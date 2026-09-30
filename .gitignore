@@ -17,3 +17,6 @@ Thumbs.db
 
 # Local Claude Code settings
 .claude/
+
+# SEO audit reports (local only)
+salaahdaily.com-audit/
