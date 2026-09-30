@@ -21,7 +21,7 @@ permissions:
 
 env:
   # Hostinger SSH details (hPanel > Advanced > SSH Access). Not secret; the private key is.
-  SSH_HOST: HOSTINGER_SSH_IP
+  SSH_HOST: 145.79.31.12
   SSH_PORT: '65002'
   SSH_USER: u320645487
 
@@ -55,7 +55,7 @@ jobs:
           # .well-known/ (SSL checks) is never touched.
           rsync -rlz --checksum --delete-after --filter='P .well-known/' \
             -e "ssh -p $SSH_PORT -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes" \
-            dist/ "$SSH_USER@$SSH_HOST:public_html/"
+            dist/ "$SSH_USER@$SSH_HOST:domains/salaahdaily.com/public_html/"
           rm -f ~/.ssh/deploy_key
 
       - name: Tell search engines (IndexNow, new content only)
