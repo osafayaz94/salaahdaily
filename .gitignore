@@ -1,0 +1,19 @@
+# Build output and deploy archive: rebuilt from source, never committed
+dist/
+site.zip
+*.zip
+
+# Secrets: keep any future keys or passwords out of Git
+.env
+.env.*
+*.pem
+*.key
+
+# Local tooling
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+
+# Local Claude Code settings
+.claude/

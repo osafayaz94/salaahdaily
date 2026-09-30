@@ -1,0 +1,16 @@
+{
+  "name": "namaz-times",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static, multilingual prayer times website.",
+  "scripts": {
+    "build": "node build.js",
+    "check": "node scripts/check.js",
+    "serve": "python -m http.server 5500 --directory dist",
+    "indexnow": "node scripts/indexnow.js",
+    "og": "node scripts/og-images.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
