@@ -54,7 +54,7 @@
     Dubai: 'dubai', Qatar: 'qatar', Kuwait: 'kuwait', Egyptian: 'egyptian', Turkey: 'diyanet',
     Bosnia: 'bosnia', Kosovo: 'kosovo', DiyanetEurope: 'diyanet-europe', ParisGMP: 'grande-mosquee-de-paris', IGGO: 'iggo-austria', EMB: 'emb-belgium',
     Tatarstan: 'dum-rt-tatarstan', Dagestan: 'muftiate-dagestan', QMI: 'qmi-caucasus', DUMU: 'dumu-ukraine',
-    Kazakhstan: 'qmdb-kazakhstan', Uzbekistan: 'muslim-board-uzbekistan', Kyrgyzstan: 'muftiyat-kyrgyzstan',
+    Singapore: 'muis-singapore', Kazakhstan: 'qmdb-kazakhstan', Uzbekistan: 'muslim-board-uzbekistan', Kyrgyzstan: 'muftiyat-kyrgyzstan',
   };
   // Methods a visitor can pick in Settings for Hanafi, Shafi'i, Maliki and Hanbali.
   var SELECTABLE = ['Karachi', 'MuslimWorldLeague', 'Egyptian', 'UmmAlQura', 'Dubai', 'Qatar', 'Kuwait',
@@ -653,7 +653,7 @@
     Kemenag: [20, 18], JAKIM: [18, 18], Brunei: [20, 18], Tehran: [17.7, 14], Jafari: [16, 14],
     // { min: n } = Isha a fixed n minutes after Maghrib
     UmmAlQura: [18.5, { min: 90 }], Dubai: [18.2, 18.2], Qatar: [18, { min: 90 }], Kuwait: [18, 17.5],
-    Egyptian: [19.5, 17.5], Turkey: [18, 17], Bosnia: [18, 16], Kosovo: [18.5, 16.5], DiyanetEurope: [18, 17], ParisGMP: [15.75, { min: 87 }], IGGO: [18, 17], EMB: [18, 17], Tatarstan: [18, 15], Dagestan: [17.5, 15], QMI: [16, 15], DUMU: [{ before: 100 }, { min: '90-100' }], Kazakhstan: [15, 15], Uzbekistan: [15.5, 15.3], Kyrgyzstan: [18, 16],
+    Egyptian: [19.5, 17.5], Turkey: [18, 17], Bosnia: [18, 16], Kosovo: [18.5, 16.5], DiyanetEurope: [18, 17], ParisGMP: [15.75, { min: 87 }], IGGO: [18, 17], EMB: [18, 17], Tatarstan: [18, 15], Dagestan: [17.5, 15], QMI: [16, 15], DUMU: [{ before: 100 }, { min: '90-100' }], Singapore: [20, 18], Kazakhstan: [15, 15], Uzbekistan: [15.5, 15.3], Kyrgyzstan: [18, 16],
   };
 
   // Mosques map: a "mosque" search pinned to exact coordinates (sll = search centre, ll = view centre).

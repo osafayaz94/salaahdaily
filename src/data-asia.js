@@ -153,5 +153,108 @@ module.exports = [
       ]),
     ],
   },
+  // Phase A2 (2026-09-30): Singapore (MUIS: adhan's Singapore method matches MUIS's 2026 timetable on
+  // data.gov.sg within 1 min on 359 of 365 days), Thailand, Philippines, Cambodia (Shafi'i), Myanmar (Hanafi):
+  // no official data found, MWL.
+  {
+    slug: 'singapore', cc: 'SG', continent: 'asia', name: { en: 'Singapore' }, langs: ['en'],
+    tz: 'Asia/Singapore', method: 'Singapore', defaultSect: 'shafii',
+    regions: [
+      R('Singapore', 'سنگاپور|सिंगापुर|সিঙ্গাপুর|سنگاپور', { ar: 'سنغافورة', tr: 'Singapur', es: 'Singapur', fr: 'Singapour', ms: 'Singapura', id: 'Singapura' }, [
+        T('Singapore', 1.3521, 103.8198, 'سنگاپور شہر|सिंगापुर शहर|সিঙ্গাপুর শহর|شهر سنگاپور', { ps: 'د سینګاپور ښار', prs: 'شهر سنگاپور', ar: 'مدينة سنغافورة', tr: 'Singapur', es: 'Singapur', fr: 'Singapour', ms: 'Singapura', id: 'Singapura' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'thailand', cc: 'TH', continent: 'asia', name: { en: 'Thailand' }, langs: ['en'],
+    tz: 'Asia/Bangkok', method: 'MuslimWorldLeague', defaultSect: 'shafii',
+    regions: [
+      R('Bangkok', 'بنکاک|बैंकॉक|ব্যাংকক|بانکوک', { ar: 'بانكوك', tr: 'Bangkok', es: 'Bangkok', fr: 'Bangkok' }, [
+        T('Bangkok', 13.7563, 100.5018, 'بنکاک|बैंकॉक|ব্যাংকক|بانکوک', { ar: 'بانكوك' }),
+      ]),
+      R('Deep South', 'انتہائی جنوب|सुदूर दक्षिण|দক্ষিণাঞ্চল|جنوب دور', { ar: 'أقصى الجنوب', tr: 'Derin Güney', es: 'Sur profundo', fr: 'Extrême Sud', ms: 'Selatan Thai', id: 'Thailand Selatan' }, [
+        T('Pattani', 6.8696, 101.2501, 'پتانی|पट्टानी|পাত্তানি|پاتانی', { ar: 'فطاني', tr: 'Patani', ms: 'Patani', id: 'Patani' }),
+        T('Yala', 6.5411, 101.2804, 'یالا|याला|ইয়ালা|یالا', { ar: 'يالا', ms: 'Jala', id: 'Yala' }),
+        T('Narathiwat', 6.4254, 101.8253, 'نراتھیوات|नराथिवात|নারাথিওয়াত|ناراتیوات', { ar: 'ناراتيوات', ms: 'Menara', id: 'Narathiwat' }),
+      ]),
+      R('Songkhla', 'سونگکھلا|सोंगख्ला|সংখলা|سونگکلا', { ar: 'سونغكلا', tr: 'Songkhla', es: 'Songkhla', fr: 'Songkhla', ms: 'Singgora', id: 'Songkhla' }, [
+        T('Hat Yai', 7.0086, 100.4747, 'ہات یائی|हाट याई|হাত ইয়াই|هات‌یای', { ar: 'هات ياي' }),
+        T('Songkhla', 7.1898, 100.5954, 'سونگکھلا|सोंगख्ला|সংখলা|سونگکلا', { ar: 'سونغكلا', ms: 'Singgora' }),
+      ]),
+      R('Andaman Coast', 'انڈمان ساحل|अंडमान तट|আন্দামান উপকূল|سواحل آندامان', { ar: 'ساحل أندامان', tr: 'Andaman Kıyısı', es: 'Costa de Andamán', fr: 'Côte d’Andaman' }, [
+        T('Satun', 6.6238, 100.0674, 'ستون|सातून|সাতুন|ساتون', { ar: 'ساتون', ms: 'Setul', id: 'Satun' }),
+        T('Krabi', 8.0863, 98.9063, 'کرابی|क्राबी|ক্রাবি|کرابی', { ar: 'كرابي' }),
+        T('Phuket', 7.8804, 98.3923, 'پھوکٹ|फुकेत|ফুকেট|پوکت', { ar: 'بوكيت' }),
+      ]),
+      R('Central and Northern Thailand', 'وسطی و شمالی تھائی لینڈ|मध्य और उत्तरी थाईलैंड|মধ্য ও উত্তর থাইল্যান্ড|تایلند مرکزی و شمالی', { ar: 'وسط وشمال تايلاند', tr: 'Orta ve Kuzey Tayland', es: 'Tailandia central y norte', fr: 'Thaïlande centrale et du Nord' }, [
+        T('Nonthaburi', 13.8621, 100.5144, 'نونتھابوری|नोंथाबुरी|নন্থাবুরি|نونتابوری', { ar: 'نونثابوري' }),
+        T('Ayutthaya', 14.3532, 100.5689, 'ایوتھایا|अयुत्थाया|আয়ুথায়া|آیوتایا', { ar: 'أيوتايا' }),
+        T('Chiang Mai', 18.7883, 98.9853, 'چیانگ مائی|चियांग माई|চিয়াং মাই|چیانگ‌مای', { ar: 'شيانغ ماي' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'philippines', cc: 'PH', continent: 'asia', name: { en: 'Philippines' }, langs: ['en'],
+    tz: 'Asia/Manila', method: 'MuslimWorldLeague', defaultSect: 'shafii',
+    regions: [
+      R('Metro Manila', 'میٹرو منیلا|मेट्रो मनीला|মেট্রো ম্যানিলা|مانیل بزرگ', { ar: 'مترو مانيلا', tr: 'Metro Manila', es: 'Gran Manila', fr: 'Grand Manille' }, [
+        T('Manila', 14.5995, 120.9842, 'منیلا|मनीला|ম্যানিলা|مانیل', { ar: 'مانيلا', tr: 'Manila', es: 'Manila', fr: 'Manille' }),
+        T('Quezon City', 14.6760, 121.0437, 'کیوزون سٹی|क्वेज़ोन सिटी|কুইজন সিটি|کزون‌سیتی', { ar: 'مدينة كيزون' }),
+      ]),
+      R('Bangsamoro', 'بنگسامورو|बांगसामोरो|বাংসামোরো|بانگسامورو', { ar: 'بانغسامورو', tr: 'Bangsamoro', es: 'Bangsamoro', fr: 'Bangsamoro' }, [
+        T('Cotabato City', 7.2236, 124.2464, 'کوٹاباٹو|कोटाबाटो|কোটাবাটো|کوتاباتو', { ar: 'كوتاباتو' }),
+        T('Marawi', 8.0034, 124.2839, 'ماراوی|मारावी|মারাভি|ماراوی', { ar: 'ماراوي' }),
+        T('Jolo', 6.0535, 121.0022, 'جولو|जोलो|জোলো|جولو', { ar: 'جولو' }),
+        T('Bongao', 5.0292, 119.7731, 'بونگاؤ|बोंगाओ|বোঙ্গাও|بونگائو', { ar: 'بونغاو' }),
+        T('Lamitan', 6.6503, 122.1356, 'لامیتان|लामितान|লামিতান|لامیتان', { ar: 'لاميتان' }),
+      ]),
+      R('Zamboanga Peninsula', 'زامبوانگا جزیرہ نما|ज़ाम्बोआंगा प्रायद्वीप|জাম্বোয়াঙ্গা উপদ্বীপ|شبه‌جزیره زامبوانگا', { ar: 'شبه جزيرة زامبوانغا', tr: 'Zamboanga Yarımadası', es: 'Península de Zamboanga', fr: 'Péninsule de Zamboanga' }, [
+        T('Zamboanga City', 6.9214, 122.0790, 'زامبوانگا|ज़ाम्बोआंगा|জাম্বোয়াঙ্গা|زامبوانگا', { ar: 'زامبوانغا' }),
+      ]),
+      R('Northern and Southern Mindanao', 'شمالی و جنوبی منڈاناؤ|उत्तरी और दक्षिणी मिंडानाओ|উত্তর ও দক্ষিণ মিন্দানাও|میندانائو شمالی و جنوبی', { ar: 'شمال وجنوب مينداناو', tr: 'Kuzey ve Güney Mindanao', es: 'Norte y sur de Mindanao', fr: 'Nord et Sud de Mindanao' }, [
+        T('Iligan', 8.2280, 124.2452, 'ایلیگن|इलिगन|ইলিগান|ایلیگان', { ar: 'إليغان' }),
+        T('Davao City', 7.1907, 125.4553, 'داواؤ|दावाओ|দাভাও|داوائو', { ar: 'دافاو' }),
+        T('General Santos', 6.1164, 125.1716, 'جنرل سانتوس|जनरल सैंटोस|জেনারেল সান্তোস|ژنرال سانتوس', { ar: 'جنرال سانتوس' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'myanmar', cc: 'MM', continent: 'asia', name: { en: 'Myanmar' }, langs: ['en'],
+    tz: 'Asia/Yangon', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Yangon Region', 'ینگون علاقہ|यांगून क्षेत्र|ইয়াঙ্গুন অঞ্চল|منطقه یانگون', { ar: 'منطقة يانغون', tr: 'Yangon Bölgesi', es: 'Región de Rangún', fr: 'Région de Rangoun' }, [
+        T('Yangon', 16.8409, 96.1735, 'ینگون|यांगून|ইয়াঙ্গুন|یانگون', { ar: 'يانغون', tr: 'Yangon', es: 'Rangún', fr: 'Rangoun' }),
+      ]),
+      R('Mandalay Region', 'منڈالے علاقہ|मांडले क्षेत्र|মান্দালয় অঞ্চল|منطقه ماندالی', { ar: 'منطقة ماندالاي', tr: 'Mandalay Bölgesi', es: 'Región de Mandalay', fr: 'Région de Mandalay' }, [
+        T('Mandalay', 21.9588, 96.0891, 'منڈالے|मांडले|মান্দালয়|ماندالی', { ar: 'ماندالاي' }),
+      ]),
+      R('Naypyidaw', 'نیپیداو|नेपीडॉ|নেপিদো|نای‌پی‌دا', { ar: 'نايبيداو', tr: 'Naypyidaw', es: 'Naipyidó', fr: 'Naypyidaw' }, [
+        T('Naypyidaw', 19.7633, 96.0785, 'نیپیداو|नेपीडॉ|নেপিদো|نای‌پی‌دا', { ar: 'نايبيداو', es: 'Naipyidó' }),
+      ]),
+      R('Rakhine State', 'راکھین ریاست|राखीन राज्य|রাখাইন রাজ্য|ایالت راخین', { ar: 'ولاية راخين', tr: 'Rakhine Eyaleti', es: 'Estado de Rakáin', fr: 'État d’Arakan' }, [
+        T('Sittwe', 20.1462, 92.8983, 'ستوے|सित्तवे|সিত্তে|سیتوه', { ar: 'سيتوي' }),
+        T('Maungdaw', 20.8167, 92.3667, 'مونگڈو|मौंगडॉ|মংডু|مانگدا', { ar: 'مونغداو' }),
+      ]),
+      R('Mon State', 'مون ریاست|मोन राज्य|মন রাজ্য|ایالت مون', { ar: 'ولاية مون', tr: 'Mon Eyaleti', es: 'Estado Mon', fr: 'État Môn' }, [
+        T('Mawlamyine', 16.4905, 97.6283, 'مولامیائن|मॉलम्याइन|মওলামাইন|مولامیاین', { ar: 'مولامين' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'cambodia', cc: 'KH', continent: 'asia', name: { en: 'Cambodia' }, langs: ['en'],
+    tz: 'Asia/Phnom_Penh', method: 'MuslimWorldLeague', defaultSect: 'shafii',
+    regions: [
+      R('Phnom Penh', 'نوم پنہ|नोम पेन्ह|নম পেন|پنوم‌پن', { ar: 'بنوم بنه', tr: 'Phnom Penh', es: 'Nom Pen', fr: 'Phnom Penh' }, [
+        T('Phnom Penh', 11.5564, 104.9282, 'نوم پنہ|नोम पेन्ह|নম পেন|پنوم‌پن', { ar: 'بنوم بنه', es: 'Nom Pen' }),
+      ]),
+      R('Central Cambodia', 'وسطی کمبوڈیا|मध्य कंबोडिया|মধ্য কম্বোডিয়া|کامبوج مرکزی', { ar: 'وسط كمبوديا', tr: 'Orta Kamboçya', es: 'Camboya central', fr: 'Cambodge central' }, [
+        T('Kampong Cham', 11.9934, 105.4635, 'کامپونگ چام|कम्पोंग चाम|কাম্পং চাম|کامپونگ چام', { ar: 'كامبونغ تشام' }),
+      ]),
+      R('Southern and Western Cambodia', 'جنوبی و مغربی کمبوڈیا|दक्षिणी और पश्चिमी कंबोडिया|দক্ষিণ ও পশ্চিম কম্বোডিয়া|کامبوج جنوبی و غربی', { ar: 'جنوب وغرب كمبوديا', tr: 'Güney ve Batı Kamboçya', es: 'Camboya meridional y occidental', fr: 'Cambodge du Sud et de l’Ouest' }, [
+        T('Kampot', 10.6104, 104.1815, 'کامپوٹ|कम्पोट|কাম্পোট|کامپوت', { ar: 'كامبوت' }),
+        T('Battambang', 13.0957, 103.2022, 'بٹامبانگ|बट्टमबांग|বাত্তামবাং|باتامبانگ', { ar: 'باتامبانغ' }),
+        T('Siem Reap', 13.3671, 103.8448, 'سیم ریپ|सिएम रीप|সিয়েম রিপ|سیم‌ریپ', { ar: 'سيام ريب' }),
+      ]),
+    ],
+  },
 ];
-
