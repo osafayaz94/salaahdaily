@@ -544,7 +544,7 @@ const NORDIC = new Set(['norway', 'sweden', 'denmark', 'finland', 'iceland']);
 const OFFICIAL_ASR = { 'bosnia-and-herzegovina': 'Islamska zajednica u Bosni i Hercegovini', kosovo: 'Bashkësia Islame e Kosovës', germany: 'DITIB (Diyanet)',
   netherlands: 'Diyanet', luxembourg: 'Diyanet', switzerland: 'Diyanet', austria: 'IGGÖ (Islamische Glaubensgemeinschaft in Österreich)',
   serbia: 'Islamska zajednica', montenegro: 'Islamska zajednica', croatia: 'Islamska zajednica', slovenia: 'Islamska skupnost',
-  bulgaria: 'Главно мюфтийство (Chief Mufti of Bulgaria)', denmark: 'Diyanet', finland: 'Diyanet', iceland: 'Diyanet',
+  bulgaria: 'Главно мюфтийство (Chief Mufti of Bulgaria)', denmark: 'Diyanet', finland: 'Diyanet', iceland: 'Diyanet', liechtenstein: 'Diyanet',
   ukraine: 'ДУМУ (Spiritual Administration of Muslims of Ukraine)', poland: 'Muzułmański Związek Religijny (MZR)', hungary: 'Magyarországi Muszlimok Egyháza (MME)' };
 
 /* ---------- Country: today's times for every city ---------- */

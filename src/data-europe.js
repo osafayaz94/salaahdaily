@@ -1339,4 +1339,55 @@ module.exports = [
       ]),
     ],
   },
+  // Phase 10 (2026-09-30): micro-states, each on its neighbour's method and school: Andorra as Spain,
+  // Monaco as France, San Marino and Vatican City as Italy, Liechtenstein as Switzerland (Diyanet).
+  {
+    slug: 'andorra', cc: 'AD', continent: 'europe', name: { en: 'Andorra' }, langs: ['es'],
+    tz: 'Europe/Andorra', method: 'MuslimWorldLeague', defaultSect: 'maliki',
+    regions: [
+      R('Andorra la Vella', 'انڈورا لا ویلا|अंडोरा ला वेला|আন্দোরা লা ভেলিয়া|آندورا لا ویا', { ar: 'أندورا لا فيلا', tr: 'Andorra la Vella', es: 'Andorra la Vieja', fr: 'Andorre-la-Vieille' }, [
+        T('Andorra la Vella', 42.5063, 1.5218, 'انڈورا لا ویلا|अंडोरा ला वेला|আন্দোরা লা ভেলিয়া|آندورا لا ویا', { ar: 'أندورا لا فيلا', es: 'Andorra la Vieja', fr: 'Andorre-la-Vieille' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'monaco', cc: 'MC', continent: 'europe', name: { en: 'Monaco' }, langs: ['fr'],
+    tz: 'Europe/Monaco', method: 'ParisGMP', defaultSect: 'maliki',
+    regions: [
+      R('Monaco', 'موناکو|मोनाको|মোনাকো|موناکو', { ar: 'موناكو', tr: 'Monako', es: 'Mónaco', fr: 'Monaco' }, [
+        T('Monaco', 43.7384, 7.4246, 'موناکو|मोनाको|মোনাকো|موناکو', { ar: 'موناكو', tr: 'Monako', es: 'Mónaco', fr: 'Monaco' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'san-marino', cc: 'SM', continent: 'europe', name: { en: 'San Marino' }, langs: ['en'],
+    tz: 'Europe/San_Marino', method: 'MuslimWorldLeague', defaultSect: 'maliki',
+    regions: [
+      R('San Marino', 'سان مارینو|सैन मैरिनो|সান মারিনো|سان مارینو', { ar: 'سان مارينو', tr: 'San Marino', es: 'San Marino', fr: 'Saint-Marin' }, [
+        T('San Marino', 43.9424, 12.4578, 'سان مارینو|सैन मैरिनो|সান মারিনো|سان مارینو', { ps: 'د سان مارینو ښار', ar: 'سان مارينو', fr: 'Saint-Marin' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'vatican-city', cc: 'VA', continent: 'europe', name: { en: 'Vatican City' }, langs: ['en'],
+    tz: 'Europe/Vatican', method: 'MuslimWorldLeague', defaultSect: 'maliki',
+    regions: [
+      R('Vatican City', 'ویٹیکن سٹی|वेटिकन सिटी|ভ্যাটিকান সিটি|واتیکان', { ar: 'مدينة الفاتيكان', tr: 'Vatikan', es: 'Ciudad del Vaticano', fr: 'Cité du Vatican' }, [
+        T('Vatican City', 41.9029, 12.4534, 'ویٹیکن سٹی|वेटिकन सिटी|ভ্যাটিকান সিটি|شهر واتیکان', { ps: 'د واتیکان ښار', prs: 'شهر واتیکان', ar: 'مدينة الفاتيكان', tr: 'Vatikan', es: 'Ciudad del Vaticano', fr: 'Cité du Vatican' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'liechtenstein', cc: 'LI', continent: 'europe', name: { en: 'Liechtenstein' }, langs: ['en'],
+    tz: 'Europe/Vaduz', method: 'DiyanetEurope', defaultSect: 'shafii',
+    regions: [
+      R('Oberland', 'اوبرلینڈ|ओबरलैंड|ওবারল্যান্ড|اوبرلند', { ar: 'أوبرلاند', tr: 'Oberland', es: 'Oberland', fr: 'Oberland' }, [
+        T('Vaduz', 47.1410, 9.5209, 'فادوز|फ़ादुत्स|ফাদুৎস|فادوتس', { ar: 'فادوتس' }),
+        T('Schaan', 47.1651, 9.5096, 'شان|शान|শান|شان', { ar: 'شان' }),
+      ]),
+      R('Unterland', 'انٹرلینڈ|उंटरलैंड|উন্টারল্যান্ড|اونترلند', { ar: 'أونترلاند', tr: 'Unterland', es: 'Unterland', fr: 'Unterland' }, [
+        T('Eschen', 47.2107, 9.5223, 'ایشن|एशेन|এশেন|اشن', { ar: 'إيشن' }),
+      ]),
+    ],
+  },
 ];
