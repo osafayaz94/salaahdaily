@@ -540,10 +540,11 @@ function homePage(lang) {
 // Countries whose default follows Diyanet's official timetable (Asr by one shadow length).
 const DIYANET = new Set(['turkey', 'cyprus']);
 // Countries whose official timetable (named here, as it names itself) also uses the first Asr time.
+const NORDIC = new Set(['norway', 'sweden', 'denmark', 'finland', 'iceland']);
 const OFFICIAL_ASR = { 'bosnia-and-herzegovina': 'Islamska zajednica u Bosni i Hercegovini', kosovo: 'Bashkësia Islame e Kosovës', germany: 'DITIB (Diyanet)',
   netherlands: 'Diyanet', luxembourg: 'Diyanet', switzerland: 'Diyanet', austria: 'IGGÖ (Islamische Glaubensgemeinschaft in Österreich)',
   serbia: 'Islamska zajednica', montenegro: 'Islamska zajednica', croatia: 'Islamska zajednica', slovenia: 'Islamska skupnost',
-  bulgaria: 'Главно мюфтийство (Chief Mufti of Bulgaria)',
+  bulgaria: 'Главно мюфтийство (Chief Mufti of Bulgaria)', denmark: 'Diyanet', finland: 'Diyanet', iceland: 'Diyanet',
   ukraine: 'ДУМУ (Spiritual Administration of Muslims of Ukraine)', poland: 'Muzułmański Związek Religijny (MZR)', hungary: 'Magyarországi Muszlimok Egyháza (MME)' };
 
 /* ---------- Country: today's times for every city ---------- */
@@ -591,6 +592,8 @@ function countryPage(lang, c) {
     { q: t.qMethod, a: methodText },
     { q: cf[2], a: t.aboutSects },
   ];
+  // Midnight sun and light summer nights: how the times are estimated, and the options scholars give.
+  if (NORDIC.has(c.slug)) faq.push({ q: GUIDES[lang].nordicQ, a: GUIDES[lang].nordicA });
   html += `<section class="card faq" aria-labelledby="faqTitle"><h2 id="faqTitle">${esc(tpl(t.faqH2, { city: country }))}</h2>` +
     faq.map((it) => `<div class="faq-item"><h3>${esc(it.q)}</h3><p>${esc(it.a)}</p></div>`).join('') + '</section>';
   html += `<section class="coming-soon"><h2>${esc(t.cityNotListed)}</h2>` +

@@ -289,12 +289,27 @@
     else if (A.HighLatitudeRule && typeof A.HighLatitudeRule.recommended === 'function') {
       p.highLatitudeRule = A.HighLatitudeRule.recommended(new A.Coordinates(loc.lat, loc.lng));
     }
+    // Arctic days with no sunrise or no sunset: times of the nearest latitude that still has both
+    // (aqrab al-bilad, the Muslim World League Fiqh Council's ruling).
+    if (A.PolarCircleResolution) p.polarCircleResolution = A.PolarCircleResolution.AqrabBalad;
     return p;
+  }
+  function inOrder(t) {
+    for (var i = 0; i < PRAYERS.length; i++) {
+      if (isNaN(t[PRAYERS[i]]) || (i > 0 && t[PRAYERS[i]] <= t[PRAYERS[i - 1]])) return false;
+    }
+    return true;
   }
   function timesFor(loc, ctx, y, m, d, params) {
     // adhan reads the calendar day from the Date's local components.
     var p = params || paramsFor(loc, ctx), f = p.fixedSummer;
     var t = new A.PrayerTimes(new A.Coordinates(loc.lat, loc.lng), new Date(y, m - 1, d), p);
+    // Arctic days too short or too long for all five prayers (no sunset, no sunrise, or Asr never before
+    // sunset): times of the nearest latitude, same longitude, where every prayer has its place (aqrab al-bilad).
+    for (var lat = loc.lat; !inOrder(t) && Math.abs(lat) > 48;) {
+      lat -= lat > 0 ? 0.5 : -0.5;
+      t = new A.PrayerTimes(new A.Coordinates(lat, loc.lng), new Date(y, m - 1, d), p);
+    }
     // Fixed intervals on nights the Sun never reaches the Fajr angle (lowest altitude = |lat| + declination - 90).
     if (f && Math.abs(loc.lat) + (loc.lat < 0 ? -1 : 1) * declination(y, m, d) - 90 > -f.angle) {
       t.fajr = new Date(t.sunrise.getTime() - f.fajr * 60000);

@@ -1224,4 +1224,119 @@ module.exports = [
       ]),
     ],
   },
+  // Phase 4 (2026-09-30): the Nordics. Arctic days use the nearest latitude where all five prayers exist
+  // (core.js). Norway: MWL + Hanafi (Pakistani majority; one-seventh of the night in summer, as Norwegian
+  // timetables do). Sweden: MWL, as Stockholm Mosque (Islamiska Förbundet) uses; Shafi'i (Arab, Somali, Bosnian
+  // majority). Denmark, Finland, Iceland: Diyanet's European timetable, first Asr + Diyanet note.
+  {
+    slug: 'norway', cc: 'NO', continent: 'europe', name: { en: 'Norway' }, langs: ['en'],
+    tz: 'Europe/Oslo', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Oslo', 'اوسلو|ओस्लो|অসলো|اسلو', { ar: 'أوسلو', tr: 'Oslo', es: 'Oslo', fr: 'Oslo' }, [
+        T('Oslo', 59.9139, 10.7522, 'اوسلو|ओस्लो|অসলো|اسلو', { ar: 'أوسلو' }),
+      ]),
+      R('Eastern Norway', 'مشرقی ناروے|पूर्वी नॉर्वे|পূর্ব নরওয়ে|نروژ شرقی', { ar: 'شرق النرويج', tr: 'Doğu Norveç', es: 'Noruega Oriental', fr: 'Norvège orientale' }, [
+        T('Drammen', 59.7439, 10.2045, 'ڈرامن|ड्रामेन|ড্রামেন|درامن', { ar: 'درامن' }),
+        T('Fredrikstad', 59.2181, 10.9298, 'فریڈرکسٹاڈ|फ़्रेड्रिकस्टाड|ফ্রেড্রিকস্তাদ|فردریکستاد', { ar: 'فريدريكستاد' }),
+      ]),
+      R('Western Norway', 'مغربی ناروے|पश्चिमी नॉर्वे|পশ্চিম নরওয়ে|نروژ غربی', { ar: 'غرب النرويج', tr: 'Batı Norveç', es: 'Noruega Occidental', fr: 'Norvège occidentale' }, [
+        T('Bergen', 60.3913, 5.3221, 'برگن|बर्गेन|বার্গেন|برگن', { ar: 'بيرغن' }),
+        T('Stavanger', 58.9700, 5.7331, 'سٹاوانگر|स्टावान्गर|স্টাভাঙ্গার|استاوانگر', { ar: 'ستافانغر' }),
+      ]),
+      R('Southern Norway', 'جنوبی ناروے|दक्षिणी नॉर्वे|দক্ষিণ নরওয়ে|نروژ جنوبی', { ar: 'جنوب النرويج', tr: 'Güney Norveç', es: 'Noruega Meridional', fr: 'Norvège méridionale' }, [
+        T('Kristiansand', 58.1467, 7.9956, 'کرسچن سینڈ|क्रिस्टियानसैंड|ক্রিস্টিয়ানস্যান্ড|کریستیانساند', { ar: 'كريستيانساند' }),
+      ]),
+      R('Trøndelag', 'ٹرونڈیلاگ|त्रोंडेलाग|ত্রোন্দেলাগ|تروندلاگ', { ar: 'تروندلاغ', tr: 'Trøndelag', es: 'Trøndelag', fr: 'Trøndelag' }, [
+        T('Trondheim', 63.4305, 10.3951, 'ٹرونڈہائم|ट्रॉनहाइम|ট্রনহেইম|تروندهایم', { ar: 'تروندهايم' }),
+      ]),
+      R('Northern Norway', 'شمالی ناروے|उत्तरी नॉर्वे|উত্তর নরওয়ে|نروژ شمالی', { ar: 'شمال النرويج', tr: 'Kuzey Norveç', es: 'Noruega Septentrional', fr: 'Norvège septentrionale' }, [
+        T('Bodø', 67.2804, 14.4049, 'بودو|बोदो|বোদো|بودو', { ar: 'بودو' }),
+        T('Tromsø', 69.6492, 18.9553, 'ترومسو|त्रोम्सो|ত্রমসো|ترومسو', { ar: 'ترومسو' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'sweden', cc: 'SE', continent: 'europe', name: { en: 'Sweden' }, langs: ['en'],
+    tz: 'Europe/Stockholm', method: 'MuslimWorldLeague', defaultSect: 'shafii',
+    regions: [
+      R('Stockholm County', 'اسٹاک ہوم کاؤنٹی|स्टॉकहोम काउंटी|স্টকহোম কাউন্টি|استان استکهلم', { ar: 'مقاطعة ستوكهولم', tr: 'Stockholm ili', es: 'Provincia de Estocolmo', fr: 'Comté de Stockholm' }, [
+        T('Stockholm', 59.3293, 18.0686, 'اسٹاک ہوم|स्टॉकहोम|স্টকহোম|استکهلم', { ar: 'ستوكهولم', tr: 'Stockholm', es: 'Estocolmo', fr: 'Stockholm' }),
+        T('Södertälje', 59.1955, 17.6253, 'سودرتیلیے|स्योडरटेल्ये|সোডারটেলিয়ে|سودرتلیه', { ar: 'سودرتاليا' }),
+      ]),
+      R('Uppsala County', 'اپسالا کاؤنٹی|उप्साला काउंटी|উপসালা কাউন্টি|استان اوپسالا', { ar: 'مقاطعة أوبسالا', tr: 'Uppsala ili', es: 'Provincia de Upsala', fr: 'Comté d’Uppsala' }, [
+        T('Uppsala', 59.8586, 17.6389, 'اپسالا|उप्साला|উপসালা|اوپسالا', { ar: 'أوبسالا', es: 'Upsala' }),
+      ]),
+      R('Västra Götaland', 'ویسترا یوتالاند|वेस्ट्रा गोटालैंड|ভেস্ত্রা ইয়োতাল্যান্ড|وستره گوتالند', { ar: 'فاسترا غوتالاند', tr: 'Västra Götaland', es: 'Västra Götaland', fr: 'Västra Götaland' }, [
+        T('Gothenburg', 57.7089, 11.9746, 'گوتھنبرگ|गोथेनबर्ग|গোথেনবার্গ|گوتنبرگ', { ar: 'غوتنبرغ', tr: 'Göteborg', es: 'Gotemburgo', fr: 'Göteborg' }),
+      ]),
+      R('Skåne', 'اسکونے|स्कोने|স্কোনে|اسکونه', { ar: 'سكونه', tr: 'Skåne', es: 'Escania', fr: 'Scanie' }, [
+        T('Malmö', 55.6050, 13.0038, 'مالمو|माल्मो|মালমো|مالمو', { ar: 'مالمو' }),
+        T('Helsingborg', 56.0465, 12.6945, 'ہیلسنگبورگ|हेल्सिंगबोर्ग|হেলসিংবোর্গ|هلسینگبوری', { ar: 'هلسينغبورغ' }),
+      ]),
+      R('Central Sweden', 'وسطی سویڈن|मध्य स्वीडन|মধ্য সুইডেন|سوئد مرکزی', { ar: 'وسط السويد', tr: 'Orta İsveç', es: 'Suecia central', fr: 'Suède centrale' }, [
+        T('Örebro', 59.2753, 15.2134, 'اوریبرو|ऑरेब्रो|ওরেব্রো|اوربرو', { ar: 'أوريبرو' }),
+        T('Västerås', 59.6099, 16.5448, 'ویسترؤس|वेस्टेरोस|ভেস্টেরোস|وستروس', { ar: 'فستروس' }),
+      ]),
+      R('Östergötland', 'اوسترگوتلاند|ओस्टरगोटलैंड|ওস্টারইয়োটল্যান্ড|استرگوتلند', { ar: 'أوسترغوتلاند', tr: 'Östergötland', es: 'Östergötland', fr: 'Östergötland' }, [
+        T('Linköping', 58.4108, 15.6214, 'لنشوپنگ|लिनशोपिंग|লিনশোপিং|لینشوپینگ', { ar: 'لينشوبينغ' }),
+        T('Norrköping', 58.5877, 16.1924, 'نورشوپنگ|नॉरशोपिंग|নরশোপিং|نورشوپینگ', { ar: 'نورشوبينغ' }),
+      ]),
+      R('Northern Sweden', 'شمالی سویڈن|उत्तरी स्वीडन|উত্তর সুইডেন|سوئد شمالی', { ar: 'شمال السويد', tr: 'Kuzey İsveç', es: 'Suecia septentrional', fr: 'Suède septentrionale' }, [
+        T('Umeå', 63.8258, 20.2630, 'اومیو|उमेओ|উমিও|اومه‌او', { ar: 'أوميو' }),
+        T('Luleå', 65.5848, 22.1547, 'لولیو|लुलेओ|লুলিও|لوله‌او', { ar: 'لوليو' }),
+        T('Kiruna', 67.8558, 20.2253, 'کرونا|किरुना|কিরুনা|کیرونا', { ar: 'كيرونا' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'denmark', cc: 'DK', continent: 'europe', name: { en: 'Denmark' }, langs: ['en'],
+    tz: 'Europe/Copenhagen', method: 'DiyanetEurope', defaultSect: 'shafii',
+    regions: [
+      R('Capital Region', 'دارالحکومت علاقہ|राजधानी क्षेत्र|রাজধানী অঞ্চল|منطقه پایتخت', { ar: 'منطقة العاصمة', tr: 'Başkent Bölgesi', es: 'Región Capital', fr: 'Région Capitale' }, [
+        T('Copenhagen', 55.6761, 12.5683, 'کوپن ہیگن|कोपेनहेगन|কোপেনহেগেন|کپنهاگ', { ar: 'كوبنهاغن', tr: 'Kopenhag', es: 'Copenhague', fr: 'Copenhague' }),
+      ]),
+      R('Central Jutland', 'وسطی یوٹلینڈ|मध्य जटलैंड|মধ্য জাটল্যান্ড|یوتلند مرکزی', { ar: 'وسط يوتلاند', tr: 'Orta Jutland', es: 'Jutlandia Central', fr: 'Jutland-Central' }, [
+        T('Aarhus', 56.1629, 10.2039, 'آرہوس|ऑर्हूस|অরহুস|آرهوس', { ar: 'آرهوس' }),
+      ]),
+      R('Southern Denmark', 'جنوبی ڈنمارک|दक्षिणी डेनमार्क|দক্ষিণ ডেনমার্ক|دانمارک جنوبی', { ar: 'جنوب الدنمارك', tr: 'Güney Danimarka', es: 'Dinamarca Meridional', fr: 'Danemark-du-Sud' }, [
+        T('Odense', 55.4038, 10.4024, 'اوڈنسے|ओडेन्से|ওডেন্সে|اودنسه', { ar: 'أودنسه' }),
+      ]),
+      R('North Jutland', 'شمالی یوٹلینڈ|उत्तरी जटलैंड|উত্তর জাটল্যান্ড|یوتلند شمالی', { ar: 'شمال يوتلاند', tr: 'Kuzey Jutland', es: 'Jutlandia Septentrional', fr: 'Jutland-du-Nord' }, [
+        T('Aalborg', 57.0488, 9.9217, 'آلبورگ|ऑलबोर्ग|অলবর্গ|آلبورگ', { ar: 'آلبورغ' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'finland', cc: 'FI', continent: 'europe', name: { en: 'Finland' }, langs: ['en'],
+    tz: 'Europe/Helsinki', method: 'DiyanetEurope', defaultSect: 'shafii',
+    regions: [
+      R('Uusimaa', 'اوسیما|ऊसिमा|উউসিমা|اوسیما', { ar: 'أوسيما', tr: 'Uusimaa', es: 'Uusimaa', fr: 'Uusimaa' }, [
+        T('Helsinki', 60.1699, 24.9384, 'ہیلسنکی|हेलसिंकी|হেলসিঙ্কি|هلسینکی', { ar: 'هلسنكي', tr: 'Helsinki', es: 'Helsinki', fr: 'Helsinki' }),
+        T('Espoo', 60.2055, 24.6559, 'ایسپو|एस्पू|এসপু|اسپو', { ar: 'إسبو' }),
+        T('Vantaa', 60.2934, 25.0378, 'وانتا|वांता|ভানতা|وانتا', { ar: 'فانتا' }),
+      ]),
+      R('Southwest Finland', 'جنوب مغربی فن لینڈ|दक्षिण-पश्चिम फ़िनलैंड|দক্ষিণ-পশ্চিম ফিনল্যান্ড|فنلاند جنوب غربی', { ar: 'جنوب غرب فنلندا', tr: 'Güneybatı Finlandiya', es: 'Finlandia Propia', fr: 'Finlande-Propre' }, [
+        T('Turku', 60.4518, 22.2666, 'ترکو|तुर्कू|তুর্কু|تورکو', { ar: 'توركو' }),
+      ]),
+      R('Pirkanmaa', 'پرکنما|पिरकनमा|পিরকানমা|پیرکانما', { ar: 'بيركانما', tr: 'Pirkanmaa', es: 'Pirkanmaa', fr: 'Pirkanmaa' }, [
+        T('Tampere', 61.4978, 23.7610, 'ٹیمپرے|तांपेरे|তাম্পেরে|تامپره', { ar: 'تامبيري' }),
+      ]),
+      R('Northern Finland', 'شمالی فن لینڈ|उत्तरी फ़िनलैंड|উত্তর ফিনল্যান্ড|فنلاند شمالی', { ar: 'شمال فنلندا', tr: 'Kuzey Finlandiya', es: 'Finlandia septentrional', fr: 'Finlande du Nord' }, [
+        T('Oulu', 65.0121, 25.4651, 'اولو|ओउलू|ওউলু|اولو', { ar: 'أولو' }),
+        T('Rovaniemi', 66.5039, 25.7294, 'روانیمی|रोवानिएमी|রোভানিয়েমি|روانیمی', { ar: 'روفانييمي' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'iceland', cc: 'IS', continent: 'europe', name: { en: 'Iceland' }, langs: ['en'],
+    tz: 'Atlantic/Reykjavik', method: 'DiyanetEurope', defaultSect: 'shafii',
+    regions: [
+      R('Capital Region', 'دارالحکومت علاقہ|राजधानी क्षेत्र|রাজধানী অঞ্চল|منطقه پایتخت', { ar: 'منطقة العاصمة', tr: 'Başkent Bölgesi', es: 'Región Capital', fr: 'Région de la capitale' }, [
+        T('Reykjavík', 64.1466, -21.9426, 'ریکیاوک|रेक्याविक|রেইকিয়াভিক|ریکیاویک', { ar: 'ريكيافيك', tr: 'Reykjavik', es: 'Reikiavik', fr: 'Reykjavik' }),
+      ]),
+      R('Northeast Iceland', 'شمال مشرقی آئس لینڈ|उत्तर-पूर्वी आइसलैंड|উত্তর-পূর্ব আইসল্যান্ড|ایسلند شمال شرقی', { ar: 'شمال شرق آيسلندا', tr: 'Kuzeydoğu İzlanda', es: 'Islandia Nororiental', fr: 'Islande du Nord-Est' }, [
+        T('Akureyri', 65.6885, -18.1262, 'آکوریری|अकुरेरी|আকুরেইরি|آکوریری', { ar: 'أكوريري' }),
+      ]),
+    ],
+  },
 ];
