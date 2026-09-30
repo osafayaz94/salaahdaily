@@ -424,4 +424,48 @@ module.exports = [
       ]),
     ],
   },
+  // Phase A5 (2026-09-30): Vietnam, Laos, Timor-Leste. No official timetable data: MWL, Shafi'i (Cham in Vietnam
+  // and Laos, Indonesian-linked community in Timor-Leste).
+  {
+    slug: 'vietnam', cc: 'VN', continent: 'asia', name: { en: 'Vietnam' }, langs: ['en'],
+    tz: 'Asia/Ho_Chi_Minh', method: 'MuslimWorldLeague', defaultSect: 'shafii',
+    regions: [
+      R('Ho Chi Minh City', 'ہو چی منہ سٹی|हो ची मिन्ह सिटी|হো চি মিন সিটি|شهر هوشی‌مین', { ar: 'مدينة هو تشي منه', tr: 'Ho Chi Minh Kenti', es: 'Ciudad Ho Chi Minh', fr: 'Hô Chi Minh-Ville' }, [
+        T('Ho Chi Minh City', 10.8231, 106.6297, 'ہو چی منہ سٹی|हो ची मिन्ह सिटी|হো চি মিন সিটি|شهر هوشی‌مین', { ar: 'مدينة هو تشي منه', es: 'Ciudad Ho Chi Minh', fr: 'Hô Chi Minh-Ville' }),
+      ]),
+      R('Mekong Delta', 'میکونگ ڈیلٹا|मेकांग डेल्टा|মেকং ব-দ্বীপ|دلتای مکونگ', { ar: 'دلتا ميكونغ', tr: 'Mekong Deltası', es: 'Delta del Mekong', fr: 'Delta du Mékong' }, [
+        T('Châu Đốc', 10.7009, 105.1167, 'چاؤ ڈوک|चाउ डॉक|চাউ ডক|چائو دوک', { ar: 'تشاو دوك' }),
+      ]),
+      R('South Central Coast', 'جنوبی وسطی ساحل|दक्षिण मध्य तट|দক্ষিণ মধ্য উপকূল|ساحل جنوب مرکزی', { ar: 'الساحل الجنوبي الأوسط', tr: 'Güney Orta Kıyı', es: 'Costa Centro-Sur', fr: 'Côte centrale du Sud' }, [
+        T('Phan Rang', 11.5646, 108.9886, 'پھان رانگ|फान रंग|ফান রাং|فان‌رانگ', { ar: 'فان رانغ' }),
+      ]),
+      R('Hanoi', 'ہنوئی|हनोई|হ্যানয়|هانوی', { ar: 'هانوي', tr: 'Hanoi', es: 'Hanói', fr: 'Hanoï' }, [
+        T('Hanoi', 21.0278, 105.8342, 'ہنوئی|हनोई|হ্যানয়|هانوی', { ar: 'هانوي', es: 'Hanói', fr: 'Hanoï' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'laos', cc: 'LA', continent: 'asia', name: { en: 'Laos' }, langs: ['en'],
+    tz: 'Asia/Vientiane', method: 'MuslimWorldLeague', defaultSect: 'shafii',
+    regions: [
+      R('Vientiane', 'وینتیان|विएंतियान|ভিয়েনতিয়েন|وینتیان', { ar: 'فيينتيان', tr: 'Vientiane', es: 'Vientián', fr: 'Vientiane' }, [
+        T('Vientiane', 17.9757, 102.6331, 'وینتیان|विएंतियान|ভিয়েনতিয়েন|وینتیان', { ar: 'فيينتيان', es: 'Vientián' }),
+      ]),
+      R('Luang Prabang', 'لوانگ پرابانگ|लुआंग प्रबांग|লুয়াং প্রাবাং|لوانگ پرابانگ', { ar: 'لوانغ برابانغ', tr: 'Luang Prabang', es: 'Luang Prabang', fr: 'Luang Prabang' }, [
+        T('Luang Prabang', 19.8856, 102.1347, 'لوانگ پرابانگ|लुआंग प्रबांग|লুয়াং প্রাবাং|لوانگ پرابانگ', { ar: 'لوانغ برابانغ' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'timor-leste', cc: 'TL', continent: 'asia', name: { en: 'Timor-Leste' }, langs: ['en'],
+    tz: 'Asia/Dili', method: 'MuslimWorldLeague', defaultSect: 'shafii',
+    regions: [
+      R('Dili', 'دیلی|दिली|দিলি|دیلی', { ar: 'ديلي', tr: 'Dili', es: 'Dili', fr: 'Dili' }, [
+        T('Dili', -8.5569, 125.5603, 'دیلی|दिली|দিলি|دیلی', { ar: 'ديلي' }),
+      ]),
+      R('Baucau', 'باؤکاؤ|बाउकाउ|বাউকাউ|بائوکائو', { ar: 'باوكاو', tr: 'Baucau', es: 'Baucau', fr: 'Baucau' }, [
+        T('Baucau', -8.4667, 126.4500, 'باؤکاؤ|बाउकाउ|বাউকাউ|بائوکائو', { ar: 'باوكاو' }),
+      ]),
+    ],
+  },
 ];
