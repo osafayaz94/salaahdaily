@@ -126,7 +126,37 @@
     });
   }
 
+  // Footer suggestion form: send in the background and say whether it worked (the page URL goes with it).
+  var sg = document.querySelector('form[data-suggest]');
+  if (sg && window.fetch) sg.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var status = sg.querySelector('.sg-status'), btn = sg.querySelector('button');
+    var fd = new FormData(sg);
+    fd.append('page', location.href);
+    btn.disabled = true;
+    fetch(sg.action, { method: 'POST', body: fd, headers: { Accept: 'application/json' } })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.success) throw new Error('send');
+        status.textContent = status.getAttribute('data-ok');
+        sg.reset();
+      })
+      .catch(function () { status.textContent = status.getAttribute('data-err'); })
+      .then(function () { btn.disabled = false; });
+  });
+
+  // The language menu is a <details>: close it on a click anywhere outside it, or on Escape.
+  function closeMenus(except) {
+    document.querySelectorAll('details.lang-menu[open]').forEach(function (d) { if (d !== except) d.removeAttribute('open'); });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var open = document.querySelector('details.lang-menu[open]');
+    if (open) { open.removeAttribute('open'); open.querySelector('summary').focus(); }
+  });
+
   document.addEventListener('click', function (e) {
+    closeMenus(e.target.closest('details.lang-menu'));
     var sectBtn = e.target.closest('[data-sect]');
     if (sectBtn) {
       S.sect = sectBtn.getAttribute('data-sect');

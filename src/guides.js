@@ -820,5 +820,8 @@ Object.keys(G3).forEach(function (l) { Object.assign(GUIDES[l], G3[l]); });
 // Europe strings live in guides-europe.js.
 var EU = require('./guides-europe').EU;
 Object.keys(EU).forEach(function (l) { Object.assign(GUIDES[l], EU[l]); });
+// Footer suggestion form strings live in guides-suggest.js.
+var SG = require('./guides-suggest').SG;
+Object.keys(SG).forEach(function (l) { Object.assign(GUIDES[l], SG[l]); });
 
 if (typeof module === 'object' && module.exports) module.exports = { GUIDES: GUIDES, WIKI: WIKI };

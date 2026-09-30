@@ -336,9 +336,26 @@ function footer(lang) {
         `<li><a href="${url.widget(lang)}">${esc(GUIDES[lang].wNav)}</a></li>` +
         `<li><a href="${url.about(lang)}">${esc(t.aboutLink)}</a></li></ul></nav>` +
     '</div>' +
+    suggestForm(lang) +
     `<p>${esc(t.footer1)} <a href="${url.about(lang)}">${esc(t.aboutLink)}</a></p><p>${esc(t.footer2)}</p>` +
     `<p class="muted">© ${NOW.getUTCFullYear()} ${esc(BRAND)} · <span lang="ar" dir="rtl">${esc(BRAND_AR)}</span></p>` +
     '</div></footer>';
+}
+
+// Suggestion form: posts to Web3Forms, which emails the site owner (their address never appears here).
+// botcheck is a honeypot that people never see; bots that fill it are dropped.
+function suggestForm(lang) {
+  if (!CONFIG.web3formsKey) return '';
+  const g = GUIDES[lang];
+  return `<form class="suggest" data-suggest action="https://api.web3forms.com/submit" method="post" aria-labelledby="sgH">` +
+    `<h2 id="sgH">${esc(g.sgH)}</h2>` +
+    `<input type="hidden" name="access_key" value="${esc(CONFIG.web3formsKey)}">` +
+    `<input type="hidden" name="subject" value="SalaahDaily suggestion (${lang})">` +
+    `<input type="hidden" name="from_name" value="SalaahDaily">` +
+    `<input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">` +
+    `<label for="sgMsg">${esc(g.sgLabel)}</label><textarea id="sgMsg" name="message" rows="3" maxlength="2000" required></textarea>` +
+    `<label for="sgMail">${esc(g.sgEmail)}</label><input id="sgMail" name="email" type="email" maxlength="120" autocomplete="email">` +
+    `<button type="submit" class="btn-primary">${esc(g.sgSend)}</button><p class="sg-status" role="status" data-ok="${esc(g.sgThanks)}" data-err="${esc(g.sgError)}"></p></form>`;
 }
 
 function breadcrumbs(items) {
@@ -1236,11 +1253,11 @@ const CSP = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src https://fonts.gstatic.com",
   "img-src 'self' data:",
-  "connect-src 'self'",
+  "connect-src 'self' https://api.web3forms.com",
   "frame-src 'self' https://maps.google.com https://www.google.com",
   "object-src 'none'",
   "base-uri 'self'",
-  "form-action 'self'",
+  "form-action 'self' https://api.web3forms.com",
   "frame-ancestors 'self'",
   'upgrade-insecure-requests',
 ].join('; ');
