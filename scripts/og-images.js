@@ -13,7 +13,7 @@ const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const CONFIG = require('../site.config');
-const RAW = require('../src/data').concat(require('../src/data-mea')).concat(require('../src/data-europe'));
+const RAW = require('../src/data').concat(require('../src/data-mea')).concat(require('../src/data-europe')).concat(require('../src/data-asia'));
 const TOWNS = require('../src/towns');
 
 const ROOT = path.join(__dirname, '..');

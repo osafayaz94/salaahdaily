@@ -43,6 +43,9 @@
     Dagestan: 'Muftiate of the Republic of Dagestan (fitted to its timetable)',
     QMI: 'Caucasus Muslims Board (QMİ), Baku',
     DUMU: 'DUMU, Spiritual Administration of Muslims of Ukraine',
+    Kazakhstan: 'Spiritual Administration of Muslims of Kazakhstan (QMDB)',
+    Uzbekistan: 'Muslim Board of Uzbekistan (fitted to its calendar)',
+    Kyrgyzstan: 'Spiritual Administration of Muslims of Kyrgyzstan (fitted to its timetable)',
   };
   // Addresses of the method pages (/methods/<slug>/).
   var METHOD_SLUG = {
@@ -51,6 +54,7 @@
     Dubai: 'dubai', Qatar: 'qatar', Kuwait: 'kuwait', Egyptian: 'egyptian', Turkey: 'diyanet',
     Bosnia: 'bosnia', Kosovo: 'kosovo', DiyanetEurope: 'diyanet-europe', ParisGMP: 'grande-mosquee-de-paris', IGGO: 'iggo-austria', EMB: 'emb-belgium',
     Tatarstan: 'dum-rt-tatarstan', Dagestan: 'muftiate-dagestan', QMI: 'qmi-caucasus', DUMU: 'dumu-ukraine',
+    Kazakhstan: 'qmdb-kazakhstan', Uzbekistan: 'muslim-board-uzbekistan', Kyrgyzstan: 'muftiyat-kyrgyzstan',
   };
   // Methods a visitor can pick in Settings for Hanafi, Shafi'i, Maliki and Hanbali.
   var SELECTABLE = ['Karachi', 'MuslimWorldLeague', 'Egyptian', 'UmmAlQura', 'Dubai', 'Qatar', 'Kuwait',
@@ -115,6 +119,16 @@
       };
       return p;
     },
+    // Kazakhstan (QMDB): the settings in muftyat.kz's own timetable script: ISNA 15/15, twilight-angle rule at
+    // high latitudes, sunrise -3 and Dhuhr, Asr, Maghrib +3 min (5 min north of 48°N).
+    Kazakhstan: function (loc) {
+      var m = loc && Math.abs(loc.lat) >= 48 ? 5 : 3;
+      return angles(15, 15, 0, { fajr: 0, sunrise: -m, dhuhr: m, asr: m, maghrib: m, isha: 0 })();
+    },
+    // Muslim Board of Uzbekistan: fitted to its Tashkent calendar (praytime.uz, 30 Sep 2026), within 1 min.
+    Uzbekistan: angles(15.5, 15.3, 0, { fajr: 0, sunrise: 0, dhuhr: 0, asr: 0, maghrib: 4, isha: 0 }),
+    // Kyrgyzstan (muftiyat.kg API, Bishkek, 32 dates of 2026): 18/16, Maghrib 7 min after sunset, within 1-2 min.
+    Kyrgyzstan: angles(18, 16, 0, { fajr: 0, sunrise: 0, dhuhr: 0, asr: 1, maghrib: 7, isha: 0 }),
     // Muftiate of Dagestan: fitted to its 2026 Makhachkala timetable (muftiyatrd.ru), every prayer within 1-2 min.
     Dagestan: angles(17.5, 15, 0, { fajr: 0, sunrise: -2, dhuhr: 5, asr: 1, maghrib: 5, isha: 0 }),
     // Caucasus Muslims Board (QMİ): its 2026 Baku calendar (qafqazislam.com, June and December) is Fajr 16°,
@@ -144,7 +158,7 @@
   // Germany): cap only when the angle is never reached, by the middle of the night.
   var MIDNIGHT_CAP = { Turkey: true, DiyanetEurope: true, IGGO: true, ParisGMP: true, Tatarstan: true };
   // EMB's calendar follows the twilight-angle rule in summer (Fajr within 3 min in July).
-  var TWILIGHT_CAP = { EMB: true };
+  var TWILIGHT_CAP = { EMB: true, Kazakhstan: true };
   // The Sun's declination (degrees) at noon UTC on a date, Spencer's series (error under 0.05°).
   function declination(y, m, d) {
     var n = (Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 1)) / 864e5, g = 2 * Math.PI * n / 365;
@@ -282,7 +296,7 @@
 
   function paramsFor(loc, ctx) {
     var k = methodKey(loc, ctx);
-    var p = CUSTOM[k] ? CUSTOM[k]() : A.CalculationMethod[k]();
+    var p = CUSTOM[k] ? CUSTOM[k](loc) : A.CalculationMethod[k]();
     p.madhab = (p.asrMadhab || SECT_ASR[ctx.sect]) === 'Hanafi' ? A.Madhab.Hanafi : A.Madhab.Shafi;
     if (MIDNIGHT_CAP[k]) p.highLatitudeRule = A.HighLatitudeRule.MiddleOfTheNight;
     else if (TWILIGHT_CAP[k]) p.highLatitudeRule = A.HighLatitudeRule.TwilightAngle;
@@ -639,7 +653,7 @@
     Kemenag: [20, 18], JAKIM: [18, 18], Brunei: [20, 18], Tehran: [17.7, 14], Jafari: [16, 14],
     // { min: n } = Isha a fixed n minutes after Maghrib
     UmmAlQura: [18.5, { min: 90 }], Dubai: [18.2, 18.2], Qatar: [18, { min: 90 }], Kuwait: [18, 17.5],
-    Egyptian: [19.5, 17.5], Turkey: [18, 17], Bosnia: [18, 16], Kosovo: [18.5, 16.5], DiyanetEurope: [18, 17], ParisGMP: [15.75, { min: 87 }], IGGO: [18, 17], EMB: [18, 17], Tatarstan: [18, 15], Dagestan: [17.5, 15], QMI: [16, 15], DUMU: [{ before: 100 }, { min: '90-100' }],
+    Egyptian: [19.5, 17.5], Turkey: [18, 17], Bosnia: [18, 16], Kosovo: [18.5, 16.5], DiyanetEurope: [18, 17], ParisGMP: [15.75, { min: 87 }], IGGO: [18, 17], EMB: [18, 17], Tatarstan: [18, 15], Dagestan: [17.5, 15], QMI: [16, 15], DUMU: [{ before: 100 }, { min: '90-100' }], Kazakhstan: [15, 15], Uzbekistan: [15.5, 15.3], Kyrgyzstan: [18, 16],
   };
 
   // Mosques map: a "mosque" search pinned to exact coordinates (sll = search centre, ll = view centre).
