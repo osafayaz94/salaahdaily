@@ -935,4 +935,14 @@ function toArabic(fa) {
     .replace(/پ/g, 'ب').replace(/چ/g, 'تش').replace(/ژ/g, 'ج').replace(/هٔ/g, 'ة').replace(/ۀ/g, 'ة');
 }
 
+// German, Portuguese, Italian, Japanese and Korean (src/names-more.js).
+var MORE_NAMES = require('./names-more');
+Object.keys(MORE_NAMES.COUNTRIES_MORE).forEach(function (en) {
+  var o = countries[en] || (countries[en] = { en: en });
+  ['de', 'pt', 'it', 'ja', 'ko'].forEach(function (l, i) { o[l] = MORE_NAMES.COUNTRIES_MORE[en][i]; });
+});
+Object.keys(MORE_NAMES.PLACES_MORE).forEach(function (en) {
+  latin[en] = Object.assign({}, latin[en] || {}, MORE_NAMES.PLACES_MORE[en]);
+});
+
 module.exports = { places: places, latin: latin, countries: countries, arabic: arabic, toArabic: toArabic, PLACE_LANGS: ['ur', 'hi', 'bn', 'fa'] };

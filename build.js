@@ -23,6 +23,23 @@ const { LANGS, STRINGS, EN_VARIANTS, COUNTRY_FAQ } = require('./src/i18n');
 const RAW = require('./src/data').concat(require('./src/data-mea')).concat(require('./src/data-europe')).concat(require('./src/data-asia')).concat(require('./src/data-africa')).concat(require('./src/data-more'));
 const NAMES = require('./src/names');
 const { GUIDES, WIKI } = require('./src/guides');
+// German, Portuguese, Italian, Japanese, Korean: English first, the translations on top (a gap shows English).
+(function addLanguages() {
+  const { MORE } = require('./src/i18n-more');
+  const copy = (x) => JSON.parse(JSON.stringify(x));
+  const over = (base, add) => {
+    Object.keys(add).forEach((k) => {
+      const v = add[k];
+      if (v && typeof v === 'object' && !Array.isArray(v) && base[k] && typeof base[k] === 'object') over(base[k], v); else base[k] = v;
+    });
+    return base;
+  };
+  Object.keys(MORE).forEach((l) => {
+    STRINGS[l] = over(copy(STRINGS.en), MORE[l].STRINGS);
+    GUIDES[l] = over(copy(GUIDES.en), MORE[l].GUIDES);
+    COUNTRY_FAQ[l] = MORE[l].COUNTRY_FAQ.slice();
+  });
+})();
 const GUIDE_PRAYERS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'jumuah'];
 
 const ROOT = __dirname;
@@ -33,7 +50,7 @@ const BRAND_AR = CONFIG.siteNameAr;                    // أوقات الصلا�
 const BRAND_FULL = `${BRAND} · ${BRAND_AR}`;           // SalaahDaily · أوقات الصلاة
 // Other names the same site has used or is searched by; schema lists them so engines join them to one entity.
 const BRAND_ALT = [BRAND_AR, 'Awqat as-Salah', 'Salaah Daily'];
-const LATIN = new Set(['en', 'id', 'ms', 'es', 'fr', 'tr', 'ha']);
+const LATIN = new Set(['en', 'id', 'ms', 'es', 'fr', 'tr', 'ha', 'de', 'pt', 'it']);
 const NOW = new Date();
 const TODAY_ISO = NOW.toISOString().slice(0, 10);
 const esc = Core.esc;
@@ -65,7 +82,7 @@ function placeNames(en, inline) {
   if (!out.ar) delete out.ar;
   return out;
 }
-const FALLBACK = { prs: ['fa'], fa: ['prs'], ps: ['prs', 'fa'] };
+const FALLBACK = { ps: ['fa'] };
 // Latin-script languages fall back to the country's own Latin-script name (Ciudad de México on a
 // French page, Jawa Barat on a Spanish page) and then to English. Dhivehi falls back to English.
 function nameIn(names, lang, country) {
@@ -178,7 +195,6 @@ const abs = (u) => SITE + u;
 // A country's own languages get a region tag (ur-PK, es-MX); others the plain language. Dari is always fa-AF.
 function langTag(lang, country) {
   if (lang === 'en') return 'en';
-  if (lang === 'prs') return 'fa-AF';
   return country && country.langs.includes(lang) ? `${lang}-${country.cc}` : lang;
 }
 function ogLocale(tag, lang) { return tag.includes('-') ? tag.replace('-', '_') : LANGS[lang].og; }
@@ -768,8 +784,9 @@ function aboutPage(lang) {
 // The city whose times a prayer page shows before the visitor has picked one (then: their last city).
 const DEFAULT_CITY = {
   en: 'saudi-arabia/makkah', ur: 'pakistan/karachi', hi: 'india/new-delhi', bn: 'bangladesh/dhaka', id: 'indonesia/jakarta',
-  ms: 'malaysia/kuala-lumpur', fa: 'iran/tehran', prs: 'afghanistan/kabul', ps: 'afghanistan/kabul', dv: 'maldives/male',
+  ms: 'malaysia/kuala-lumpur', fa: 'iran/tehran', ps: 'afghanistan/kabul',
   es: 'mexico/mexico-city', fr: 'saudi-arabia/makkah', ar: 'saudi-arabia/makkah', tr: 'turkey/istanbul', ha: 'nigeria/kano',
+  de: 'germany/berlin', pt: 'brazil/sao-paulo', it: 'italy/rome', ja: 'japan/tokyo', ko: 'south-korea/seoul',
 };
 // Cities linked from each prayer page: a worldwide set for languages spoken in many countries, else the home country's first ten.
 const GLOBAL_CITIES = ['saudi-arabia/makkah', 'saudi-arabia/madinah', 'pakistan/karachi', 'pakistan/lahore', 'bangladesh/dhaka',
@@ -777,7 +794,7 @@ const GLOBAL_CITIES = ['saudi-arabia/makkah', 'saudi-arabia/madinah', 'pakistan/
 const cityByPath = (p) => ALL_CITIES.find((ci) => `${ci.country.slug}/${ci.slug}` === p);
 Object.values(DEFAULT_CITY).concat(GLOBAL_CITIES).forEach((p) => { if (!cityByPath(p)) problems.push(`guides: unknown city ${p}`); });
 function guideCities(lang) {
-  if (['en', 'es', 'fr'].includes(lang)) return GLOBAL_CITIES.map(cityByPath);
+  if (['en', 'es', 'fr', 'pt'].includes(lang)) return GLOBAL_CITIES.map(cityByPath);
   return cityByPath(DEFAULT_CITY[lang]).country.cities.slice(0, 10);
 }
 // The live "today in <city>" line starts with the default city; the browser swaps in the last city visited.
@@ -1279,6 +1296,9 @@ write('.htaccess', [
   // Never serve archives, backups, env or log files, even if one is left in public_html by mistake.
   '  RewriteRule \\.(zip|tar|gz|rar|7z|bak|old|sql|env|log|ini|sh|md)$ - [F,L,NC]',
   '  RewriteRule (^|/)\\.(?!well-known/) - [F,L]',
+  // Dari and Dhivehi pages were retired on 1 Oct 2026: Dari to the same page in Persian, Dhivehi to English.
+  `  RewriteRule ^prs/(.*)$ ${SITE}/fa/$1 [L,R=301]`,
+  `  RewriteRule ^dv/(.*)$ ${SITE}/$1 [L,R=301]`,
   '</IfModule>',
   'ErrorDocument 404 /404.html',
   'AddDefaultCharset utf-8',

@@ -242,7 +242,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'germany', cc: 'DE', continent: 'europe', name: { en: 'Germany' }, langs: ['en'],
+    slug: 'germany', cc: 'DE', continent: 'europe', name: { en: 'Germany' }, langs: ['de'],
     tz: 'Europe/Berlin', method: 'DiyanetEurope', defaultSect: 'shafii', // DITIB's timetable prints the first Asr time
     regions: [
       R('Berlin', 'برلن|बर्लिन|বার্লিন|برلین', { ar: 'برلين', es: 'Berlín' }, [
@@ -428,7 +428,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'switzerland', cc: 'CH', continent: 'europe', name: { en: 'Switzerland', fr: 'Suisse' }, langs: ['en'], // multilingual: French names stay on French pages only
+    slug: 'switzerland', cc: 'CH', continent: 'europe', name: { en: 'Switzerland', fr: 'Suisse' }, langs: ['de'], // multilingual: French names stay on French pages only
     tz: 'Europe/Zurich', method: 'DiyanetEurope', defaultSect: 'shafii', // Diyanet timetable: first Asr time
     regions: [
       R('Zurich', 'زیورخ|ज़्यूरिख़|জুরিখ|زوریخ', { ar: 'زيورخ', tr: 'Zürih', es: 'Zúrich', fr: 'Zurich' }, [
@@ -463,7 +463,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'austria', cc: 'AT', continent: 'europe', name: { en: 'Austria' }, langs: ['en'],
+    slug: 'austria', cc: 'AT', continent: 'europe', name: { en: 'Austria' }, langs: ['de'],
     tz: 'Europe/Vienna', method: 'IGGO', defaultSect: 'shafii', // IGGÖ calendar: first Asr time
     regions: [
       R('Vienna', 'ویانا|वियना|ভিয়েনা|وین', { ar: 'فيينا', tr: 'Viyana', es: 'Viena', fr: 'Vienne' }, [
@@ -558,7 +558,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'portugal', cc: 'PT', continent: 'europe', name: { en: 'Portugal' }, langs: ['en'],
+    slug: 'portugal', cc: 'PT', continent: 'europe', name: { en: 'Portugal' }, langs: ['pt'],
     tz: 'Europe/Lisbon', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
     regions: [
       R('Lisbon', 'لزبن|लिस्बन|লিসবন|لیسبون', { ar: 'لشبونة', tr: 'Lizbon', es: 'Lisboa', fr: 'Lisbonne' }, [
@@ -584,7 +584,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'italy', cc: 'IT', continent: 'europe', name: { en: 'Italy' }, langs: ['en'],
+    slug: 'italy', cc: 'IT', continent: 'europe', name: { en: 'Italy' }, langs: ['it'],
     tz: 'Europe/Rome', method: 'MuslimWorldLeague', defaultSect: 'maliki',
     regions: [
       R('Lazio', 'لاتسیو|लात्सियो|লাৎসিও|لاتسیو', { ar: 'لاتسيو', es: 'Lacio', fr: 'Latium' }, [
@@ -1360,7 +1360,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'san-marino', cc: 'SM', continent: 'europe', name: { en: 'San Marino' }, langs: ['en'],
+    slug: 'san-marino', cc: 'SM', continent: 'europe', name: { en: 'San Marino' }, langs: ['it'],
     tz: 'Europe/San_Marino', method: 'MuslimWorldLeague', defaultSect: 'maliki',
     regions: [
       R('San Marino', 'سان مارینو|सैन मैरिनो|সান মারিনো|سان مارینو', { ar: 'سان مارينو', tr: 'San Marino', es: 'San Marino', fr: 'Saint-Marin' }, [
@@ -1369,7 +1369,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'vatican-city', cc: 'VA', continent: 'europe', name: { en: 'Vatican City' }, langs: ['en'],
+    slug: 'vatican-city', cc: 'VA', continent: 'europe', name: { en: 'Vatican City' }, langs: ['it'],
     tz: 'Europe/Vatican', method: 'MuslimWorldLeague', defaultSect: 'maliki',
     regions: [
       R('Vatican City', 'ویٹیکن سٹی|वेटिकन सिटी|ভ্যাটিকান সিটি|واتیکان', { ar: 'مدينة الفاتيكان', tr: 'Vatikan', es: 'Ciudad del Vaticano', fr: 'Cité du Vatican' }, [
@@ -1378,7 +1378,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'liechtenstein', cc: 'LI', continent: 'europe', name: { en: 'Liechtenstein' }, langs: ['en'],
+    slug: 'liechtenstein', cc: 'LI', continent: 'europe', name: { en: 'Liechtenstein' }, langs: ['de'],
     tz: 'Europe/Vaduz', method: 'DiyanetEurope', defaultSect: 'shafii',
     regions: [
       R('Oberland', 'اوبرلینڈ|ओबरलैंड|ওবারল্যান্ড|اوبرلند', { ar: 'أوبرلاند', tr: 'Oberland', es: 'Oberland', fr: 'Oberland' }, [

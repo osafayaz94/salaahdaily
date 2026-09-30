@@ -11,7 +11,7 @@ function R(en, names, extra, cities) { return { name: Object.assign({ en: en }, 
 
 module.exports = [
   {
-    slug: 'brazil', cc: 'BR', continent: 'southAmerica', name: { en: 'Brazil' }, langs: ['en'],
+    slug: 'brazil', cc: 'BR', continent: 'southAmerica', name: { en: 'Brazil' }, langs: ['pt'],
     tz: 'America/Sao_Paulo', method: 'NorthAmerica', defaultSect: 'hanafi',
     regions: [
       R('Southeast', 'جنوب مشرقی برازیل|दक्षिण-पूर्व ब्राज़ील|দক্ষিণ-পূর্ব ব্রাজিল|جنوب شرقی برزیل', { ar: 'الجنوب الشرقي', tr: 'Güneydoğu', es: 'Sudeste', fr: 'Sud-Est' }, [

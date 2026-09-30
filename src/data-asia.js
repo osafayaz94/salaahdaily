@@ -364,7 +364,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'japan', cc: 'JP', continent: 'asia', name: { en: 'Japan' }, langs: ['en'],
+    slug: 'japan', cc: 'JP', continent: 'asia', name: { en: 'Japan' }, langs: ['ja'],
     tz: 'Asia/Tokyo', method: 'MuslimWorldLeague', defaultSect: 'shafii',
     regions: [
       R('Kantō', 'کانتو|कांतो|কান্তো|کانتو', { ar: 'كانتو', tr: 'Kantō', es: 'Kantō', fr: 'Kantō' }, [
@@ -386,7 +386,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'south-korea', cc: 'KR', continent: 'asia', name: { en: 'South Korea' }, langs: ['en'],
+    slug: 'south-korea', cc: 'KR', continent: 'asia', name: { en: 'South Korea' }, langs: ['ko'],
     tz: 'Asia/Seoul', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
     regions: [
       R('Seoul Capital Area', 'سیول دارالحکومت علاقہ|सियोल राजधानी क्षेत्र|সিউল রাজধানী অঞ্চল|منطقه پایتخت سئول', { ar: 'منطقة العاصمة سيول', tr: 'Seul Başkent Bölgesi', es: 'Área de la Capital de Seúl', fr: 'Région capitale de Séoul' }, [
@@ -416,7 +416,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'north-korea', cc: 'KP', continent: 'asia', name: { en: 'North Korea' }, langs: ['en'],
+    slug: 'north-korea', cc: 'KP', continent: 'asia', name: { en: 'North Korea' }, langs: ['ko'],
     tz: 'Asia/Pyongyang', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
     regions: [
       R('Pyongyang', 'پیانگ یانگ|प्योंगयांग|পিয়ংইয়াং|پیونگ‌یانگ', { ar: 'بيونغ يانغ', tr: 'Pyongyang', es: 'Pionyang', fr: 'Pyongyang' }, [
@@ -457,7 +457,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'timor-leste', cc: 'TL', continent: 'asia', name: { en: 'Timor-Leste' }, langs: ['en'],
+    slug: 'timor-leste', cc: 'TL', continent: 'asia', name: { en: 'Timor-Leste' }, langs: ['pt'],
     tz: 'Asia/Dili', method: 'MuslimWorldLeague', defaultSect: 'shafii',
     regions: [
       R('Dili', 'دیلی|दिली|দিলি|دیلی', { ar: 'ديلي', tr: 'Dili', es: 'Dili', fr: 'Dili' }, [

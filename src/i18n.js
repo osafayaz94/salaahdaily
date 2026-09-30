@@ -12,12 +12,15 @@ var LANGS = {
   id: { name: 'Bahasa Indonesia', dir: 'ltr', locale: 'id-ID', timeLocale: 'id-ID', hour12: false, og: 'id_ID' },
   ms: { name: 'Bahasa Melayu', dir: 'ltr', locale: 'ms-MY', timeLocale: 'ms-MY', hour12: true, og: 'ms_MY' },
   fa: { name: 'فارسی', dir: 'rtl', locale: 'fa-IR', timeLocale: 'fa-IR', hour12: false, og: 'fa_IR', arabicScript: true, gfont: 'Vazirmatn:wght@400;700;800' },
-  prs: { name: 'دری', dir: 'rtl', locale: 'fa-AF', timeLocale: 'fa-AF', hour12: false, og: 'fa_AF', arabicScript: true, gfont: 'Vazirmatn:wght@400;700;800' },
   // Chrome ships no Pashto date data, so Pashto uses its own tables below (same in Node and every browser).
   ps: { name: 'پښتو', dir: 'rtl', locale: null, timeLocale: null, hour12: false, force24: true, digits: '۰۱۲۳۴۵۶۷۸۹', decimal: '٫', og: 'ps_AF', arabicScript: true, gfont: 'Noto+Sans+Arabic:wght@400;700;800' },
-  dv: { name: 'ދިވެހި', dir: 'rtl', locale: null, timeLocale: null, hour12: false, force24: true, og: 'dv_MV', gfont: 'Noto+Sans+Thaana:wght@400;700' },
   es: { name: 'Español', dir: 'ltr', locale: 'es-MX', timeLocale: 'es-MX', hour12: true, og: 'es_MX' },
   fr: { name: 'Français', dir: 'ltr', locale: 'fr-FR', timeLocale: 'fr-FR', hour12: false, og: 'fr_FR' },
+  de: { name: 'Deutsch', dir: 'ltr', locale: 'de-DE', timeLocale: 'de-DE', hour12: false, og: 'de_DE' },
+  pt: { name: 'Português', dir: 'ltr', locale: 'pt-BR', timeLocale: 'pt-BR', hour12: false, og: 'pt_BR' },
+  it: { name: 'Italiano', dir: 'ltr', locale: 'it-IT', timeLocale: 'it-IT', hour12: false, og: 'it_IT' },
+  ja: { name: '日本語', dir: 'ltr', locale: 'ja-JP', timeLocale: 'ja-JP', hour12: false, og: 'ja_JP' },
+  ko: { name: '한국어', dir: 'ltr', locale: 'ko-KR', timeLocale: 'ko-KR', hour12: true, og: 'ko_KR' },
   ar: { name: 'العربية', dir: 'rtl', locale: 'ar-SA', timeLocale: 'ar-SA', hour12: true, og: 'ar_SA', arabicScript: true, gfont: 'Noto+Sans+Arabic:wght@400;700;800' },
   tr: { name: 'Türkçe', dir: 'ltr', locale: 'tr-TR', timeLocale: 'tr-TR', hour12: false, og: 'tr_TR' },
   // Chrome ships no Hausa date data, so Hausa uses its own month and weekday tables (see STRINGS.ha).

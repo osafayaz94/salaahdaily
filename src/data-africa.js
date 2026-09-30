@@ -335,7 +335,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'guinea-bissau', cc: 'GW', continent: 'africa', name: { en: 'Guinea-Bissau' }, langs: ['en'],
+    slug: 'guinea-bissau', cc: 'GW', continent: 'africa', name: { en: 'Guinea-Bissau' }, langs: ['pt'],
     tz: 'Africa/Bissau', method: 'MuslimWorldLeague', defaultSect: 'maliki',
     regions: [
       R('Bissau', 'بساؤ|बिसाऊ|বিসাউ|بیسائو', { ar: 'بيساو', tr: 'Bissau', es: 'Bisáu', fr: 'Bissau' }, [
@@ -347,7 +347,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'cape-verde', cc: 'CV', continent: 'africa', name: { en: 'Cape Verde' }, langs: ['en'],
+    slug: 'cape-verde', cc: 'CV', continent: 'africa', name: { en: 'Cape Verde' }, langs: ['pt'],
     tz: 'Atlantic/Cape_Verde', method: 'MuslimWorldLeague', defaultSect: 'maliki',
     regions: [
       R('Santiago', 'سانتیاگو|सैंटियागो|সান্তিয়াগো|سانتیاگو', { ar: 'سانتياغو', tr: 'Santiago', es: 'Santiago', fr: 'Santiago' }, [
@@ -610,7 +610,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'sao-tome-and-principe', cc: 'ST', continent: 'africa', name: { en: 'São Tomé and Príncipe' }, langs: ['en'],
+    slug: 'sao-tome-and-principe', cc: 'ST', continent: 'africa', name: { en: 'São Tomé and Príncipe' }, langs: ['pt'],
     tz: 'Africa/Sao_Tome', method: 'MuslimWorldLeague', defaultSect: 'maliki',
     regions: [
       R('São Tomé Island', 'ساؤ ٹومے جزیرہ|साओ टोमे द्वीप|সাও তোমে দ্বীপ|جزیره سائوتومه', { ar: 'جزيرة ساو تومي', tr: 'São Tomé Adası', es: 'Isla de Santo Tomé', fr: 'Île de São Tomé' }, [
@@ -639,7 +639,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'mozambique', cc: 'MZ', continent: 'africa', name: { en: 'Mozambique' }, langs: ['en'],
+    slug: 'mozambique', cc: 'MZ', continent: 'africa', name: { en: 'Mozambique' }, langs: ['pt'],
     tz: 'Africa/Maputo', method: 'MuslimWorldLeague', defaultSect: 'shafii',
     regions: [
       R('Maputo', 'ماپوتو|मापुतो|মাপুতো|ماپوتو', { ar: 'مابوتو', tr: 'Maputo', es: 'Maputo', fr: 'Maputo' }, [
@@ -703,7 +703,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'angola', cc: 'AO', continent: 'africa', name: { en: 'Angola' }, langs: ['en'],
+    slug: 'angola', cc: 'AO', continent: 'africa', name: { en: 'Angola' }, langs: ['pt'],
     tz: 'Africa/Luanda', method: 'MuslimWorldLeague', defaultSect: 'maliki',
     regions: [
       R('Luanda', 'لوانڈا|लुआंडा|লুয়ান্ডা|لوآندا', { ar: 'لواندا', tr: 'Luanda', es: 'Luanda', fr: 'Luanda' }, [
