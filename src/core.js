@@ -42,6 +42,7 @@
     Tatarstan: 'DUM RT, Spiritual Administration of Muslims of Tatarstan',
     Dagestan: 'Muftiate of the Republic of Dagestan (fitted to its timetable)',
     QMI: 'Caucasus Muslims Board (QMİ), Baku',
+    DUMU: 'DUMU, Spiritual Administration of Muslims of Ukraine',
   };
   // Addresses of the method pages (/methods/<slug>/).
   var METHOD_SLUG = {
@@ -49,7 +50,7 @@
     Kemenag: 'kemenag', JAKIM: 'jakim', Brunei: 'brunei', Tehran: 'tehran', Jafari: 'jafari', UmmAlQura: 'umm-al-qura',
     Dubai: 'dubai', Qatar: 'qatar', Kuwait: 'kuwait', Egyptian: 'egyptian', Turkey: 'diyanet',
     Bosnia: 'bosnia', Kosovo: 'kosovo', DiyanetEurope: 'diyanet-europe', ParisGMP: 'grande-mosquee-de-paris', IGGO: 'iggo-austria', EMB: 'emb-belgium',
-    Tatarstan: 'dum-rt-tatarstan', Dagestan: 'muftiate-dagestan', QMI: 'qmi-caucasus',
+    Tatarstan: 'dum-rt-tatarstan', Dagestan: 'muftiate-dagestan', QMI: 'qmi-caucasus', DUMU: 'dumu-ukraine',
   };
   // Methods a visitor can pick in Settings for Hanafi, Shafi'i, Maliki and Hanbali.
   var SELECTABLE = ['Karachi', 'MuslimWorldLeague', 'Egyptian', 'UmmAlQura', 'Dubai', 'Qatar', 'Kuwait',
@@ -98,6 +99,20 @@
       var p = angles(18, 15, 0, { fajr: -1, sunrise: 0, dhuhr: 0, asr: 1, maghrib: 0, isha: 0 })();
       p.rounding = A.Rounding.Up;
       p.fixedSummer = { angle: 18, fajr: 121, isha: 90 };
+      return p;
+    },
+    // DUMU (Spiritual Administration of Muslims of Ukraine): its 2026 calendars (islam.ua; Kyiv and Kharkiv, every
+    // day) put Fajr 100 min before its sunrise and Isha 90 min after its Maghrib, 100 min from June to August
+    // with a one-minute-a-day step in late May and early September. Sunrise -9, Maghrib +9: within 1-2 min.
+    DUMU: function () {
+      var p = angles(18, 17, 0, { fajr: 0, sunrise: -9, dhuhr: 5, asr: 5, maghrib: 9, isha: 0 })();
+      p.fixedIntervals = {
+        fajr: 100,
+        isha: function (y, m, d) {
+          var n = (Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 1)) / 864e5; // 140 = 21 May, 243 = 1 Sep
+          return n < 200 ? 90 + Math.min(10, Math.max(0, n - 140)) : 100 - Math.min(10, Math.max(0, n - 243));
+        },
+      };
       return p;
     },
     // Muftiate of Dagestan: fitted to its 2026 Makhachkala timetable (muftiyatrd.ru), every prayer within 1-2 min.
@@ -284,6 +299,11 @@
     if (f && Math.abs(loc.lat) + (loc.lat < 0 ? -1 : 1) * declination(y, m, d) - 90 > -f.angle) {
       t.fajr = new Date(t.sunrise.getTime() - f.fajr * 60000);
       t.isha = new Date(t.maghrib.getTime() + f.isha * 60000);
+    }
+    // Methods defined by minutes from sunrise and Maghrib all year (no twilight angle).
+    if (p.fixedIntervals) {
+      t.fajr = new Date(t.sunrise.getTime() - p.fixedIntervals.fajr * 60000);
+      t.isha = new Date(t.maghrib.getTime() + p.fixedIntervals.isha(y, m, d) * 60000);
     }
     return t;
   }
@@ -604,7 +624,7 @@
     Kemenag: [20, 18], JAKIM: [18, 18], Brunei: [20, 18], Tehran: [17.7, 14], Jafari: [16, 14],
     // { min: n } = Isha a fixed n minutes after Maghrib
     UmmAlQura: [18.5, { min: 90 }], Dubai: [18.2, 18.2], Qatar: [18, { min: 90 }], Kuwait: [18, 17.5],
-    Egyptian: [19.5, 17.5], Turkey: [18, 17], Bosnia: [18, 16], Kosovo: [18.5, 16.5], DiyanetEurope: [18, 17], ParisGMP: [15.75, { min: 87 }], IGGO: [18, 17], EMB: [18, 17], Tatarstan: [18, 15], Dagestan: [17.5, 15], QMI: [16, 15],
+    Egyptian: [19.5, 17.5], Turkey: [18, 17], Bosnia: [18, 16], Kosovo: [18.5, 16.5], DiyanetEurope: [18, 17], ParisGMP: [15.75, { min: 87 }], IGGO: [18, 17], EMB: [18, 17], Tatarstan: [18, 15], Dagestan: [17.5, 15], QMI: [16, 15], DUMU: [{ before: 100 }, { min: '90-100' }],
   };
 
   // Mosques map: a "mosque" search pinned to exact coordinates (sll = search centre, ll = view centre).

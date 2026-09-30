@@ -42,8 +42,10 @@ const problems = [];
 const CONTINENTS = ['asia', 'middleEast', 'africa', 'europe', 'northAmerica', 'oceania'];
 const SECT_KEYS = Core.SECTS;
 
+// Letters that have no accent to strip (ł, đ, ø...) are spelled out, so Łódź becomes "lodz", not "odz".
+const PLAIN = { ł: 'l', đ: 'd', ø: 'o', æ: 'ae', ß: 'ss', ı: 'i', þ: 'th', ð: 'd', œ: 'oe' };
 function slugify(s) {
-  return s.toLowerCase().replace(/['’]/g, '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+  return s.toLowerCase().replace(/['’]/g, '').replace(/[łđøæßıþðœ]/g, (c) => PLAIN[c]).normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 // Search text ignores case and accents, so "merida" finds "Mérida" (non-Latin scripts are unaffected).
@@ -541,7 +543,8 @@ const DIYANET = new Set(['turkey', 'cyprus']);
 const OFFICIAL_ASR = { 'bosnia-and-herzegovina': 'Islamska zajednica u Bosni i Hercegovini', kosovo: 'Bashkësia Islame e Kosovës', germany: 'DITIB (Diyanet)',
   netherlands: 'Diyanet', luxembourg: 'Diyanet', switzerland: 'Diyanet', austria: 'IGGÖ (Islamische Glaubensgemeinschaft in Österreich)',
   serbia: 'Islamska zajednica', montenegro: 'Islamska zajednica', croatia: 'Islamska zajednica', slovenia: 'Islamska skupnost',
-  bulgaria: 'Главно мюфтийство (Chief Mufti of Bulgaria)' };
+  bulgaria: 'Главно мюфтийство (Chief Mufti of Bulgaria)',
+  ukraine: 'ДУМУ (Spiritual Administration of Muslims of Ukraine)', poland: 'Muzułmański Związek Religijny (MZR)', hungary: 'Magyarországi Muszlimok Egyháza (MME)' };
 
 /* ---------- Country: today's times for every city ---------- */
 function countryPage(lang, c) {
@@ -713,7 +716,10 @@ function aboutPage(lang) {
   const t = STRINGS[lang], ctx = ctxFor(lang, 'hanafi');
   const pagePath = url.about(lang);
   // Isha is either an angle or a fixed number of minutes after Maghrib (Umm al-Qura, Qatar).
-  const deg = (x) => (typeof x === 'object' ? tpl(t.ishaMinutes, { n: Core.num(x.min, ctx) }) : `${Core.decShort(x, ctx)}°`);
+  // Ukraine's DUMU uses minutes on both sides: Fajr before sunrise, Isha a range after Maghrib.
+  const numText = (v) => String(v).replace(/\d+/g, (n) => Core.num(+n, ctx));
+  const deg = (x) => (typeof x !== 'object' ? `${Core.decShort(x, ctx)}°`
+    : x.before ? tpl(GUIDES[lang].fajrBefore, { n: numText(x.before) }) : tpl(t.ishaMinutes, { n: numText(x.min) }));
   const rows = COUNTRIES.map((c) => {
     const a = Core.METHOD_ANGLES[c.method];
     return `<tr><th scope="row"><a href="${url.country(lang, c)}">${esc(nameIn(c.name, lang))}</a></th><td><a href="${url.method(lang, c.method)}">${esc(Core.methodLabel(c.method, ctx))}</a></td>` +
@@ -964,7 +970,9 @@ METHOD_KEYS.forEach((k) => { const u = methodUse(k); if (!u.main.length && !u.ja
 function methodFacts(lang, key) {
   const t = STRINGS[lang], g = GUIDES[lang], ctx = ctxFor(lang, 'shafii');
   const p = Core.paramsFor({ method: key }, ctx), name = Core.methodLabel(key, ctx), d = (x) => Core.decShort(x, ctx);
-  const lede = p.ishaInterval > 0 ? tpl(g.mLedeMin, { method: name, fajr: d(p.fajrAngle), n: Core.num(p.ishaInterval, ctx) })
+  const fx = p.fixedIntervals, fxIsha = fx && [fx.isha(2026, 1, 1), fx.isha(2026, 7, 1)];
+  const lede = fx ? tpl(g.mLedeFixed, { method: name, fajr: Core.num(fx.fajr, ctx), isha: Core.num(fxIsha[0], ctx), summer: Core.num(fxIsha[1], ctx) })
+    : p.ishaInterval > 0 ? tpl(g.mLedeMin, { method: name, fajr: d(p.fajrAngle), n: Core.num(p.ishaInterval, ctx) })
     : tpl(g.mLedeAngle, { method: name, fajr: d(p.fajrAngle), isha: d(p.ishaAngle) });
   const adj = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].filter((k) => p.methodAdjustments[k])
     .map((k) => `${t.prayers[k]} ${p.methodAdjustments[k] > 0 ? '+' : '−'}${Core.num(Math.abs(p.methodAdjustments[k]), ctx)}`);
@@ -1010,9 +1018,12 @@ function methodsHub(lang) {
   const deg = (x) => `${Core.decShort(x, ctx)}°`;
   const rows = METHOD_KEYS.map((k) => {
     const f = methodFacts(lang, k), u = methodUse(k);
-    const isha = f.p.ishaInterval > 0 ? tpl(t.ishaMinutes, { n: Core.num(f.p.ishaInterval, ctx) }) : deg(f.p.ishaAngle);
+    const fx = f.p.fixedIntervals;
+    const fajr = fx ? tpl(g.fajrBefore, { n: Core.num(fx.fajr, ctx) }) : deg(f.p.fajrAngle);
+    const isha = fx ? tpl(t.ishaMinutes, { n: `${Core.num(fx.isha(2026, 1, 1), ctx)}-${Core.num(fx.isha(2026, 7, 1), ctx)}` })
+      : f.p.ishaInterval > 0 ? tpl(t.ishaMinutes, { n: Core.num(f.p.ishaInterval, ctx) }) : deg(f.p.ishaAngle);
     const used = u.main.map((c) => nameIn(c.name, lang)).concat(u.jafria.length ? [`${t.sects.jafria} (${Core.num(u.jafria.length, ctx)})`] : []);
-    return `<tr><th scope="row"><a href="${url.method(lang, k)}">${esc(f.name)}</a></th><td><bdi>${deg(f.p.fajrAngle)}</bdi></td><td><bdi>${esc(isha)}</bdi></td><td>${esc(listJoin(lang, used))}</td></tr>`;
+    return `<tr><th scope="row"><a href="${url.method(lang, k)}">${esc(f.name)}</a></th><td><bdi>${esc(fajr)}</bdi></td><td><bdi>${esc(isha)}</bdi></td><td>${esc(listJoin(lang, used))}</td></tr>`;
   }).join('');
   const crumbs = [{ name: t.home, href: url.home(lang) }, { name: g.mNav, href: pagePath }];
   const body = breadcrumbs(crumbs) + '<article class="card about guide">' +

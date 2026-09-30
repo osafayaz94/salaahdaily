@@ -989,4 +989,174 @@ module.exports = [
       ]),
     ],
   },
+  // Phase 8 (2026-09-30): Ukraine, Belarus, Moldova, Poland, Czechia, Slovakia, Hungary.
+  //   Ukraine: DUMU calendars (islam.ua), first Asr as printed; Crimea (listed under Ukraine, clock time as used
+  //   there) Hanafi, the Crimean Tatars' school. Poland: MZR's own widget (MWL 18/17, first Asr). Hungary: MME's
+  //   monthly tables (ISNA 15/15, first Asr). Belarus, Moldova, Czechia, Slovakia: no official timetable found,
+  //   MWL + Hanafi.
+  {
+    slug: 'ukraine', cc: 'UA', continent: 'europe', name: { en: 'Ukraine' }, langs: ['en'],
+    tz: 'Europe/Kyiv', method: 'DUMU', defaultSect: 'shafii',
+    regions: [
+      R('Kyiv', 'کیف|कीव|কিয়েভ|کی‌یف', { ar: 'كييف', tr: 'Kiev', es: 'Kiev', fr: 'Kiev' }, [
+        T('Kyiv', 50.4501, 30.5234, 'کیف|कीव|কিয়েভ|کی‌یف', { ar: 'كييف', tr: 'Kiev', es: 'Kiev', fr: 'Kiev' }),
+      ]),
+      R('Kharkiv Oblast', 'خارکیف اوبلاست|ख़ारकीव ओब्लास्ट|খারকিভ ওব্লাস্ট|استان خارکیف', { ar: 'أوبلاست خاركيف', tr: 'Harkiv Oblastı', es: 'Óblast de Járkov', fr: 'Oblast de Kharkiv' }, [
+        T('Kharkiv', 49.9935, 36.2304, 'خارکیف|ख़ारकीव|খারকিভ|خارکیف', { ar: 'خاركيف', tr: 'Harkiv', es: 'Járkov', fr: 'Kharkiv' }),
+      ]),
+      R('Odesa Oblast', 'اوڈیسا اوبلاست|ओडेसा ओब्लास्ट|ওডেসা ওব্লাস্ট|استان اودسا', { ar: 'أوبلاست أوديسا', tr: 'Odessa Oblastı', es: 'Óblast de Odesa', fr: 'Oblast d’Odessa' }, [
+        T('Odesa', 46.4825, 30.7233, 'اوڈیسا|ओडेसा|ওডেসা|اودسا', { ar: 'أوديسا', tr: 'Odessa', es: 'Odesa', fr: 'Odessa' }),
+      ]),
+      R('Dnipropetrovsk Oblast', 'دنیپروپیتروفسک اوبلاست|द्नीप्रोपेत्रोव्स्क ओब्लास्ट|দ্নিপ্রোপেত্রোভস্ক ওব্লাস্ট|استان دنیپروپتروفسک', { ar: 'أوبلاست دنيبروبتروفسك', tr: 'Dnipropetrovsk Oblastı', es: 'Óblast de Dnipropetrovsk', fr: 'Oblast de Dnipropetrovsk' }, [
+        T('Dnipro', 48.4647, 35.0462, 'دنیپرو|द्नीप्रो|দ্নিপ্রো|دنیپرو', { ar: 'دنيبرو', tr: 'Dnipro' }),
+      ]),
+      R('Zaporizhzhia Oblast', 'زاپوریژیا اوبلاست|ज़ापोरिज़्ज़िया ओब्लास्ट|জাপোরিঝঝিয়া ওব্লাস্ট|استان زاپوریژیا', { ar: 'أوبلاست زاباروجيا', tr: 'Zaporijya Oblastı', es: 'Óblast de Zaporiyia', fr: 'Oblast de Zaporijjia' }, [
+        T('Zaporizhzhia', 47.8388, 35.1396, 'زاپوریژیا|ज़ापोरिज़्ज़िया|জাপোরিঝঝিয়া|زاپوریژیا', { ar: 'زاباروجيا', tr: 'Zaporijya', es: 'Zaporiyia', fr: 'Zaporijjia' }),
+      ]),
+      R('Lviv Oblast', 'لویو اوبلاست|ल्वीव ओब्लास्ट|লভিভ ওব্লাস্ট|استان لویو', { ar: 'أوبلاست لفيف', tr: 'Lviv Oblastı', es: 'Óblast de Leópolis', fr: 'Oblast de Lviv' }, [
+        T('Lviv', 49.8397, 24.0297, 'لویو|ल्वीव|লভিভ|لویو', { ar: 'لفيف', tr: 'Lviv', es: 'Leópolis', fr: 'Lviv' }),
+      ]),
+      R('Mykolaiv Oblast', 'میکولائیف اوبلاست|मिकोलाइव ओब्लास्ट|মিকোলাইভ ওব্লাস্ট|استان میکولایف', { ar: 'أوبلاست ميكولايف', tr: 'Mıkolayiv Oblastı', es: 'Óblast de Mykolaiv', fr: 'Oblast de Mykolaïv' }, [
+        T('Mykolaiv', 46.9750, 31.9946, 'میکولائیف|मिकोलाइव|মিকোলাইভ|میکولایف', { ar: 'ميكولايف', tr: 'Mıkolayiv', fr: 'Mykolaïv' }),
+      ]),
+      R('Kherson Oblast', 'خیرسون اوبلاست|ख़ेरसॉन ओब्लास्ट|খেরসন ওব্লাস্ট|استان خرسون', { ar: 'أوبلاست خيرسون', tr: 'Herson Oblastı', es: 'Óblast de Jersón', fr: 'Oblast de Kherson' }, [
+        T('Kherson', 46.6354, 32.6169, 'خیرسون|ख़ेरसॉन|খেরসন|خرسون', { ar: 'خيرسون', tr: 'Herson', es: 'Jersón', fr: 'Kherson' }),
+      ]),
+      R('Central Ukraine', 'وسطی یوکرین|मध्य यूक्रेन|মধ্য ইউক্রেন|اوکراین مرکزی', { ar: 'وسط أوكرانيا', tr: 'Orta Ukrayna', es: 'Ucrania central', fr: 'Ukraine centrale' }, [
+        T('Poltava', 49.5883, 34.5514, 'پولتاوا|पोल्टावा|পোলতাভা|پولتاوا', { ar: 'بولتافا' }),
+        T('Cherkasy', 49.4444, 32.0598, 'چرکاسی|चेरकासी|চেরকাসি|چرکاسی', { ar: 'تشيركاسي', tr: 'Çerkası', es: 'Cherkasy', fr: 'Tcherkassy' }),
+        T('Sumy', 50.9077, 34.7981, 'سومی|सूमी|সুমি|سومی', { ar: 'سومي' }),
+      ]),
+      Object.assign(R('Autonomous Republic of Crimea', 'خود مختار جمہوریہ کریمیا|क्रीमिया स्वायत्त गणराज्य|ক্রিমিয়া স্বায়ত্তশাসিত প্রজাতন্ত্র|جمهوری خودمختار کریمه', { ar: 'جمهورية القرم ذاتية الحكم', tr: 'Kırım Özerk Cumhuriyeti', es: 'República Autónoma de Crimea', fr: 'République autonome de Crimée' }, [
+        T('Simferopol', 44.9521, 34.1024, 'سمفروپول|सिम्फ़ेरोपोल|সিমফেরোপোল|سیمفروپل', { ar: 'سيمفيروبول', tr: 'Akmescit' }, 'Europe/Simferopol'),
+        T('Bakhchysarai', 44.7514, 33.8606, 'باغچہ سرائے|बख़चिसराय|বাখচিসারাই|باغچه‌سرای', { ar: 'باغجة سراي', tr: 'Bahçesaray', es: 'Bajchisarái', fr: 'Bakhtchyssaraï' }, 'Europe/Simferopol'),
+        T('Yevpatoria', 45.1904, 33.3669, 'ییوپاتوریا|येवपतोरिया|ইয়েভপাতোরিয়া|یوپاتوریا', { ar: 'يفباتوريا', tr: 'Gözleve', es: 'Eupatoria', fr: 'Eupatoria' }, 'Europe/Simferopol'),
+        T('Kerch', 45.3563, 36.4671, 'کرچ|केर्च|কের্চ|کرچ', { ar: 'كيرتش', tr: 'Kerç' }, 'Europe/Simferopol'),
+      ]), { defaultSect: 'hanafi' }),
+    ],
+  },
+  {
+    slug: 'belarus', cc: 'BY', continent: 'europe', name: { en: 'Belarus' }, langs: ['en'],
+    tz: 'Europe/Minsk', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Minsk', 'منسک|मिन्स्क|মিনস্ক|مینسک', { ar: 'مينسك', tr: 'Minsk', es: 'Minsk', fr: 'Minsk' }, [
+        T('Minsk', 53.9006, 27.5590, 'منسک|मिन्स्क|মিনস্ক|مینسک', { ar: 'مينسك' }),
+      ]),
+      R('Grodno Region', 'گرودنو علاقہ|ग्रोद्नो क्षेत्र|গ্রদনো অঞ্চল|منطقه گرودنو', { ar: 'منطقة غرودنو', tr: 'Grodno bölgesi', es: 'Región de Grodno', fr: 'Voblast de Hrodna' }, [
+        T('Hrodna', 53.6694, 23.8131, 'ہرودنا|ह्रोद्ना|হ্রদনা|هرودنا', { ar: 'هرودنا', tr: 'Grodno', es: 'Grodno', fr: 'Hrodna' }),
+        T('Iwye', 53.9294, 25.7725, 'ایویے|इव्ये|ইভিয়ে|ایویه', { ar: 'إيفيه' }),
+        T('Navahrudak', 53.5942, 25.8191, 'نواہروداک|नवाह्रुदक|নাভাহ্রুদাক|ناواهروداک', { ar: 'نافاهروداك' }),
+        T('Slonim', 53.0869, 25.3163, 'سلونیم|स्लोनिम|স্লোনিম|سلونیم', { ar: 'سلونيم' }),
+      ]),
+      R('Brest Region', 'بریسٹ علاقہ|ब्रेस्ट क्षेत्र|ব্রেস্ট অঞ্চল|منطقه برست', { ar: 'منطقة بريست', tr: 'Brest bölgesi', es: 'Región de Brest', fr: 'Voblast de Brest' }, [
+        T('Brest', 52.0976, 23.7341, 'بریسٹ|ब्रेस्ट|ব্রেস্ট|برست', { ar: 'بريست' }),
+      ]),
+      R('Eastern Belarus', 'مشرقی بیلاروس|पूर्वी बेलारूस|পূর্ব বেলারুশ|بلاروس شرقی', { ar: 'شرق بيلاروس', tr: 'Doğu Belarus', es: 'Bielorrusia oriental', fr: 'Biélorussie orientale' }, [
+        T('Homel', 52.4412, 30.9878, 'ہومیل|होमेल|হোমেল|هومل', { ar: 'غوميل', tr: 'Gomel', es: 'Gómel', fr: 'Homiel' }),
+        T('Vitebsk', 55.1904, 30.2049, 'ویتیبسک|वितेब्स्क|ভিতেবস্ক|ویتبسک', { ar: 'فيتيبسك' }),
+        T('Mogilev', 53.9007, 30.3314, 'موگیلیو|मोगिलेव|মোগিলেভ|موگیلف', { ar: 'موغيليف', fr: 'Moguilev' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'moldova', cc: 'MD', continent: 'europe', name: { en: 'Moldova' }, langs: ['en'],
+    tz: 'Europe/Chisinau', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Chișinău', 'کیشیناؤ|किशिनाउ|কিশিনাউ|کیشیناو', { ar: 'كيشيناو', tr: 'Kişinev', es: 'Chisináu', fr: 'Chișinău' }, [
+        T('Chișinău', 47.0105, 28.8638, 'کیشیناؤ|किशिनाउ|কিশিনাউ|کیشیناو', { ar: 'كيشيناو', tr: 'Kişinev', es: 'Chisináu' }),
+      ]),
+      R('Northern Moldova', 'شمالی مالدووا|उत्तरी मोल्दोवा|উত্তর মলদোভা|مولداوی شمالی', { ar: 'شمال مولدوفا', tr: 'Kuzey Moldova', es: 'Moldavia del Norte', fr: 'Moldavie du Nord' }, [
+        T('Bălți', 47.7617, 27.9289, 'بالتس|बाल्त्सी|বাল্টসি|بالتی', { ar: 'بالتسي', tr: 'Belçi' }),
+      ]),
+      R('Gagauzia', 'گاگاؤزیا|गागाउज़िया|গাগাউজিয়া|گاگائوزیا', { ar: 'غاغاوزيا', tr: 'Gagavuzya', es: 'Gagauzia', fr: 'Gagaouzie' }, [
+        T('Comrat', 46.2956, 28.6550, 'کومرات|कोमरात|কোমরাত|کومرات', { ar: 'كومرات', tr: 'Komrat' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'poland', cc: 'PL', continent: 'europe', name: { en: 'Poland' }, langs: ['en'],
+    tz: 'Europe/Warsaw', method: 'MuslimWorldLeague', defaultSect: 'shafii',
+    regions: [
+      R('Masovian Voivodeship', 'مازوویا صوبہ|माज़ोवियन प्रांत|মাজোভিয়া প্রদেশ|استان مازووی', { ar: 'مقاطعة مازوفيا', tr: 'Mazovya Voyvodalığı', es: 'Voivodato de Mazovia', fr: 'Voïvodie de Mazovie' }, [
+        T('Warsaw', 52.2297, 21.0122, 'وارسا|वारसॉ|ওয়ারশ|ورشو', { ar: 'وارسو', tr: 'Varşova', es: 'Varsovia', fr: 'Varsovie' }),
+      ]),
+      R('Podlaskie Voivodeship', 'پودلاسکی صوبہ|पोडलास्की प्रांत|পোদলাস্কিয়ে প্রদেশ|استان پودلاسکی', { ar: 'مقاطعة بودلاسكي', tr: 'Podlaski Voyvodalığı', es: 'Voivodato de Podlaquia', fr: 'Voïvodie de Podlachie' }, [
+        T('Białystok', 53.1325, 23.1688, 'بیالیستوک|बियालिस्तोक|বিয়ালিস্তক|بیالیستوک', { ar: 'بياويستوك', tr: 'Białystok' }),
+        T('Kruszyniany', 53.1797, 23.7950, 'کروشینیانی|क्रुशिन्यानी|ক্রুশিনিয়ানি|کروشینیانی', { ar: 'كروشينياني' }),
+        T('Bohoniki', 53.3931, 23.5461, 'بوہونیکی|बोहोनिकी|বোহোনিকি|بوهونیکی', { ar: 'بوهونيكي' }),
+        T('Sokółka', 53.4064, 23.5031, 'سوکولکا|सोकुल्का|সোকুলকা|سوکولکا', { ar: 'سوكوفكا' }),
+      ]),
+      R('Pomeranian Voivodeship', 'پومیرانیا صوبہ|पोमेरेनियन प्रांत|পোমেরানিয়া প্রদেশ|استان پامرانی', { ar: 'مقاطعة بوميرانيا', tr: 'Pomeranya Voyvodalığı', es: 'Voivodato de Pomerania', fr: 'Voïvodie de Poméranie' }, [
+        T('Gdańsk', 54.3520, 18.6466, 'گدانسک|ग्दान्स्क|গদানস্ক|گدانسک', { ar: 'غدانسك', tr: 'Gdańsk', es: 'Gdansk', fr: 'Gdańsk' }),
+      ]),
+      R('Lesser Poland Voivodeship', 'چھوٹا پولینڈ صوبہ|लघु पोलैंड प्रांत|লেসার পোল্যান্ড প্রদেশ|استان لهستان کوچک', { ar: 'مقاطعة بولندا الصغرى', tr: 'Küçük Polonya Voyvodalığı', es: 'Voivodato de Pequeña Polonia', fr: 'Voïvodie de Petite-Pologne' }, [
+        T('Kraków', 50.0647, 19.9450, 'کراکوف|क्राकोव|ক্রাকুফ|کراکوف', { ar: 'كراكوف', tr: 'Krakov', es: 'Cracovia', fr: 'Cracovie' }),
+      ]),
+      R('Lower Silesian Voivodeship', 'زیریں سائلیشیا صوبہ|निचला सिलेसिया प्रांत|নিম্ন সাইলেশিয়া প্রদেশ|استان سیلزی سفلی', { ar: 'مقاطعة سيليزيا السفلى', tr: 'Aşağı Silezya Voyvodalığı', es: 'Voivodato de Baja Silesia', fr: 'Voïvodie de Basse-Silésie' }, [
+        T('Wrocław', 51.1079, 17.0385, 'وروتسواف|व्रोत्सवाफ़|ভ্রোৎসোয়াফ|وروتسواف', { ar: 'فروتسواف', tr: 'Wrocław', es: 'Breslavia', fr: 'Wrocław' }),
+      ]),
+      R('Greater Poland Voivodeship', 'بڑا پولینڈ صوبہ|बृहत पोलैंड प्रांत|বৃহত্তর পোল্যান্ড প্রদেশ|استان لهستان بزرگ', { ar: 'مقاطعة بولندا الكبرى', tr: 'Büyük Polonya Voyvodalığı', es: 'Voivodato de Gran Polonia', fr: 'Voïvodie de Grande-Pologne' }, [
+        T('Poznań', 52.4064, 16.9252, 'پوزنان|पोज़्नान|পোজনান|پوزنان', { ar: 'بوزنان', tr: 'Poznań', es: 'Poznan', fr: 'Poznań' }),
+      ]),
+      R('Central Poland', 'وسطی پولینڈ|मध्य पोलैंड|মধ্য পোল্যান্ড|لهستان مرکزی', { ar: 'وسط بولندا', tr: 'Orta Polonya', es: 'Polonia central', fr: 'Pologne centrale' }, [
+        T('Łódź', 51.7592, 19.4560, 'ووج|वूच|উচ|ووچ', { ar: 'وودج', tr: 'Łódź', es: 'Lodz', fr: 'Łódź' }),
+        T('Lublin', 51.2465, 22.5684, 'لوبلن|लुब्लिन|লুবলিন|لوبلین', { ar: 'لوبلين' }),
+      ]),
+      R('Silesian Voivodeship', 'سائلیشیا صوبہ|सिलेसियन प्रांत|সাইলেশিয়া প্রদেশ|استان سیلزی', { ar: 'مقاطعة سيليزيا', tr: 'Silezya Voyvodalığı', es: 'Voivodato de Silesia', fr: 'Voïvodie de Silésie' }, [
+        T('Katowice', 50.2649, 19.0238, 'کاتوویتسے|कातोवित्से|কাতোভিৎসে|کاتوویتسه', { ar: 'كاتوفيتسه' }),
+      ]),
+      R('West Pomeranian Voivodeship', 'مغربی پومیرانیا صوبہ|पश्चिमी पोमेरेनियन प्रांत|পশ্চিম পোমেরানিয়া প্রদেশ|استان پامرانی غربی', { ar: 'مقاطعة بوميرانيا الغربية', tr: 'Batı Pomeranya Voyvodalığı', es: 'Voivodato de Pomerania Occidental', fr: 'Voïvodie de Poméranie-Occidentale' }, [
+        T('Szczecin', 53.4285, 14.5528, 'شچیچن|श्चेचिन|শচেচিন|اشچین', { ar: 'شتشيتسين', tr: 'Szczecin', es: 'Szczecin', fr: 'Szczecin' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'czechia', cc: 'CZ', continent: 'europe', name: { en: 'Czechia' }, langs: ['en'],
+    tz: 'Europe/Prague', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Prague', 'پراگ|प्राग|প্রাগ|پراگ', { ar: 'براغ', tr: 'Prag', es: 'Praga', fr: 'Prague' }, [
+        T('Prague', 50.0755, 14.4378, 'پراگ|प्राग|প্রাগ|پراگ', { ar: 'براغ', tr: 'Prag', es: 'Praga', fr: 'Prague' }),
+      ]),
+      R('South Moravian Region', 'جنوبی موراویا علاقہ|दक्षिण मोराविया क्षेत्र|দক্ষিণ মোরাভিয়া অঞ্চল|منطقه موراویای جنوبی', { ar: 'إقليم جنوب مورافيا', tr: 'Güney Moravya Bölgesi', es: 'Región de Moravia Meridional', fr: 'Région de Moravie-du-Sud' }, [
+        T('Brno', 49.1951, 16.6068, 'برنو|ब्रनो|ব্রনো|برنو', { ar: 'برنو' }),
+      ]),
+      R('Bohemia', 'بوہیمیا|बोहेमिया|বোহেমিয়া|بوهم', { ar: 'بوهيميا', tr: 'Bohemya', es: 'Bohemia', fr: 'Bohême' }, [
+        T('Teplice', 50.6404, 13.8245, 'ٹیپلیٹسے|तेप्लित्से|তেপলিৎসে|تپلیتسه', { ar: 'تبليتسه' }),
+        T('Karlovy Vary', 50.2319, 12.8720, 'کارلووی واری|कार्लोवी वारी|কার্লোভি ভারি|کارلووی واری', { ar: 'كارلوفي فاري', fr: 'Karlovy Vary' }),
+      ]),
+      R('Moravian-Silesian Region', 'موراویا-سائلیشیا علاقہ|मोराविया-सिलेसिया क्षेत्र|মোরাভিয়া-সাইলেশিয়া অঞ্চল|منطقه موراوی-سیلزی', { ar: 'إقليم مورافيا وسيليزيا', tr: 'Moravya-Silezya Bölgesi', es: 'Región de Moravia-Silesia', fr: 'Région de Moravie-Silésie' }, [
+        T('Ostrava', 49.8209, 18.2625, 'اوستراوا|ओस्त्रावा|অস্ট্রাভা|اوستراوا', { ar: 'أوسترافا' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'slovakia', cc: 'SK', continent: 'europe', name: { en: 'Slovakia' }, langs: ['en'],
+    tz: 'Europe/Bratislava', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Bratislava Region', 'براتیسلاوا علاقہ|ब्रातिस्लावा क्षेत्र|ব্রাতিস্লাভা অঞ্চল|منطقه براتیسلاوا', { ar: 'إقليم براتيسلافا', tr: 'Bratislava Bölgesi', es: 'Región de Bratislava', fr: 'Région de Bratislava' }, [
+        T('Bratislava', 48.1486, 17.1077, 'براتیسلاوا|ब्रातिस्लावा|ব্রাতিস্লাভা|براتیسلاوا', { ar: 'براتيسلافا', tr: 'Bratislava', es: 'Bratislava', fr: 'Bratislava' }),
+      ]),
+      R('Košice Region', 'کوشیتسے علاقہ|कोशित्से क्षेत्र|কোশিৎসে অঞ্চল|منطقه کوشیتسه', { ar: 'إقليم كوشيتسه', tr: 'Košice Bölgesi', es: 'Región de Košice', fr: 'Région de Košice' }, [
+        T('Košice', 48.7164, 21.2611, 'کوشیتسے|कोशित्से|কোশিৎসে|کوشیتسه', { ar: 'كوشيتسه', tr: 'Kassa' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'hungary', cc: 'HU', continent: 'europe', name: { en: 'Hungary' }, langs: ['en'],
+    tz: 'Europe/Budapest', method: 'NorthAmerica', defaultSect: 'shafii',
+    regions: [
+      R('Budapest', 'بوڈاپسٹ|बुडापेस्ट|বুদাপেস্ট|بوداپست', { ar: 'بودابست', tr: 'Budapeşte', es: 'Budapest', fr: 'Budapest' }, [
+        T('Budapest', 47.4979, 19.0402, 'بوڈاپسٹ|बुडापेस्ट|বুদাপেস্ট|بوداپست', { ar: 'بودابست', tr: 'Budapeşte' }),
+      ]),
+      R('Eastern Hungary', 'مشرقی ہنگری|पूर्वी हंगरी|পূর্ব হাঙ্গেরি|مجارستان شرقی', { ar: 'شرق المجر', tr: 'Doğu Macaristan', es: 'Hungría oriental', fr: 'Hongrie orientale' }, [
+        T('Debrecen', 47.5316, 21.6273, 'ڈیبریسن|डेब्रेत्सेन|ডেব্রেৎসেন|دبرسن', { ar: 'دبرتسن', tr: 'Debrecen' }),
+        T('Szeged', 46.2530, 20.1414, 'سیگید|सेगेद|সেগেদ|سگد', { ar: 'سيجد', tr: 'Segedin' }),
+        T('Eger', 47.9025, 20.3772, 'ایگر|एगेर|এগের|اگر', { ar: 'إغر', tr: 'Eğri' }),
+      ]),
+      R('Western Hungary', 'مغربی ہنگری|पश्चिमी हंगरी|পশ্চিম হাঙ্গেরি|مجارستان غربی', { ar: 'غرب المجر', tr: 'Batı Macaristan', es: 'Hungría occidental', fr: 'Hongrie occidentale' }, [
+        T('Pécs', 46.0727, 18.2323, 'پیچ|पेच|পেচ|پچ', { ar: 'بيتش', tr: 'Peçuy' }),
+        T('Győr', 47.6875, 17.6504, 'جیور|ड्यॉर|জিওর|جور', { ar: 'جيور', tr: 'Yanıkkale' }),
+      ]),
+    ],
+  },
 ];
