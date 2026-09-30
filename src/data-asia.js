@@ -257,4 +257,67 @@ module.exports = [
       ]),
     ],
   },
+  // Phase A3 (2026-09-30): Sri Lanka (ACJU monthly tables for Colombo, Jan and Jun 2026: 19.8/18.2, +1 min,
+  // within 1 min), Shafi'i. Nepal and Bhutan follow India (Karachi, Hanafi): no official data found.
+  {
+    slug: 'sri-lanka', cc: 'LK', continent: 'asia', name: { en: 'Sri Lanka' }, langs: ['en'],
+    tz: 'Asia/Colombo', method: 'ACJU', defaultSect: 'shafii',
+    regions: [
+      R('Western Province', 'مغربی صوبہ|पश्चिमी प्रांत|পশ্চিম প্রদেশ|استان غربی', { ar: 'المقاطعة الغربية', tr: 'Batı Eyaleti', es: 'Provincia Occidental', fr: 'Province de l’Ouest' }, [
+        T('Colombo', 6.9271, 79.8612, 'کولمبو|कोलंबो|কলম্বো|کلمبو', { ar: 'كولومبو', tr: 'Kolombo', es: 'Colombo', fr: 'Colombo' }),
+        T('Negombo', 7.2008, 79.8737, 'نیگومبو|नेगोंबो|নেগম্বো|نگومبو', { ar: 'نيغومبو' }),
+        T('Beruwala', 6.4788, 79.9828, 'بیروالا|बेरुवाला|বেরুওয়ালা|بروالا', { ar: 'بيروالا' }),
+      ]),
+      R('Central Province', 'وسطی صوبہ|मध्य प्रांत|মধ্য প্রদেশ|استان مرکزی', { ar: 'المقاطعة الوسطى', tr: 'Orta Eyalet', es: 'Provincia Central', fr: 'Province du Centre' }, [
+        T('Kandy', 7.2906, 80.6337, 'کینڈی|कैंडी|ক্যান্ডি|کندی', { ar: 'كاندي' }),
+      ]),
+      R('Southern Province', 'جنوبی صوبہ|दक्षिणी प्रांत|দক্ষিণ প্রদেশ|استان جنوبی', { ar: 'المقاطعة الجنوبية', tr: 'Güney Eyaleti', es: 'Provincia del Sur', fr: 'Province du Sud' }, [
+        T('Galle', 6.0535, 80.2210, 'گال|गाले|গল|گال', { ar: 'غالي' }),
+      ]),
+      R('Eastern Province', 'مشرقی صوبہ|पूर्वी प्रांत|পূর্ব প্রদেশ|استان شرقی', { ar: 'المقاطعة الشرقية', tr: 'Doğu Eyaleti', es: 'Provincia Oriental', fr: 'Province de l’Est' }, [
+        T('Batticaloa', 7.7102, 81.6924, 'بٹیکلوا|बट्टिकलोआ|বাত্তিকালোয়া|باتیکالوآ', { ar: 'باتيكالوا' }),
+        T('Kattankudy', 7.6781, 81.7303, 'کاتانکوڈی|कात्तानकुडी|কাত্তানকুডি|کاتانکودی', { ar: 'كاتانكودي' }),
+        T('Kalmunai', 7.4167, 81.8167, 'کلمونائی|कल्मुनई|কালমুনাই|کالمونای', { ar: 'كالموناي' }),
+        T('Trincomalee', 8.5874, 81.2152, 'ترنکومالی|त्रिंकोमाली|ত্রিঙ্কোমালি|ترینکومالی', { ar: 'ترينكومالي' }),
+      ]),
+      R('Northern and North Western Provinces', 'شمالی و شمال مغربی صوبے|उत्तरी और उत्तर-पश्चिमी प्रांत|উত্তর ও উত্তর-পশ্চিম প্রদেশ|استان‌های شمالی و شمال غربی', { ar: 'المقاطعتان الشمالية والشمالية الغربية', tr: 'Kuzey ve Kuzeybatı Eyaletleri', es: 'Provincias del Norte y del Noroeste', fr: 'Provinces du Nord et du Nord-Ouest' }, [
+        T('Jaffna', 9.6615, 80.0255, 'جافنا|जाफ़ना|জাফনা|جافنا', { ar: 'جافنا' }),
+        T('Puttalam', 8.0362, 79.8283, 'پتلم|पुत्तलम|পুত্তলম|پوتالام', { ar: 'بوتالام' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'nepal', cc: 'NP', continent: 'asia', name: { en: 'Nepal' }, langs: ['en'],
+    tz: 'Asia/Kathmandu', method: 'Karachi', defaultSect: 'hanafi',
+    regions: [
+      R('Bagmati Province', 'باگمتی صوبہ|बागमती प्रदेश|বাগমতী প্রদেশ|استان باگماتی', { ar: 'مقاطعة باغماتي', tr: 'Bagmati Eyaleti', es: 'Provincia de Bagmati', fr: 'Province de Bagmati' }, [
+        T('Kathmandu', 27.7172, 85.3240, 'کٹھمنڈو|काठमांडू|কাঠমান্ডু|کاتماندو', { ar: 'كاتماندو', tr: 'Katmandu', es: 'Katmandú', fr: 'Katmandou' }),
+      ]),
+      R('Madhesh Province', 'مدھیش صوبہ|मधेश प्रदेश|মধেশ প্রদেশ|استان مدهش', { ar: 'مقاطعة ماديش', tr: 'Madheş Eyaleti', es: 'Provincia de Madhesh', fr: 'Province de Madhesh' }, [
+        T('Birgunj', 27.0104, 84.8770, 'بیرگنج|बीरगंज|বীরগঞ্জ|بیرگنج', { ar: 'بيرغنج' }),
+        T('Janakpur', 26.7288, 85.9263, 'جنکپور|जनकपुर|জনকপুর|جنکپور', { ar: 'جانكبور' }),
+      ]),
+      R('Lumbini Province', 'لمبنی صوبہ|लुम्बिनी प्रदेश|লুম্বিনী প্রদেশ|استان لومبینی', { ar: 'مقاطعة لومبيني', tr: 'Lumbini Eyaleti', es: 'Provincia de Lumbini', fr: 'Province de Lumbini' }, [
+        T('Nepalgunj', 28.0500, 81.6167, 'نیپال گنج|नेपालगंज|নেপালগঞ্জ|نپال‌گنج', { ar: 'نيبالغنج' }),
+      ]),
+      R('Koshi Province', 'کوشی صوبہ|कोशी प्रदेश|কোশী প্রদেশ|استان کوشی', { ar: 'مقاطعة كوشي', tr: 'Koşi Eyaleti', es: 'Provincia de Koshi', fr: 'Province de Koshi' }, [
+        T('Biratnagar', 26.4525, 87.2718, 'بیرات نگر|बिराटनगर|বিরাটনগর|بیراتناگار', { ar: 'بيراتناغار' }),
+      ]),
+      R('Gandaki Province', 'گنڈکی صوبہ|गंडकी प्रदेश|গণ্ডকী প্রদেশ|استان گندکی', { ar: 'مقاطعة غانداكي', tr: 'Gandaki Eyaleti', es: 'Provincia de Gandaki', fr: 'Province de Gandaki' }, [
+        T('Pokhara', 28.2096, 83.9856, 'پوکھرا|पोखरा|পোখরা|پوخارا', { ar: 'بوخارا' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'bhutan', cc: 'BT', continent: 'asia', name: { en: 'Bhutan' }, langs: ['en'],
+    tz: 'Asia/Thimphu', method: 'Karachi', defaultSect: 'hanafi',
+    regions: [
+      R('Thimphu', 'تھمپو|थिम्फू|থিম্পু|تیمفو', { ar: 'تيمفو', tr: 'Thimphu', es: 'Timbu', fr: 'Thimphou' }, [
+        T('Thimphu', 27.4728, 89.6390, 'تھمپو|थिम्फू|থিম্পু|تیمفو', { ar: 'تيمفو', es: 'Timbu', fr: 'Thimphou' }),
+      ]),
+      R('Chukha', 'چوکھا|चुखा|চুখা|چوخا', { ar: 'تشوكا', tr: 'Chukha', es: 'Chukha', fr: 'Chukha' }, [
+        T('Phuntsholing', 26.8516, 89.3884, 'پھنشولنگ|फुंत्शोलिंग|ফুন্টশোলিং|پونتشولینگ', { ar: 'فونتشولينغ' }),
+      ]),
+    ],
+  },
 ];
