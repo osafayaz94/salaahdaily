@@ -1159,4 +1159,69 @@ module.exports = [
       ]),
     ],
   },
+  // Phase 9 (2026-09-30): Ireland, Estonia, Latvia, Lithuania. No official timetable data found (ICCI Dublin
+  // publishes none; the Baltic Tatar muftiates none online): MWL + Hanafi, the UK's and the Tatars' school.
+  {
+    slug: 'ireland', cc: 'IE', continent: 'europe', name: { en: 'Ireland' }, langs: ['en'],
+    tz: 'Europe/Dublin', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Leinster', 'لینسٹر|लेनस्टर|লেইনস্টার|لینستر', { ar: 'لينستر', tr: 'Leinster', es: 'Leinster', fr: 'Leinster' }, [
+        T('Dublin', 53.3498, -6.2603, 'ڈبلن|डबलिन|ডাবলিন|دوبلین', { ar: 'دبلن', tr: 'Dublin', es: 'Dublín', fr: 'Dublin' }),
+      ]),
+      R('Munster', 'منسٹر|मंस्टर|মুনস্টার|مانستر', { ar: 'مونستر', tr: 'Munster', es: 'Munster', fr: 'Munster' }, [
+        T('Cork', 51.8985, -8.4756, 'کارک|कॉर्क|কর্ক|کورک', { ar: 'كورك' }),
+        T('Limerick', 52.6638, -8.6267, 'لیمرک|लिमरिक|লিমেরিক|لیمریک', { ar: 'ليمريك' }),
+        T('Waterford', 52.2593, -7.1101, 'واٹرفورڈ|वॉटरफ़ोर्ड|ওয়াটারফোর্ড|واترفورد', { ar: 'واترفورد' }),
+      ]),
+      R('Connacht', 'کوناخٹ|कोनाक्ट|কনাক্ট|کوناخت', { ar: 'كوناخت', tr: 'Connacht', es: 'Connacht', fr: 'Connacht' }, [
+        T('Galway', 53.2707, -9.0568, 'گالوے|गॉलवे|গলওয়ে|گالوی', { ar: 'غالواي' }),
+        T('Ballyhaunis', 53.7629, -8.7650, 'بالی ہونس|बैलीहॉनिस|বালিহনিস|بالی‌هانیس', { ar: 'باليهونيس' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'estonia', cc: 'EE', continent: 'europe', name: { en: 'Estonia' }, langs: ['en'],
+    tz: 'Europe/Tallinn', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Harju County', 'ہاریو کاؤنٹی|हार्यू काउंटी|হারইউ কাউন্টি|شهرستان هاریو', { ar: 'مقاطعة هاريو', tr: 'Harju ili', es: 'Condado de Harju', fr: 'Comté de Harju' }, [
+        T('Tallinn', 59.4370, 24.7536, 'ٹالن|तालिन|তাল্লিন|تالین', { ar: 'تالين', tr: 'Tallinn', es: 'Tallin', fr: 'Tallinn' }),
+      ]),
+      R('Southern and Eastern Estonia', 'جنوبی و مشرقی ایسٹونیا|दक्षिणी और पूर्वी एस्टोनिया|দক্ষিণ ও পূর্ব এস্তোনিয়া|استونی جنوبی و شرقی', { ar: 'جنوب وشرق إستونيا', tr: 'Güney ve Doğu Estonya', es: 'Estonia meridional y oriental', fr: 'Estonie du Sud et de l’Est' }, [
+        T('Tartu', 58.3780, 26.7290, 'تارتو|तार्तू|তার্তু|تارتو', { ar: 'تارتو' }),
+        T('Narva', 59.3797, 28.1791, 'نروا|नार्वा|নারভা|نارفا', { ar: 'نارفا' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'latvia', cc: 'LV', continent: 'europe', name: { en: 'Latvia' }, langs: ['en'],
+    tz: 'Europe/Riga', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Riga', 'ریگا|रीगा|রিগা|ریگا', { ar: 'ريغا', tr: 'Riga', es: 'Riga', fr: 'Riga' }, [
+        T('Riga', 56.9496, 24.1052, 'ریگا|रीगा|রিগা|ریگا', { ar: 'ريغا' }),
+      ]),
+      R('Latgale', 'لاتگالے|लातगाले|লাতগালে|لاتگاله', { ar: 'لاتغاله', tr: 'Latgale', es: 'Latgale', fr: 'Latgale' }, [
+        T('Daugavpils', 55.8714, 26.5161, 'داؤگاوپلس|दाउगावपिल्स|দাউগাভপিলস|داوگاوپیلس', { ar: 'داوغافبيلس' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'lithuania', cc: 'LT', continent: 'europe', name: { en: 'Lithuania' }, langs: ['en'],
+    tz: 'Europe/Vilnius', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Vilnius County', 'ولنیئس کاؤنٹی|विल्नियस काउंटी|ভিলনিয়াস কাউন্টি|شهرستان ویلنیوس', { ar: 'مقاطعة فيلنيوس', tr: 'Vilnius ili', es: 'Condado de Vilna', fr: 'Apskritis de Vilnius' }, [
+        T('Vilnius', 54.6872, 25.2797, 'ولنیئس|विल्नियस|ভিলনিয়াস|ویلنیوس', { ar: 'فيلنيوس', tr: 'Vilnius', es: 'Vilna', fr: 'Vilnius' }),
+        T('Nemėžis', 54.6392, 25.3867, 'نیمیژیس|नेमेझिस|নেমেঝিস|نمژیس', { ar: 'نيميجيس' }),
+      ]),
+      R('Kaunas County', 'کاؤناس کاؤنٹی|काउनास काउंटी|কাউনাস কাউন্টি|شهرستان کاوناس', { ar: 'مقاطعة كاوناس', tr: 'Kaunas ili', es: 'Condado de Kaunas', fr: 'Apskritis de Kaunas' }, [
+        T('Kaunas', 54.8985, 23.9036, 'کاؤناس|काउनास|কাউনাস|کاوناس', { ar: 'كاوناس' }),
+      ]),
+      R('Alytus County', 'الیتوس کاؤنٹی|अलीतुस काउंटी|আলিতুস কাউন্টি|شهرستان آلیتوس', { ar: 'مقاطعة أليتوس', tr: 'Alytus ili', es: 'Condado de Alytus', fr: 'Apskritis d’Alytus' }, [
+        T('Raižiai', 54.4228, 24.1297, 'رائیژیائی|राइझियाई|রাইঝিয়াই|رایژیای', { ar: 'رايجياي' }),
+        T('Alytus', 54.3963, 24.0459, 'الیتوس|अलीतुस|আলিতুস|آلیتوس', { ar: 'أليتوس' }),
+      ]),
+      R('Klaipėda County', 'کلائپیدا کاؤنٹی|क्लाइपेदा काउंटी|ক্লাইপেদা কাউন্টি|شهرستان کلایپدا', { ar: 'مقاطعة كلايبيدا', tr: 'Klaipėda ili', es: 'Condado de Klaipėda', fr: 'Apskritis de Klaipėda' }, [
+        T('Klaipėda', 55.7033, 21.1443, 'کلائپیدا|क्लाइपेदा|ক্লাইপেদা|کلایپدا', { ar: 'كلايبيدا', tr: 'Klaipėda' }),
+      ]),
+    ],
+  },
 ];
