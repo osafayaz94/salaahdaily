@@ -320,4 +320,108 @@ module.exports = [
       ]),
     ],
   },
+  // Phase A4 (2026-09-30): China, Japan, South Korea, Mongolia, North Korea. No official timetable data found:
+  // MWL. Hanafi (Hui, Uyghur, Kazakh; South Korea's Central Asian and South Asian majority), Japan Shafi'i
+  // (Indonesians the largest group). China on Beijing time everywhere, its legal time (Xinjiang included).
+  {
+    slug: 'china', cc: 'CN', continent: 'asia', name: { en: 'China' }, langs: ['en'],
+    tz: 'Asia/Shanghai', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Beijing', 'بیجنگ|बीजिंग|বেইজিং|پکن', { ar: 'بكين', tr: 'Pekin', es: 'Pekín', fr: 'Pékin' }, [
+        T('Beijing', 39.9042, 116.4074, 'بیجنگ|बीजिंग|বেইজিং|پکن', { ar: 'بكين', tr: 'Pekin', es: 'Pekín', fr: 'Pékin' }),
+      ]),
+      R('Tianjin', 'تیانجن|थियानजिन|তিয়ানজিন|تیانجین', { ar: 'تيانجين', tr: 'Tianjin', es: 'Tianjin', fr: 'Tianjin' }, [
+        T('Tianjin', 39.3434, 117.3616, 'تیانجن|थियानजिन|তিয়ানজিন|تیانجین', { ar: 'تيانجين' }),
+      ]),
+      R('Shanghai', 'شنگھائی|शंघाई|সাংহাই|شانگهای', { ar: 'شانغهاي', tr: 'Şanghay', es: 'Shanghái', fr: 'Shanghai' }, [
+        T('Shanghai', 31.2304, 121.4737, 'شنگھائی|शंघाई|সাংহাই|شانگهای', { ar: 'شانغهاي', tr: 'Şanghay', es: 'Shanghái' }),
+      ]),
+      R('Guangdong', 'گوانگڈونگ|ग्वांगडोंग|গুয়াংডং|گوانگدونگ', { ar: 'غوانغدونغ', tr: 'Guangdong', es: 'Cantón', fr: 'Guangdong' }, [
+        T('Guangzhou', 23.1291, 113.2644, 'گوانگژو|ग्वांगझोउ|গুয়াংজু|گوانگژو', { ar: 'غوانزو', tr: 'Guangzhou', es: 'Cantón', fr: 'Canton' }),
+        T('Shenzhen', 22.5431, 114.0579, 'شینزین|शेनझेन|শেনজেন|شنژن', { ar: 'شنجن' }),
+      ]),
+      R('Hong Kong', 'ہانگ کانگ|हांगकांग|হংকং|هنگ کنگ', { ar: 'هونغ كونغ', tr: 'Hong Kong', es: 'Hong Kong', fr: 'Hong Kong' }, [
+        T('Hong Kong', 22.3193, 114.1694, 'ہانگ کانگ|हांगकांग|হংকং|هنگ کنگ', { ar: 'هونغ كونغ' }, 'Asia/Hong_Kong'),
+      ]),
+      R('Northwest China', 'شمال مغربی چین|उत्तर-पश्चिमी चीन|উত্তর-পশ্চিম চীন|شمال غرب چین', { ar: 'شمال غرب الصين', tr: 'Kuzeybatı Çin', es: 'Noroeste de China', fr: 'Nord-Ouest de la Chine' }, [
+        T('Xi’an', 34.3416, 108.9398, 'شیان|शीआन|সিয়ান|شی‌آن', { ar: 'شيآن', tr: 'Şian', es: 'Xi’an', fr: 'Xi’an' }),
+        T('Lanzhou', 36.0611, 103.8343, 'لانژو|लानझोउ|লানজু|لانژو', { ar: 'لانتشو' }),
+        T('Linxia', 35.6012, 103.2108, 'لینشیا|लिनशिया|লিনশিয়া|لینشیا', { ar: 'لينشيا' }),
+        T('Xining', 36.6171, 101.7782, 'شینینگ|शीनिंग|শিনিং|شینینگ', { ar: 'شينينغ' }),
+        T('Yinchuan', 38.4872, 106.2309, 'ین چوان|यिनचुआन|ইনচুয়ান|یین‌چوان', { ar: 'ينتشوان' }),
+      ]),
+      R('Xinjiang', 'سنکیانگ|शिनजियांग|জিনজিয়াং|سین‌کیانگ', { ar: 'شينجيانغ', tr: 'Sincan', es: 'Sinkiang', fr: 'Xinjiang' }, [
+        T('Ürümqi', 43.8256, 87.6168, 'ارومچی|उरुमची|উরুমচি|ارومچی', { ar: 'أورومتشي', tr: 'Urumçi', es: 'Urumqi', fr: 'Ürümqi' }),
+        T('Kashgar', 39.4704, 75.9898, 'کاشغر|काशगर|কাশগড়|کاشغر', { ar: 'كاشغر', tr: 'Kaşgar' }),
+        T('Hotan', 37.1143, 79.9225, 'ختن|होतान|হোতান|ختن', { ar: 'ختن', tr: 'Hoten' }),
+        T('Yining', 43.9168, 81.3240, 'غولجا|यिनिंग|ইনিং|غلجه', { ar: 'غولجا', tr: 'Gulca' }),
+      ]),
+      R('Other provinces', 'دیگر صوبے|अन्य प्रांत|অন্যান্য প্রদেশ|دیگر استان‌ها', { ar: 'مقاطعات أخرى', tr: 'Diğer eyaletler', es: 'Otras provincias', fr: 'Autres provinces' }, [
+        T('Kunming', 25.0389, 102.7183, 'کنمنگ|कुनमिंग|কুনমিং|کونمینگ', { ar: 'كونمينغ' }),
+        T('Zhengzhou', 34.7466, 113.6253, 'ژینگژو|झेंगझोउ|ঝেংজু|ژنگ‌ژو', { ar: 'تشنغتشو' }),
+        T('Hohhot', 40.8424, 111.7490, 'ہوہوت|होहोट|হোহহট|هوهوت', { ar: 'هوهوت' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'japan', cc: 'JP', continent: 'asia', name: { en: 'Japan' }, langs: ['en'],
+    tz: 'Asia/Tokyo', method: 'MuslimWorldLeague', defaultSect: 'shafii',
+    regions: [
+      R('Kantō', 'کانتو|कांतो|কান্তো|کانتو', { ar: 'كانتو', tr: 'Kantō', es: 'Kantō', fr: 'Kantō' }, [
+        T('Tokyo', 35.6762, 139.6503, 'ٹوکیو|टोक्यो|টোকিও|توکیو', { ar: 'طوكيو', tr: 'Tokyo', es: 'Tokio', fr: 'Tokyo' }),
+        T('Yokohama', 35.4437, 139.6380, 'یوکوہاما|योकोहामा|ইয়োকোহামা|یوکوهاما', { ar: 'يوكوهاما' }),
+      ]),
+      R('Chūbu', 'چوبو|चूबू|চুবু|چوبو', { ar: 'تشوبو', tr: 'Chūbu', es: 'Chūbu', fr: 'Chūbu' }, [
+        T('Nagoya', 35.1815, 136.9066, 'ناگویا|नागोया|নাগোয়া|ناگویا', { ar: 'ناغويا' }),
+      ]),
+      R('Kansai', 'کنسائی|कन्साई|কানসাই|کانسای', { ar: 'كانساي', tr: 'Kansai', es: 'Kansai', fr: 'Kansai' }, [
+        T('Osaka', 34.6937, 135.5023, 'اوساکا|ओसाका|ওসাকা|اوساکا', { ar: 'أوساكا', es: 'Osaka' }),
+        T('Kobe', 34.6901, 135.1955, 'کوبے|कोबे|কোবে|کوبه', { ar: 'كوبي' }),
+        T('Kyoto', 35.0116, 135.7681, 'کیوٹو|क्योटो|কিয়োটো|کیوتو', { ar: 'كيوتو', es: 'Kioto' }),
+      ]),
+      R('Kyūshū and Hokkaidō', 'کیوشو اور ہوکائیدو|क्यूशू और होक्काइडो|কিউশু ও হোক্কাইদো|کیوشو و هوکایدو', { ar: 'كيوشو وهوكايدو', tr: 'Kyūshū ve Hokkaidō', es: 'Kyūshū y Hokkaidō', fr: 'Kyūshū et Hokkaidō' }, [
+        T('Fukuoka', 33.5904, 130.4017, 'فوکوؤکا|फ़ुकुओका|ফুকুওকা|فوکوئوکا', { ar: 'فوكوكا' }),
+        T('Sapporo', 43.0618, 141.3545, 'ساپورو|सप्पोरो|সাপ্পোরো|ساپورو', { ar: 'سابورو' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'south-korea', cc: 'KR', continent: 'asia', name: { en: 'South Korea' }, langs: ['en'],
+    tz: 'Asia/Seoul', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Seoul Capital Area', 'سیول دارالحکومت علاقہ|सियोल राजधानी क्षेत्र|সিউল রাজধানী অঞ্চল|منطقه پایتخت سئول', { ar: 'منطقة العاصمة سيول', tr: 'Seul Başkent Bölgesi', es: 'Área de la Capital de Seúl', fr: 'Région capitale de Séoul' }, [
+        T('Seoul', 37.5665, 126.9780, 'سیول|सियोल|সিউল|سئول', { ar: 'سول', tr: 'Seul', es: 'Seúl', fr: 'Séoul' }),
+        T('Incheon', 37.4563, 126.7052, 'انچیون|इंचियोन|ইনচন|اینچئون', { ar: 'إنتشون' }),
+        T('Ansan', 37.3219, 126.8309, 'انسان|आनसान|আনসান|آنسان', { ar: 'أنسان' }),
+      ]),
+      R('Southern South Korea', 'جنوبی کوریا کے جنوبی علاقے|दक्षिण कोरिया का दक्षिणी भाग|দক্ষিণ কোরিয়ার দক্ষিণাঞ্চল|جنوب کره جنوبی', { ar: 'جنوب كوريا الجنوبية', tr: 'Güney Kore’nin güneyi', es: 'Sur de Corea del Sur', fr: 'Sud de la Corée du Sud' }, [
+        T('Busan', 35.1796, 129.0756, 'بوسان|बुसान|বুসান|بوسان', { ar: 'بوسان' }),
+        T('Daegu', 35.8714, 128.6014, 'ڈےگو|देगू|দেগু|دگو', { ar: 'دايغو' }),
+        T('Gwangju', 35.1595, 126.8526, 'گوانگجو|ग्वांगजू|গোয়াংজু|گوانگجو', { ar: 'غوانغجو' }),
+        T('Daejeon', 36.3504, 127.3845, 'ڈیجون|देजॉन|দেজন|دجئون', { ar: 'دايجون' }),
+      ]),
+    ],
+  },
+  {
+    slug: 'mongolia', cc: 'MN', continent: 'asia', name: { en: 'Mongolia' }, langs: ['en'],
+    tz: 'Asia/Ulaanbaatar', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Ulaanbaatar', 'اولان باتور|उलानबटार|উলানবাটার|اولان‌باتور', { ar: 'أولان باتور', tr: 'Ulan Batur', es: 'Ulán Bator', fr: 'Oulan-Bator' }, [
+        T('Ulaanbaatar', 47.8864, 106.9057, 'اولان باتور|उलानबटार|উলানবাটার|اولان‌باتور', { ar: 'أولان باتور', tr: 'Ulan Batur', es: 'Ulán Bator', fr: 'Oulan-Bator' }),
+      ]),
+      R('Western Mongolia', 'مغربی منگولیا|पश्चिमी मंगोलिया|পশ্চিম মঙ্গোলিয়া|مغولستان غربی', { ar: 'غرب منغوليا', tr: 'Batı Moğolistan', es: 'Mongolia occidental', fr: 'Mongolie occidentale' }, [
+        T('Ölgii', 48.9683, 89.9625, 'اولگی|ओल्गी|ওলগি|اولگی', { ar: 'أولغي', tr: 'Ölgiy' }, 'Asia/Hovd'),
+        T('Khovd', 48.0056, 91.6419, 'خووڈ|ख़ोवद|খোভদ|خوود', { ar: 'خوفد', tr: 'Hovd' }, 'Asia/Hovd'),
+      ]),
+    ],
+  },
+  {
+    slug: 'north-korea', cc: 'KP', continent: 'asia', name: { en: 'North Korea' }, langs: ['en'],
+    tz: 'Asia/Pyongyang', method: 'MuslimWorldLeague', defaultSect: 'hanafi',
+    regions: [
+      R('Pyongyang', 'پیانگ یانگ|प्योंगयांग|পিয়ংইয়াং|پیونگ‌یانگ', { ar: 'بيونغ يانغ', tr: 'Pyongyang', es: 'Pionyang', fr: 'Pyongyang' }, [
+        T('Pyongyang', 39.0392, 125.7625, 'پیانگ یانگ شہر|प्योंगयांग शहर|পিয়ংইয়াং শহর|شهر پیونگ‌یانگ', { ps: 'د پیونګ یانګ ښار', prs: 'شهر پیونگ‌یانگ', ar: 'مدينة بيونغ يانغ', es: 'Pionyang' }),
+      ]),
+    ],
+  },
 ];
