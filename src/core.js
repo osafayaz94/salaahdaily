@@ -335,6 +335,16 @@
       lat -= lat > 0 ? 0.5 : -0.5;
       t = new A.PrayerTimes(new A.Coordinates(lat, loc.lng), new Date(y, m - 1, d), p);
     }
+    // Next to the date line adhan can put Fajr and Isha on midnight UTC for a day (noon falls at 00:01 UTC):
+    // take them from the average of the day before and the day after.
+    if (!inOrder(t)) {
+      var dayMs = 864e5, before = new A.PrayerTimes(new A.Coordinates(loc.lat, loc.lng), new Date(y, m - 1, d - 1), p);
+      var after = new A.PrayerTimes(new A.Coordinates(loc.lat, loc.lng), new Date(y, m - 1, d + 1), p);
+      ['fajr', 'isha'].forEach(function (k) {
+        if (!isNaN(before[k]) && !isNaN(after[k])) t[k] = new Date((before[k].getTime() + after[k].getTime()) / 2);
+      });
+      if (!inOrder(t) && inOrder(before)) PRAYERS.forEach(function (k) { t[k] = new Date(before[k].getTime() + dayMs); });
+    }
     // Fixed intervals on nights the Sun never reaches the Fajr angle (lowest altitude = |lat| + declination - 90).
     if (f && Math.abs(loc.lat) + (loc.lat < 0 ? -1 : 1) * declination(y, m, d) - 90 > -f.angle) {
       t.fajr = new Date(t.sunrise.getTime() - f.fajr * 60000);

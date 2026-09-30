@@ -1216,6 +1216,14 @@ Object.keys(SCHOOLS).forEach(function (l) {
   t.ishaMinutes = s[6];
 });
 
+// South America groups the home page like the other continents.
+var SOUTH_AMERICA = {
+  en: 'South America', ur: 'جنوبی امریکا', hi: 'दक्षिण अमेरिका', bn: 'দক্ষিণ আমেরিকা', id: 'Amerika Selatan', ms: 'Amerika Selatan',
+  fa: 'آمریکای جنوبی', prs: 'امریکای جنوبی', ps: 'سویلي امریکا', dv: 'ދެކުނު އެމެރިކާ', es: 'América del Sur', fr: 'Amérique du Sud',
+  ar: 'أمريكا الجنوبية', tr: 'Güney Amerika', ha: 'Kudancin Amurka',
+};
+Object.keys(SOUTH_AMERICA).forEach(function (l) { STRINGS[l].continents.southAmerica = SOUTH_AMERICA[l]; });
+
 /* ---------- Home heading: حَيَّ عَلَى الصَّلَاةِ، حَيَّ عَلَى الْفَلَاحِ, translated ---------- */
 // Arabic pages show the Arabic alone, so their translation is empty.
 var HAYYA = {

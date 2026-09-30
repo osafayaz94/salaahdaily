@@ -20,7 +20,7 @@ const crypto = require('crypto');
 const CONFIG = require('./site.config');
 const Core = require('./src/core');
 const { LANGS, STRINGS, EN_VARIANTS, COUNTRY_FAQ } = require('./src/i18n');
-const RAW = require('./src/data').concat(require('./src/data-mea')).concat(require('./src/data-europe')).concat(require('./src/data-asia')).concat(require('./src/data-africa'));
+const RAW = require('./src/data').concat(require('./src/data-mea')).concat(require('./src/data-europe')).concat(require('./src/data-asia')).concat(require('./src/data-africa')).concat(require('./src/data-more'));
 const NAMES = require('./src/names');
 const { GUIDES, WIKI } = require('./src/guides');
 const GUIDE_PRAYERS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'jumuah'];
@@ -39,7 +39,7 @@ const TODAY_ISO = NOW.toISOString().slice(0, 10);
 const esc = Core.esc;
 const tpl = Core.tpl;
 const problems = [];
-const CONTINENTS = ['asia', 'middleEast', 'africa', 'europe', 'northAmerica', 'oceania'];
+const CONTINENTS = ['asia', 'middleEast', 'africa', 'europe', 'northAmerica', 'southAmerica', 'oceania'];
 const SECT_KEYS = Core.SECTS;
 
 // Letters that have no accent to strip (ł, đ, ø...) are spelled out, so Łódź becomes "lodz", not "odz".
