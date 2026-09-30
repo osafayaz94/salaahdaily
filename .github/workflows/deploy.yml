@@ -45,12 +45,17 @@ jobs:
       - name: Deploy to Hostinger
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
         run: |
           install -m 700 -d ~/.ssh
           printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          # The server's public host keys (ssh-keyscan, 2026-09-30): refuse to connect to anything else.
+          cat > ~/.ssh/known_hosts <<'EOF'
+          [145.79.31.12]:65002 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCgBMpI74eOXUNAfA+6rrrSXXyJ6IvgPZVCwyMm5GRXYY2VCa/8QIbObKN+/CdLLpN2TEf9URJRgDxsgvlRb9aGfDwAud9k2gM/TGPywCsblDDlybaywMvp/kZcN5WL+OQBRwCbX0/R9x3FkBjp8NqAfVZa7iBDZ1sxgEsUT+xN7TkvUQw39jGzmDyPw+8zM8ehOIUODnBLER4Ew8jbFawZDzY4XbnxD5RTtykj/uAGbqB7ZcFgo7hBbX8OPtW9zagFmKvIQ3dYRk43Twk5KZ4hyFjgQfUhA/EWui+M0nsmtRAo2DIlOIGYnw6Hqc2S3EhuZl3FF3xGYIRR+h9NXZrscUfSkaBhT049wLsxOykvbMd0cgGvwJdT025Mna25k4nINF/lRbZ0CXAjKGAiRVC6b/WQwajAWEHHXlXE3CD61lPMXFqUQULkdK7Ii+KATvO62bmR+fSKSOAhoC45Udq05fliissqOkOgJcADqygnodmWYFxi5vMX8Snf6a3fNgM=
+          [145.79.31.12]:65002 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBANlp6jvxckanGKdGruPFf15aZkstbuGRLp35mN5Pne51l6MK5wayO76VvuVfMeZsHEV3Du1F5zh4wXdVfTSyXU=
+          [145.79.31.12]:65002 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBV4VmAbo49lntkQd9tInPKGZhsVu4jVdfxxL07gWN/2
+          EOF
+          sed -i 's/^ *//' ~/.ssh/known_hosts
           # Only changed files are sent. Pages removed from the build are removed from the server;
           # .well-known/ (SSL checks) is never touched.
           rsync -rlz --checksum --delete-after --filter='P .well-known/' \
