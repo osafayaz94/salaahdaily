@@ -10,7 +10,7 @@ module.exports = {
   indexNowKey: '86f4b98784d822f1a3584cf393de3eb0',
   // Web3Forms access key for the footer suggestion form (web3forms.com). It is meant to be public: it only
   // lets a form send to the inbox chosen at sign-up. Leave empty to hide the form.
-  web3formsKey: '',
+  web3formsKey: '1961dd7e-68b7-499e-85a7-ddf1d90d59aa',
   // Public contact address shown on the Contact page (optional). Leave empty to show the form only.
   contactEmail: 'team@salaahdaily.com',
 };
