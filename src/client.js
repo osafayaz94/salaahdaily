@@ -44,10 +44,14 @@
   function renderMonth() {
     var c = ctx(), today = C.partsInTz(new Date(), loc.tz);
     var base = new Date(Date.UTC(today.y, today.m - 1 + monthOffset, 1));
+    // The page arrives with this month already drawn for the default settings: keep it when nothing differs.
+    var key = monthOffset ? '' : today.y + '-' + today.m + '-' + today.d + '|' + c.sect + '|' + c.method + '|' + c.hour12 + '|' + c.hijriAdj;
+    if (key && $('monthTable').getAttribute('data-k') === key) return;
     var r = C.renderMonth(loc, c, base.getUTCFullYear(), base.getUTCMonth() + 1, today);
     $('monthTitle').textContent = r.title;
     $('monthSub').textContent = r.sub;
     $('monthTable').innerHTML = r.table;
+    $('monthTable').setAttribute('data-k', key);
   }
   // Country pages: refresh every city's five times in place (sect, settings and today's date).
   function renderRows() {
@@ -57,8 +61,59 @@
       var r = P.rows[+tr.getAttribute('data-i')];
       var times = C.cityRowTimes({ lat: r[0], lng: r[1], tz: r[2], method: r[3] || P.method, jafariMethod: P.jafariMethod }, c, now);
       tr.querySelectorAll('td bdi').forEach(function (cell, i) { cell.textContent = times[i]; });
+      markNext(tr, { lat: r[0], lng: r[1], tz: r[2], method: r[3] || P.method, jafariMethod: P.jafariMethod }, c, now);
     });
   }
+  var FIVE = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  function markNext(tr, l, c, now) {
+    var s = C.snapshot(l, c, now), cells = tr.querySelectorAll('td'), next = -1;
+    for (var i = 0; i < FIVE.length; i++) if (s.times[FIVE[i]] > now) { next = i; break; }
+    for (var j = 0; j < cells.length; j++) cells[j].classList.toggle('is-next', j === next);
+  }
+  if (P.rows) setInterval(renderRows, 60000);
+
+  /* ---------- Home: live city cards ---------- */
+  function liveCards() {
+    var box = $('liveCards');
+    if (!box || !P.live) return;
+    var cards = [];
+    box.querySelectorAll('[data-live]').forEach(function (a) {
+      var r = P.live[+a.getAttribute('data-live')];
+      cards.push({ el: a, loc: { lat: r[0], lng: r[1], tz: r[2], method: r[3], jafariMethod: r[4] || undefined }, sect: r[5] });
+    });
+    // The visitor's last city comes first (unless it is already one of the cards).
+    var saved = lastLoc();
+    if (saved && cards.length && !box.querySelector('a[href="' + saved.url + '"]')) {
+      var li = box.firstElementChild.cloneNode(true), a = li.querySelector('a');
+      a.href = saved.url;
+      a.removeAttribute('data-live');
+      a.querySelector('.cc-name').textContent = saved.loc.name;
+      a.querySelector('.muted').textContent = '';
+      box.insertBefore(li, box.firstElementChild);
+      cards.unshift({ el: a, loc: saved.loc, sect: saved.loc.defaultSect });
+    }
+    function draw(card, now) {
+      var c = ctx();
+      c.sect = S.sect || card.sect;
+      if (!card.next || now >= card.next.at) {
+        var s = C.snapshot(card.loc, c, now);
+        card.next = s.next;
+        var name = s.next.tomorrow ? P.t.prayers.fajr + ' ' + P.t.tomorrow : P.t.prayers[s.next.key];
+        card.el.querySelector('.lc-next').textContent = name;
+        card.el.querySelector('.lc-at').textContent = C.fmtTime(s.next.at, card.loc.tz, c);
+        card.el.querySelector('.lc-label').textContent = C.tpl(P.t.nextIn, { prayer: P.t.prayers[s.next.key] });
+        card.el.querySelector('.lc-in').hidden = false;
+      }
+      card.el.querySelector('.lc-clock').textContent = C.fmtTime(now, card.loc.tz, c);
+      card.el.querySelector('.lc-cd').textContent = C.countdown(card.next.at - now, c);
+    }
+    function all() { var now = new Date(); cards.forEach(function (card) { draw(card, now); }); }
+    all();
+    setInterval(all, 1000);
+    // A new school in Settings changes Asr: start each card over.
+    liveCards.reset = function () { cards.forEach(function (card) { card.next = null; }); all(); };
+  }
+
   function renderAll() {
     syncPickers();
     renderRows();
@@ -109,7 +164,7 @@
     syncForm();
     if (dialog.showModal) dialog.showModal(); else dialog.setAttribute('open', '');
   }
-  function apply() { save(KEY, S); renderAll(); }
+  function apply() { save(KEY, S); renderAll(); if (liveCards.reset) liveCards.reset(); }
 
   if (dialog) {
     $('settingsForm').addEventListener('change', function (e) {
@@ -395,4 +450,5 @@
   }
 
   if (loc) start(); else renderAll();
+  liveCards();
 })();

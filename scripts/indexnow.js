@@ -17,8 +17,10 @@ if (!KEY) { console.error('Set indexNowKey in site.config.js first.'); process.e
 
 // sitemap.xml is an index; the page URLs are in the per-language sitemaps it lists.
 const dir = path.join(__dirname, '..', 'dist', 'sitemaps');
-const urls = fs.readdirSync(dir).filter((f) => f.endsWith('.xml')).flatMap((f) =>
+const all = fs.readdirSync(dir).filter((f) => f.endsWith('.xml')).flatMap((f) =>
   Array.from(fs.readFileSync(path.join(dir, f), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g), (m) => m[1]));
+// --ramadan: only the Ramadan timetables (sent before Ramadan; see the deploy workflow).
+const urls = process.argv.includes('--ramadan') ? all.filter((u) => u.includes('/ramadan/')) : all;
 console.log(`Found ${urls.length} page URLs.`);
 
 (async () => {

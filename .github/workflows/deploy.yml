@@ -66,3 +66,7 @@ jobs:
       - name: Tell search engines (IndexNow, new content only)
         if: github.event_name == 'push'
         run: node scripts/indexnow.js
+
+      # 70 days and 14 days before Ramadan the build leaves a flag: send the Ramadan timetables to IndexNow.
+      - name: Tell search engines about the Ramadan timetables
+        run: if [ -f .indexnow-ramadan ]; then node scripts/indexnow.js --ramadan; fi

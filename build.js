@@ -42,6 +42,11 @@ const LEGAL = require('./src/pages-legal');
     COUNTRY_FAQ[l] = MORE[l].COUNTRY_FAQ.slice();
   });
 })();
+// Strings added later (corrections, home page Ramadan section), in every language.
+(function () {
+  const { EXTRA } = require('./src/guides-extra');
+  Object.keys(LANGS).forEach((l) => { if (!EXTRA[l]) throw new Error(`guides-extra.js: no strings for ${l}`); Object.assign(GUIDES[l], EXTRA[l]); });
+})();
 const GUIDE_PRAYERS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'jumuah'];
 
 const ROOT = __dirname;
@@ -225,7 +230,7 @@ function minifyJs(js) {
 // The CSS is inlined in every page: no render-blocking stylesheet request.
 const CSS = minifyCss(read('src/style.css'));
 const JS = [read('src/vendor/adhan.umd.min.js'), minifyJs(read('src/core.js')), minifyJs(read('src/client.js'))].join('\n;\n');
-// Pages that never calculate times (home, about, 404) skip the adhan library.
+// Pages that never calculate times (about, contact, privacy, terms, 404) skip the adhan library.
 const JS_LITE = [minifyJs(read('src/core.js')), minifyJs(read('src/client.js'))].join('\n;\n');
 const CITIES_JSON = JSON.stringify({
   countries: Object.fromEntries(COUNTRIES.map((c) => [c.slug, {
@@ -315,8 +320,8 @@ function fontLinks(lang) {
   const fams = ['Manrope:wght@400;600;700;800'];
   if (LANGS[lang].gfont) fams.push(LANGS[lang].gfont);
   const sheets = [
-    `https://fonts.googleapis.com/css2?${fams.map((f) => `family=${f}`).join('&amp;')}&amp;display=swap`,
-    `https://fonts.googleapis.com/css2?family=Amiri&amp;display=swap&amp;text=${encodeURIComponent(AMIRI_TEXT)}`,
+    `https://fonts.googleapis.com/css2?${fams.map((f) => `family=${f}`).join('&amp;')}&amp;display=optional`,
+    `https://fonts.googleapis.com/css2?family=Amiri&amp;display=optional&amp;text=${encodeURIComponent(AMIRI_TEXT)}`,
   ];
   return '<link rel="preconnect" href="https://fonts.googleapis.com">' +
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
@@ -408,11 +413,12 @@ const ORG = {
   '@type': 'Organization', '@id': `${SITE}/#org`, name: BRAND, alternateName: BRAND_ALT, url: `${SITE}/`,
   logo: { '@type': 'ImageObject', url: `${SITE}/logo.png`, width: 512, height: 512 },
   image: `${SITE}/og/home.jpg`, foundingDate: '2026-09-28',
+  description: `Free daily prayer times for ${ALL_CITIES.length.toLocaleString('en')} cities in ${COUNTRIES.length} countries, in ${ALL_LANGS.length} languages, for the Hanafi, Shafi'i, Maliki, Hanbali and Jafria schools, calculated from each city's coordinates, with official timetables matched for many countries.`,
   ...(HAS_CONTACT ? { contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', url: `${SITE}/contact/`, ...(CONFIG.contactEmail ? { email: CONFIG.contactEmail } : {}), availableLanguage: 'en' } } : {}),
 };
 const WEBSITE = (lang) => ({ '@type': 'WebSite', '@id': `${SITE}/#website`, name: BRAND, alternateName: BRAND_ALT, url: `${SITE}/`, publisher: { '@id': `${SITE}/#org` }, inLanguage: ALL_LANGS.map((l) => langTag(l)) });
 
-function monthCard(lang, month) {
+function monthCard(lang, month, key) {
   const t = STRINGS[lang];
   return '<section class="card month-card" aria-labelledby="monthTitle"><div class="month-head">' +
     `<div><h2 id="monthTitle">${esc(month.title)}</h2><p class="muted" id="monthSub">${esc(month.sub)}</p></div>` +
@@ -422,7 +428,7 @@ function monthCard(lang, month) {
       `<button type="button" class="icon-btn" id="nextMonth" aria-label="${esc(t.nextMonth)}"><span class="flip" aria-hidden="true">›</span></button>` +
       `<button type="button" class="btn-small" id="printBtn">${esc(t.print)}</button>` +
     '</div></div>' +
-    `<div class="table-scroll"><table class="month-table" id="monthTable">${month.table}</table></div></section>`;
+    `<div class="table-scroll"><table class="month-table" id="monthTable"${key ? ` data-k="${esc(key)}"` : ''}>${month.table}</table></div></section>`;
 }
 
 // h1 is plain text, or { html } for markup that is already escaped (the home page call to prayer).
@@ -478,9 +484,15 @@ function fitDesc(desc) {
 const pages = [];
 const seenPaths = new Set(); // pages must never collide
 
+// Every page-type node links to the Organization as publisher (tightens the entity graph).
+const PAGE_TYPES = new Set(['WebPage', 'CollectionPage', 'AboutPage', 'ContactPage']);
+function withPublisher(ld) {
+  (ld['@graph'] || [ld]).forEach((n) => { if (PAGE_TYPES.has(n['@type']) && !n.publisher) n.publisher = { '@id': `${SITE}/#org` }; });
+  return true;
+}
 function addPage(o) {
   const lang = o.lang, L = LANGS[lang], t = STRINGS[lang];
-  const script = ['home', 'about', '404', 'contact', 'privacy', 'terms'].includes(o.data.kind) ? ASSET.jsLite : ASSET.js;
+  const script = ['about', '404', 'contact', 'privacy', 'terms'].includes(o.data.kind) ? ASSET.jsLite : ASSET.js;
   const alternates = o.alternates || [];
   const showLocal = lang !== 'en' && t.brandLocal !== BRAND_AR;
   const canonical = abs(o.path);
@@ -514,7 +526,7 @@ function addPage(o) {
     `<style>${CSS}</style>`,
     fontLinks(lang),
     `<link rel="preload" href="${script}" as="script">`,
-    o.jsonld ? `<script type="application/ld+json">${jsonForHtml(Object.assign({ '@context': 'https://schema.org' }, o.jsonld))}</script>` : '',
+    o.jsonld ? withPublisher(o.jsonld) && `<script type="application/ld+json">${jsonForHtml(Object.assign({ '@context': 'https://schema.org' }, o.jsonld))}</script>` : '',
     '</head>',
   ].filter(Boolean).join('\n');
 
@@ -567,6 +579,8 @@ function homePage(lang) {
   const call = `<span class="h1-ar" lang="ar" dir="rtl">${HAYYA_AR.split('، ').map((p, i, a) => `<span>${esc(p)}${i < a.length - 1 ? '،' : ''}</span>`).join(' ')}</span>` +
     (t.hayya ? `<span class="h1-tr">${esc(t.hayya)}</span>` : '');
   let html = hero(lang, ctx, { html: call }, tpl(t.searchPlaceholder, { x: example }), h1);
+  const live = liveCities(lang);
+  html += liveSection(lang, live);
   CONTINENTS.forEach((k) => {
     const list = COUNTRIES.filter((c) => c.continent === k);
     if (!list.length) return;
@@ -575,6 +589,7 @@ function homePage(lang) {
         `<span class="muted">${esc(tpl(t.citiesCount, { n: Core.num(c.cities.length, ctx) }))}</span></a></li>`).join('') +
       '</ul></section>';
   });
+  html += ramadanHome(lang, ctx);
   html += `<section class="coming-soon"><h2>${esc(t.countryNotListed)}</h2>` +
     `<p><a class="btn-link" href="${url.near(lang)}#locate">${esc(t.showMyLocation)}</a>. ${esc(t.worksAnywhere)}</p></section>`;
 
@@ -582,7 +597,8 @@ function homePage(lang) {
   addPage({
     lang, tag: langTag(lang), title, desc, path: pagePath, alternates: cluster(url.home), indexable: true, body: html,
     jsonld: { '@graph': [ORG, WEBSITE(lang), { '@type': 'WebPage', '@id': abs(pagePath), url: abs(pagePath), name: title, description: desc, inLanguage: langTag(lang), dateModified: TODAY_ISO, isPartOf: { '@id': `${SITE}/#website` } }] },
-    data: clientData(lang, { kind: 'home', defaultSect: 'hanafi', searchUrl: SEARCH[lang].path }),
+    data: clientData(lang, { kind: 'home', defaultSect: 'hanafi', searchUrl: SEARCH[lang].path,
+      live: live.map((ci) => [ci.lat, ci.lng, ci.tz, ci.method, ci.country.jafariMethod || null, ci.defaultSect]) }),
   });
 }
 
@@ -702,7 +718,7 @@ function cityPage(lang, ci) {
     `<section class="today pattern" id="today">${today.html}</section>` +
     `<section class="card nafl" id="nafl" aria-labelledby="naflTitle">${Core.renderNafl(loc, ctx, NOW)}</section>` +
     '<div class="layout">' +
-      monthCard(lang, month) +
+      monthCard(lang, month, `${p.y}-${p.m}-${p.d}|${ctx.sect}|${ctx.method}|${ctx.hour12}|${ctx.hijriAdj}`) +
       '<aside class="side">' +
         `<section class="card ramadan-link"><a href="${url.ramadan(lang, ci)}">${esc(tpl(GUIDES[lang].ramLink, { year: Core.num(RAMADAN.y, ctx), city: cityName }))}</a></section>` +
         `<section class="card qibla">${Core.qiblaCard(ci.lat, ci.lng, ctx)}<p class="small"><a href="${url.qibla(lang)}">${esc(GUIDES[lang].qbNav)}</a></p></section>` +
@@ -787,6 +803,7 @@ function aboutPage(lang) {
       `<h2>${esc(t.aboutNaflH2)}</h2><p>${esc(t.naflNote)} ${esc(t.laylNote)}</p>` +
       `<h2>${esc(t.aboutHijriH2)}</h2><p>${esc(t.aboutHijri)}</p>` +
       `<h2>${esc(t.aboutAccuracyH2)}</h2><p>${esc(t.aboutAccuracy)}</p>` +
+      (CONFIG.web3formsKey ? `<h2 id="corrections">${esc(GUIDES[lang].corrH)}</h2><p>${esc(GUIDES[lang].corrP)}</p>` : '') +
       `<p class="muted small">${esc(tpl(t.updated, { date: Core.gregorian(...ymd(NOW, 'UTC'), 'full', ctx) }))}</p>` +
     '</article>';
   addPage({
@@ -986,6 +1003,70 @@ function hijriPage(lang) {
 }
 
 /* ---------- Ramadan timetable per city ---------- */
+// The home page features Ramadan timetables from this many days before Ramadan until it ends,
+// and on the first of those days (and two weeks before) the deploy sends the Ramadan pages to IndexNow.
+const RAMADAN_LEAD = +process.env.RAMADAN_LEAD || 70; // env override only for testing
+function ramadanWindow() {
+  if (!RAMADAN) return null;
+  const start = Date.UTC(RAMADAN.y, RAMADAN.m - 1, RAMADAN.d), today = Date.UTC(...ymd(NOW, 'UTC').map((v, i) => (i === 1 ? v - 1 : v)));
+  const daysTo = Math.round((start - today) / 864e5);
+  return { daysTo, open: daysTo <= RAMADAN_LEAD && daysTo > -RAMADAN.n };
+}
+// Cities for the home section: English gets the worldwide list; other languages the main cities of the
+// countries that speak them (pages that are indexed in that language).
+// The main cities of the countries that speak a language, taken in turn from each country, largest first,
+// skipping any city within 80 km of one already chosen (its times would be almost the same).
+function spreadCities(lang, n) {
+  const countries = COUNTRIES.filter((c) => c.langs.includes(lang));
+  const out = [];
+  for (let i = 0; out.length < n && countries.some((c) => c.cities[i]); i++) {
+    countries.forEach((c) => {
+      const ci = c.cities[i];
+      if (ci && out.length < n && out.every((o) => Core.distanceKm(o.lat, o.lng, ci.lat, ci.lng) >= 80)) out.push(ci);
+    });
+  }
+  return out;
+}
+function ramadanCities(lang) {
+  if (lang === 'en') return GLOBAL_CITIES.map(cityByPath);
+  return spreadCities(lang, 10);
+}
+// "Prayer times now": English gets cities around the world, other languages the main cities of the countries that speak them.
+const LIVE_EN = ['saudi-arabia/makkah', 'saudi-arabia/madinah', 'uk/london', 'usa/new-york', 'pakistan/karachi', 'bangladesh/dhaka',
+  'indonesia/jakarta', 'turkey/istanbul', 'egypt/cairo', 'uae/dubai', 'malaysia/kuala-lumpur', 'india/new-delhi'];
+LIVE_EN.forEach((p) => { if (!cityByPath(p)) problems.push(`live cards: unknown city ${p}`); });
+function liveCities(lang) {
+  if (lang === 'en') return LIVE_EN.map(cityByPath).filter(Boolean);
+  return spreadCities(lang, 12);
+}
+// Each card: city, country, local time, next prayer and a countdown. Drawn here for the build time;
+// the browser redraws them for the visitor's moment and ticks every second.
+function liveSection(lang, cities) {
+  if (!cities.length) return '';
+  const g = GUIDES[lang], t = STRINGS[lang];
+  const cards = cities.map((ci, i) => {
+    const ctx = ctxFor(lang, ci.defaultSect), loc = locOf(ci, lang), s = Core.snapshot(loc, ctx, NOW);
+    const name = s.next.tomorrow ? `${t.prayers.fajr} ${t.tomorrow}` : t.prayers[s.next.key];
+    return `<li><a class="country-card live-card" href="${url.city(lang, ci)}" data-live="${i}">` +
+      `<span class="cc-name">${esc(loc.name)}</span><span class="muted">${esc(nameIn(ci.country.name, lang))}</span>` +
+      `<span class="lc-row"><span class="muted">${esc(t.localTime)}</span> <bdi class="lc-clock">${esc(Core.fmtTime(NOW, ci.tz, ctx))}</bdi></span>` +
+      `<span class="lc-row"><span class="muted">${esc(t.next)}</span> <b class="lc-next">${esc(name)}</b> <bdi class="lc-at">${esc(Core.fmtTime(s.next.at, ci.tz, ctx))}</bdi></span>` +
+      `<span class="lc-in" hidden><span class="lc-label"></span> <bdi class="lc-cd"></bdi></span></a></li>`;
+  }).join('');
+  return `<section class="continent live" aria-labelledby="liveH"><h2 class="section-title" id="liveH">${esc(g.liveH)}</h2><ul class="country-grid live-grid" id="liveCards">${cards}</ul></section>`;
+}
+function ramadanHome(lang, ctx) {
+  const w = ramadanWindow();
+  if (!w || !w.open) return '';
+  const g = GUIDES[lang], t = STRINGS[lang], cities = ramadanCities(lang);
+  if (!cities.length) return '';
+  const first = Core.gregorian(RAMADAN.y, RAMADAN.m, RAMADAN.d, 'full', ctx);
+  return '<section class="continent ramadan-home" aria-labelledby="ramHomeH">' +
+    `<h2 class="section-title" id="ramHomeH">${esc(tpl(g.ramHomeH, { year: Core.num(RAMADAN.y, ctx) }))}</h2>` +
+    `<p class="muted">${esc(tpl(g.aRamStart, { hijri: `${Core.num(RAMADAN.hy, ctx)} ${t.hijriEra}`, date: first }))}</p>` +
+    '<ul class="country-grid">' + cities.map((ci) => `<li><a class="country-card" href="${url.ramadan(lang, ci)}"><span class="cc-name">${esc(nameIn(ci.names, lang, ci.country))}</span>` +
+      `<span class="muted">${esc(nameIn(ci.country.name, lang))}</span></a></li>`).join('') + '</ul></section>';
+}
 // The Ramadan to show: this one while it runs, else the next. Umm al-Qura start and length.
 const RAMADAN = (function () {
   const p = Core.partsInTz(NOW, 'Asia/Riyadh'), h = Core.hijriParts(p.y, p.m, p.d, 0);
@@ -1281,6 +1362,11 @@ write('sitemap.xml', ['<?xml version="1.0" encoding="UTF-8"?>',
   '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
   ...sitemapFiles.map((f) => `<sitemap><loc>${SITE}/${f}</loc></sitemap>`),
   '</sitemapindex>', ''].join('\n'));
+
+{
+  const w = ramadanWindow(), flag = path.join(ROOT, '.indexnow-ramadan');
+  if (w && (w.daysTo === RAMADAN_LEAD || w.daysTo === 14)) fs.writeFileSync(flag, String(w.daysTo)); else fs.rmSync(flag, { force: true });
+}
 
 // llms.txt: a plain summary for AI assistants and answer engines (https://llmstxt.org).
 write('llms.txt', [

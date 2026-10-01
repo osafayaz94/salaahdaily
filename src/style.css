@@ -528,3 +528,21 @@ body.bare { background: var(--surface); margin: 0; }
 .legal-intro { font-size: 1.0625rem; }
 .legal .suggest { margin-top: 20px; }
 .site-footer .site-links a { margin: 0 2px; }
+
+/* The footer is long (every country) and below the fold: the browser lays it out only when it nears the screen. */
+.site-footer { content-visibility: auto; contain-intrinsic-size: auto 1800px; }
+
+/* Home: live city cards (local time, next prayer, countdown) */
+.live-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.live-card .lc-row { display: flex; align-items: baseline; gap: 6px; margin-top: 4px; font-size: 0.875rem; }
+.live-card .lc-row .muted { font-size: 0.8rem; }
+.live-card .lc-clock, .live-card .lc-at, .live-card .lc-cd { font-variant-numeric: tabular-nums; font-weight: 700; }
+.live-card .lc-in { margin-top: 4px; font-size: 0.85rem; color: var(--emerald-2); font-weight: 600; }
+.city-table td.is-next { background: var(--gold-soft); font-weight: 800; }
+@media (max-width: 560px) {
+  .live-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .live-card { padding: 10px 12px; }
+  .live-card .lc-row { flex-wrap: wrap; column-gap: 4px; margin-top: 2px; }
+  .live-card .lc-row .muted { display: none; }
+  .live-card .lc-in { font-size: 0.8rem; }
+}
