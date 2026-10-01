@@ -40,6 +40,7 @@ var CONTACT = {
   tips: 'Please include the city, the date, the prayer, and the timetable or masjid you compared with. If your country publishes an official timetable, a link to it helps most: we fit our calculations to official timetables wherever they exist.',
   formH: 'Send a message',
   formLabel: 'Your message',
+  formSend: 'Send message',
   emailH: 'Email',
   emailP: 'You can also write to',
   emailOnly: 'Write to us at',

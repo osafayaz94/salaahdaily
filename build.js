@@ -386,7 +386,7 @@ function suggestForm(lang, o = {}) {
     `<input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">` +
     `<label for="sgMsg">${esc(o.label || g.sgLabel)}</label><textarea id="sgMsg" name="message" rows="${o.rows || 3}" maxlength="2000" required></textarea>` +
     `<label for="sgMail">${esc(g.sgEmail)}</label><input id="sgMail" name="email" type="email" maxlength="120" autocomplete="email">` +
-    `<button type="submit" class="btn-primary">${esc(g.sgSend)}</button><p class="sg-status" role="status" data-ok="${esc(g.sgThanks)}" data-err="${esc(g.sgError)}"></p></form>`;
+    `<button type="submit" class="btn-primary">${esc(o.send || g.sgSend)}</button><p class="sg-status" role="status" data-ok="${esc(g.sgThanks)}" data-err="${esc(g.sgError)}"></p></form>`;
 }
 
 function breadcrumbs(items) {
@@ -825,7 +825,7 @@ function legalPages() {
   const C = LEGAL.CONTACT, mail = CONFIG.contactEmail;
   infoPage('contact', C, url.contact(), 'ContactPage',
     `<h2>${esc(C.tipsH)}</h2><p>${esc(C.tips)}</p>` +
-    suggestForm('en', { heading: C.formH, label: C.formLabel, subject: 'SalaahDaily contact', rows: 6 }) +
+    suggestForm('en', { heading: C.formH, label: C.formLabel, subject: 'SalaahDaily contact', rows: 6, send: C.formSend }) +
     (mail ? `<h2>${esc(C.emailH)}</h2><p>${esc(CONFIG.web3formsKey ? C.emailP : C.emailOnly)} <a href="mailto:${esc(mail)}">${esc(mail)}</a>.</p>` : ''));
 }
 
