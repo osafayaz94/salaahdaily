@@ -105,8 +105,8 @@ function nameIn(names, lang, country) {
 
 /* ---------- Data ---------- */
 // Merge src/towns.js: towns join an existing region with the same English name, or form a new one.
-const TOWNS = require('./src/towns');
-Object.keys(TOWNS).forEach((slug) => {
+const TOWNS2 = require('./src/towns-2');
+[require('./src/towns'), TOWNS2].forEach((TOWNS) => Object.keys(TOWNS).filter((k) => k === k.toLowerCase()).forEach((slug) => {
   const country = RAW.find((c) => c.slug === slug);
   if (!country) { problems.push(`towns.js: unknown country ${slug}`); return; }
   TOWNS[slug].forEach((r) => {
@@ -114,7 +114,7 @@ Object.keys(TOWNS).forEach((slug) => {
     if (existing) existing.cities.push(...r.cities);
     else country.regions.push(r);
   });
-});
+}));
 
 const COUNTRIES = RAW.map((raw) => {
   const c = Object.assign({}, raw, { regions: [], cities: [] });
@@ -136,6 +136,12 @@ const COUNTRIES = RAW.map((raw) => {
   return c;
 });
 const ALL_CITIES = COUNTRIES.flatMap((c) => c.cities);
+Object.entries(TOWNS2.ALIASES).forEach(([key, alt]) => {
+  const ci = ALL_CITIES.find((x) => `${x.country.slug}/${x.names.en}` === key);
+  if (!ci) { problems.push(`towns-2.js: no city ${key} for its aliases`); return; }
+  ci.names.alt = [ci.names.alt, alt].filter(Boolean).join(' ');
+  if (TOWNS2.EN_SHOWN[key]) ci.shownEn = TOWNS2.EN_SHOWN[key];
+});
 const ALL_LANGS = Object.keys(LANGS);
 
 // Catch data mistakes before anything is written.
@@ -470,9 +476,12 @@ function fitTitle(full, lang, countryName, cityName) {
   return options.find((o) => o.length <= TITLE_MAX) || options[options.length - 1];
 }
 // Regional English wording for a country (EN_VARIANTS in i18n.js), or null.
+// Regional wording: English by country group (i18n.js), other languages in src/variants.js.
+const { VARIANTS } = require('./src/variants');
 function variantOf(lang, c) {
-  if (lang !== 'en') return null;
-  return Object.values(EN_VARIANTS).find((v) => v.countries.includes(c.slug)) || null;
+  const groups = lang === 'en' ? EN_VARIANTS : VARIANTS[lang];
+  if (!groups) return null;
+  return Object.values(groups).find((v) => v.countries === '*' || v.countries.includes(c.slug)) || null;
 }
 function fitDesc(desc) {
   if (desc.length <= DESC_MAX) return desc;
@@ -686,15 +695,17 @@ function cityPage(lang, ci) {
   const c = ci.country, t = STRINGS[lang], ctx = ctxFor(lang, ci.defaultSect);
   const loc = locOf(ci, lang);
   const cityName = loc.name, countryName = nameIn(c.name, lang);
+  // English titles add the older spelling people still search with: "Bengaluru (Bangalore)".
+  const titleName = lang === 'en' && ci.shownEn ? `${cityName} (${ci.shownEn})` : cityName;
   const variant = variantOf(lang, c);
   if (variant) {
     loc.v = { summary: variant.summary, faq: variant.faq.concat((variant.faqByCountry && variant.faqByCountry[c.slug]) || []) };
   }
   // The H1 keeps the standard wording; a regional title adds the other search term ("Namaz Timings").
-  const h1 = tpl(t.cityTitle, { city: cityName, country: countryName }).split(' | ')[0];
-  const fullTitle = tpl((variant && variant.cityTitle) || t.cityTitle, { city: cityName, country: countryName });
-  const title = fitTitle(fullTitle, lang, countryName, cityName);
-  const desc = tpl(t.cityDesc, { city: cityName, country: countryName });
+  const h1 = tpl(t.cityTitle, { city: titleName, country: countryName }).split(' | ')[0];
+  const fullTitle = tpl((variant && variant.cityTitle) || t.cityTitle, { city: titleName, country: countryName });
+  const title = fitTitle(fullTitle, lang, countryName, titleName);
+  const desc = tpl((variant && variant.cityDesc) || t.cityDesc, { city: titleName, country: countryName });
   const pagePath = url.city(lang, ci);
   const today = Core.renderToday(loc, ctx, NOW, h1);
   const p = Core.partsInTz(NOW, ci.tz);

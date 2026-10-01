@@ -15,6 +15,7 @@ const { execFileSync } = require('child_process');
 const CONFIG = require('../site.config');
 const RAW = require('../src/data').concat(require('../src/data-mea')).concat(require('../src/data-europe')).concat(require('../src/data-asia')).concat(require('../src/data-africa')).concat(require('../src/data-more'));
 const TOWNS = require('../src/towns');
+const TOWNS2 = require('../src/towns-2');
 
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'src', 'og');
@@ -36,7 +37,7 @@ const host = new URL(CONFIG.siteUrl).host;
 const counts = {};
 RAW.forEach((c) => {
   counts[c.slug] = c.regions.reduce((n, r) => n + r.cities.length, 0) +
-    (TOWNS[c.slug] || []).reduce((n, r) => n + r.cities.length, 0);
+    [TOWNS, TOWNS2].reduce((m, T) => m + (T[c.slug] || []).reduce((n, r) => n + r.cities.length, 0), 0);
 });
 const totalCities = Object.values(counts).reduce((a, b) => a + b, 0);
 

@@ -748,7 +748,7 @@ var MORE = {
     continents: { asia: 'এশিয়া', europe: 'ইউরোপ', northAmerica: 'উত্তর আমেরিকা', oceania: 'ওশেনিয়া' },
     faqH2: '{city}: দ্রুত উত্তর',
     qTimes: '{city}: আজ নামাজের সময় কী?', aTimes: '{date}: ফজর {fajr}, সূর্যোদয় {sunrise}, যোহর {dhuhr}, আসর {asr}, মাগরিব {maghrib}, এশা {isha} ({sect})।',
-    qFajr: '{city}: আজ ফজরের সময় কখন শেষ হয়?', aFajr: 'ফজর শুরু {fajr}, শেষ সূর্যোদয়ে ({sunrise})।',
+    qFajr: 'আজ {city}-এ ফজরের নামাজের শেষ সময় কখন?', aFajr: 'আজ ফজরের নামাজ শুরু {fajr}, শেষ সময় সূর্যোদয় {sunrise}।',
     qMaghrib: '{city}: আজ মাগরিব (ইফতার) কখন?', aMaghrib: 'মাগরিব {maghrib}। এশা শুরু {isha}।',
     qNafl: '{city}: আজ ইশরাক, চাশত ও তাহাজ্জুদ কখন?', aNafl: 'ইশরাক শুরু {ishraq}, চাশত {chasht} এবং তাহাজ্জুদ {tahajjud}।',
     qLayl: '{city}: আজ রাতে সালাতুল লাইল কখন?', aLayl: 'সালাতুল লাইল মধ্যরাত ({layl}) থেকে ফজর ({fajr}) পর্যন্ত।',
@@ -1257,10 +1257,15 @@ var EN_VARIANTS = {
     countries: ['pakistan', 'india', 'bangladesh'],
     cityTitle: '{city} Namaz Timings & Prayer Times Today, {country} | SalaahDaily',
     countryTitle: '{country} Namaz Timings & Prayer Times Today | SalaahDaily',
+    cityDesc: 'Today’s namaz timings in {city}, {country}: Fajr, Zuhr, Asr, Maghrib and Isha, plus Tahajjud and Ishraq. Hanafi and Shafi‘i times, monthly timetable and Qibla.',
     summary: 'Namaz timing in {city} today: Fajr is at {fajr} and Maghrib is at {maghrib}.',
     faq: [['What is the namaz timing in {city} today?', 'Namaz timing in {city} on {date}: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
     faqByCountry: {
-      pakistan: [['Aaj {city} mein namaz ka waqt kya hai?', 'Aaj {city} mein namaz ka waqt: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
+      pakistan: [
+        ['Aaj {city} mein namaz ka waqt kya hai?', 'Aaj {city} mein namaz ka waqt: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).'],
+        // Spellings Pakistan searches with: fajar, zohar, asar.
+        ['What is the Fajar, Zohar and Asar time in {city} today?', 'In {city} today, Fajar (Fajr) is at {fajr}, Zohar (Zuhr) at {dhuhr} and Asar (Asr) at {asr} ({sect}).'],
+      ],
     },
   },
   west: {

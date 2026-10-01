@@ -572,6 +572,11 @@
       city: city, date: gregorian(d.y, d.m, d.d, 'full', ctx), fajr: f(tt.fajr), sunrise: f(tt.sunrise), dhuhr: f(tt.dhuhr),
       asr: f(tt.asr), maghrib: f(tt.maghrib), isha: f(tt.isha), sect: sect,
     };
+    // Tomorrow's Fajr and sunrise, for the regional questions that ask about tomorrow.
+    if (loc.v) {
+      var tm = addDays(d.y, d.m, d.d, 1), t2 = timesFor(loc, ctx, tm.y, tm.m, tm.d, s.params);
+      vars.dateTomorrow = gregorian(tm.y, tm.m, tm.d, 'full', ctx); vars.fajrTomorrow = f(t2.fajr); vars.sunriseTomorrow = f(t2.sunrise);
+    }
     var items = [
       [tpl(t.qTimes, { city: city }), tpl(t.aTimes, vars)],
       [tpl(t.qFajr, { city: city }), tpl(t.aFajr, { fajr: f(tt.fajr), sunrise: f(tt.sunrise) })],
