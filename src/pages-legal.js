@@ -42,6 +42,7 @@ var CONTACT = {
   formLabel: 'Your message',
   emailH: 'Email',
   emailP: 'You can also write to',
+  emailOnly: 'Write to us at',
 };
 
 var PRIVACY = {

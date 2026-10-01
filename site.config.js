@@ -12,5 +12,5 @@ module.exports = {
   // lets a form send to the inbox chosen at sign-up. Leave empty to hide the form.
   web3formsKey: '',
   // Public contact address shown on the Contact page (optional). Leave empty to show the form only.
-  contactEmail: '',
+  contactEmail: 'team@salaahdaily.com',
 };

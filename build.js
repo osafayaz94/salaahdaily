@@ -206,6 +206,10 @@ function langTag(lang, country) {
 }
 function ogLocale(tag, lang) { return tag.includes('-') ? tag.replace('-', '_') : LANGS[lang].og; }
 const cluster = (fn, country) => ALL_LANGS.map((l) => ({ lang: l, tag: langTag(l, country), href: fn(l) }));
+// Index scope for the templated city and Ramadan pages: English plus the country's own languages.
+// Other language copies are still built for visitors, but are noindex and left out of hreflang and the sitemaps.
+const inScope = (lang, country) => lang === 'en' || country.langs.includes(lang);
+const scopedCluster = (fn, country) => cluster(fn, country).filter((a) => inScope(a.lang, country));
 
 /* ---------- Assets ---------- */
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
@@ -714,7 +718,7 @@ function cityPage(lang, ci) {
 
   const tag = langTag(lang, c);
   addPage({
-    lang, tag, title, desc, path: pagePath, alternates: cluster((l) => url.city(l, ci), c), indexable: true, body, og: c.slug,
+    lang, tag, title, desc, path: pagePath, alternates: scopedCluster((l) => url.city(l, ci), c), indexable: inScope(lang, c), body, og: c.slug,
     jsonld: {
       '@graph': [
         {
@@ -822,7 +826,7 @@ function legalPages() {
   infoPage('contact', C, url.contact(), 'ContactPage',
     `<h2>${esc(C.tipsH)}</h2><p>${esc(C.tips)}</p>` +
     suggestForm('en', { heading: C.formH, label: C.formLabel, subject: 'SalaahDaily contact', rows: 6 }) +
-    (mail ? `<h2>${esc(C.emailH)}</h2><p>${esc(C.emailP)} <a href="mailto:${esc(mail)}">${esc(mail)}</a>.</p>` : ''));
+    (mail ? `<h2>${esc(C.emailH)}</h2><p>${esc(CONFIG.web3formsKey ? C.emailP : C.emailOnly)} <a href="mailto:${esc(mail)}">${esc(mail)}</a>.</p>` : ''));
 }
 
 /* ---------- Explainers: the prayers and the Hijri calendar ---------- */
@@ -1027,7 +1031,7 @@ function ramadanPage(lang, ci) {
   const title = fitTitle(tpl(g.ramTitle, { year, city: titleCity }), lang);
   const desc = tpl(g.ramDesc, { year, hijri: hijriYear, city: titleCity });
   addPage({
-    lang, tag, title, desc, path: pagePath, alternates: cluster((l) => url.ramadan(l, ci), c), indexable: true, body, og: c.slug,
+    lang, tag, title, desc, path: pagePath, alternates: scopedCluster((l) => url.ramadan(l, ci), c), indexable: inScope(lang, c), body, og: c.slug,
     jsonld: { '@graph': [
       { '@type': 'WebPage', '@id': abs(pagePath), url: abs(pagePath), name: title, description: desc, inLanguage: tag, dateModified: TODAY_ISO,
         isPartOf: { '@id': `${SITE}/#website` }, about: aboutThing('Ramadan', 'https://en.wikipedia.org/wiki/Ramadan'),
@@ -1262,13 +1266,11 @@ write('robots.txt', [
 const sitemapFiles = [];
 ALL_LANGS.forEach((lang) => {
   const lines = ['<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'];
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'];
   pages.filter((p) => p.indexable && p.lang === lang).forEach((p) => {
-    const en = p.alternates.find((a) => a.lang === 'en');
-    lines.push('<url>', `<loc>${abs(p.path)}</loc>`, `<lastmod>${TODAY_ISO}</lastmod>`);
-    p.alternates.forEach((a) => lines.push(`<xhtml:link rel="alternate" hreflang="${a.tag}" href="${abs(a.href)}"/>`));
-    if (en) lines.push(`<xhtml:link rel="alternate" hreflang="x-default" href="${abs(en.href)}"/>`);
-    lines.push('</url>');
+    // hreflang lives in each page's HTML only; repeating it here made the sitemaps ~131 MB.
+    // No lastmod: the build date is not a content change date, and a constant one gets ignored.
+    lines.push('<url>', `<loc>${abs(p.path)}</loc>`, '</url>');
   });
   lines.push('</urlset>');
   const file = `sitemaps/${lang}.xml`;
@@ -1277,7 +1279,7 @@ ALL_LANGS.forEach((lang) => {
 });
 write('sitemap.xml', ['<?xml version="1.0" encoding="UTF-8"?>',
   '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-  ...sitemapFiles.map((f) => `<sitemap><loc>${SITE}/${f}</loc><lastmod>${TODAY_ISO}</lastmod></sitemap>`),
+  ...sitemapFiles.map((f) => `<sitemap><loc>${SITE}/${f}</loc></sitemap>`),
   '</sitemapindex>', ''].join('\n'));
 
 // llms.txt: a plain summary for AI assistants and answer engines (https://llmstxt.org).
