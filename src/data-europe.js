@@ -242,7 +242,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'germany', cc: 'DE', continent: 'europe', name: { en: 'Germany' }, langs: ['de'],
+    slug: 'germany', cc: 'DE', continent: 'europe', name: { en: 'Germany' }, langs: ['de', 'tr'],
     tz: 'Europe/Berlin', method: 'DiyanetEurope', defaultSect: 'shafii', // DITIB's timetable prints the first Asr time
     regions: [
       R('Berlin', 'برلن|बर्लिन|বার্লিন|برلین', { ar: 'برلين', es: 'Berlín' }, [
@@ -329,7 +329,7 @@ module.exports = [
   //   Belgium: the Muslim Executive of Belgium (EMB) calendar, fitted; Maliki, the majority school.
   //   Austria: the IGGÖ unified calendar (same numbers as Diyanet's European timetable).
   {
-    slug: 'netherlands', cc: 'NL', continent: 'europe', name: { en: 'Netherlands' }, langs: ['en'],
+    slug: 'netherlands', cc: 'NL', continent: 'europe', name: { en: 'Netherlands' }, langs: ['en', 'tr'],
     tz: 'Europe/Amsterdam', method: 'DiyanetEurope', defaultSect: 'shafii', // Diyanet timetable: first Asr time
     regions: [
       R('North Holland', 'نارتھ ہالینڈ|नॉर्थ हॉलैंड|নর্থ হল্যান্ড|هلند شمالی', { ar: 'هولندا الشمالية', tr: 'Kuzey Hollanda', es: 'Holanda Septentrional', fr: 'Hollande-Septentrionale' }, [
@@ -384,7 +384,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'belgium', cc: 'BE', continent: 'europe', name: { en: 'Belgium', fr: 'Belgique' }, langs: ['en'], // multilingual: French names stay on French pages only
+    slug: 'belgium', cc: 'BE', continent: 'europe', name: { en: 'Belgium', fr: 'Belgique' }, langs: ['en', 'fr', 'tr'], // multilingual: French names stay on French pages only
     tz: 'Europe/Brussels', method: 'EMB', defaultSect: 'maliki',
     regions: [
       R('Brussels-Capital Region', 'برسلز کیپیٹل ریجن|ब्रुसेल्स राजधानी क्षेत्र|ব্রাসেলস রাজধানী অঞ্চল|منطقه پایتخت بروکسل', { ar: 'منطقة بروكسل العاصمة', tr: 'Brüksel Başkent Bölgesi', es: 'Región de Bruselas-Capital', fr: 'Région de Bruxelles-Capitale' }, [
@@ -428,7 +428,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'switzerland', cc: 'CH', continent: 'europe', name: { en: 'Switzerland', fr: 'Suisse' }, langs: ['de'], // multilingual: French names stay on French pages only
+    slug: 'switzerland', cc: 'CH', continent: 'europe', name: { en: 'Switzerland', fr: 'Suisse' }, langs: ['de', 'fr'], // multilingual: French names stay on French pages only
     tz: 'Europe/Zurich', method: 'DiyanetEurope', defaultSect: 'shafii', // Diyanet timetable: first Asr time
     regions: [
       R('Zurich', 'زیورخ|ज़्यूरिख़|জুরিখ|زوریخ', { ar: 'زيورخ', tr: 'Zürih', es: 'Zúrich', fr: 'Zurich' }, [
@@ -463,7 +463,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'austria', cc: 'AT', continent: 'europe', name: { en: 'Austria' }, langs: ['de'],
+    slug: 'austria', cc: 'AT', continent: 'europe', name: { en: 'Austria' }, langs: ['de', 'tr'],
     tz: 'Europe/Vienna', method: 'IGGO', defaultSect: 'shafii', // IGGÖ calendar: first Asr time
     regions: [
       R('Vienna', 'ویانا|वियना|ভিয়েনা|وین', { ar: 'فيينا', tr: 'Viyana', es: 'Viena', fr: 'Vienne' }, [

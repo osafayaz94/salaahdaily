@@ -479,7 +479,9 @@ function fitTitle(full, lang, countryName, cityName) {
 }
 // Regional English wording for a country (EN_VARIANTS in i18n.js), or null.
 // Regional wording: English by country group (i18n.js), other languages in src/variants.js.
-const { VARIANTS } = require('./src/variants');
+const { VARIANTS, LOCAL } = require('./src/variants');
+// English pages: the local language of a country (or region) the site has no pages in.
+const localFor = (ci) => LOCAL[`${ci.country.slug}/${ci.region.names.en}`] || LOCAL[ci.country.slug] || null;
 function variantOf(lang, c) {
   const groups = lang === 'en' ? EN_VARIANTS : VARIANTS[lang];
   if (!groups) return null;
@@ -699,13 +701,16 @@ function cityPage(lang, ci) {
   const cityName = loc.name, countryName = nameIn(c.name, lang);
   // English titles add the older spelling people still search with: "Bengaluru (Bangalore)".
   const titleName = lang === 'en' && ci.shownEn ? `${cityName} (${ci.shownEn})` : cityName;
-  const variant = variantOf(lang, c);
-  if (variant) {
-    loc.v = { summary: variant.summary, faq: variant.faq.concat((variant.faqByCountry && variant.faqByCountry[c.slug]) || []) };
+  const variant = variantOf(lang, c), local = lang === 'en' ? localFor(ci) : null;
+  if (variant || local) {
+    loc.v = { summary: variant && variant.summary, faq: [].concat((variant && variant.faq) || [], (variant && variant.faqByCountry && variant.faqByCountry[c.slug]) || [], local ? [[local.q, local.a]] : []) };
   }
+  // Title: a regional wording, else (English) the local search term when it is in Latin letters.
+  const localTitle = local && local.latin && !(variant && variant.cityTitle) ? `{city} Prayer Times & ${local.term} Today, {country} | SalaahDaily` : null;
+  const variantTitle = variant && ((variant.cityTitleByCountry && variant.cityTitleByCountry[c.slug]) || variant.cityTitle);
   // The H1 keeps the standard wording; a regional title adds the other search term ("Namaz Timings").
   const h1 = tpl(t.cityTitle, { city: titleName, country: countryName }).split(' | ')[0];
-  const fullTitle = tpl((variant && variant.cityTitle) || t.cityTitle, { city: titleName, country: countryName });
+  const fullTitle = tpl(variantTitle || localTitle || t.cityTitle, { city: titleName, country: countryName });
   const title = fitTitle(fullTitle, lang, countryName, titleName);
   const desc = tpl((variant && variant.cityDesc) || t.cityDesc, { city: titleName, country: countryName });
   const pagePath = url.city(lang, ci);

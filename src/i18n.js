@@ -1271,7 +1271,10 @@ var EN_VARIANTS = {
   west: {
     countries: ['uk', 'usa', 'canada', 'australia'],
     summary: 'Salah times in {city} today: Fajr is at {fajr} and Maghrib is at {maghrib}.',
-    faq: [['What time is Azan in {city} today?', 'On {date}, Azan in {city} is at the start of each Salah: Fajr {fajr}, Dhuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}). Your masjid may call it a few minutes later.']],
+    faq: [
+      ['What time is Azan in {city} today?', 'On {date}, Azan in {city} is at the start of each Salah: Fajr {fajr}, Dhuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}). Your masjid may call it a few minutes later.'],
+      ['What is the namaz time in {city} today?', 'Namaz times in {city} today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).'],
+    ],
   },
 };
 

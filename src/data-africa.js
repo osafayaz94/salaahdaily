@@ -11,7 +11,7 @@ function R(en, names, extra, cities) { return { name: Object.assign({ en: en }, 
 
 module.exports = [
   {
-    slug: 'morocco', cc: 'MA', continent: 'africa', name: { en: 'Morocco' }, langs: ['ar'],
+    slug: 'morocco', cc: 'MA', continent: 'africa', name: { en: 'Morocco' }, langs: ['ar', 'fr'],
     tz: 'Africa/Casablanca', method: 'Morocco', defaultSect: 'maliki',
     regions: [
       R('Rabat-Salé-Kénitra', 'رباط-سلا-قنیطرہ|रबात-सले-केनित्रा|রাবাত-সালে-কেনিত্রা|رباط-سلا-قنیطره', { ar: 'الرباط سلا القنيطرة', tr: 'Rabat-Sale-Kenitra', es: 'Rabat-Salé-Kenitra', fr: 'Rabat-Salé-Kénitra' }, [
@@ -44,7 +44,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'algeria', cc: 'DZ', continent: 'africa', name: { en: 'Algeria' }, langs: ['ar'],
+    slug: 'algeria', cc: 'DZ', continent: 'africa', name: { en: 'Algeria' }, langs: ['ar', 'fr'],
     tz: 'Africa/Algiers', method: 'Algeria', defaultSect: 'maliki',
     regions: [
       R('North Central Algeria', 'شمالی وسطی الجزائر|उत्तर-मध्य अल्जीरिया|উত্তর-মধ্য আলজেরিয়া|شمال مرکزی الجزایر', { ar: 'الشمال الأوسط', tr: 'Kuzey Orta Cezayir', es: 'Argelia centro-norte', fr: 'Centre-Nord algérien' }, [
@@ -73,7 +73,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'tunisia', cc: 'TN', continent: 'africa', name: { en: 'Tunisia' }, langs: ['ar'],
+    slug: 'tunisia', cc: 'TN', continent: 'africa', name: { en: 'Tunisia' }, langs: ['ar', 'fr'],
     tz: 'Africa/Tunis', method: 'MuslimWorldLeague', defaultSect: 'maliki',
     regions: [
       R('Greater Tunis', 'تیونس کبریٰ|वृहत ट्यूनिस|বৃহত্তর তিউনিস|تونس بزرگ', { ar: 'تونس الكبرى', tr: 'Büyük Tunus', es: 'Gran Túnez', fr: 'Grand Tunis' }, [
@@ -143,7 +143,7 @@ module.exports = [
     ],
   },
   {
-    slug: 'mauritania', cc: 'MR', continent: 'africa', name: { en: 'Mauritania' }, langs: ['ar'],
+    slug: 'mauritania', cc: 'MR', continent: 'africa', name: { en: 'Mauritania' }, langs: ['ar', 'fr'],
     tz: 'Africa/Nouakchott', method: 'MuslimWorldLeague', defaultSect: 'maliki',
     regions: [
       R('Nouakchott', 'نواکشوط|नुआकशॉट|নুয়াকশট|نواکشوت', { ar: 'نواكشوط', tr: 'Nuakşot', es: 'Nuakchot', fr: 'Nouakchott' }, [
