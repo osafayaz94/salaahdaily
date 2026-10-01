@@ -1,0 +1,848 @@
+{
+ "great-mosque-of-mecca": {
+  "title": "Great Mosque of Mecca",
+  "w": 480,
+  "h": 336,
+  "page": "https://commons.wikimedia.org/wiki/File:Kaba_(restored).jpg",
+  "artist": "Unknown authorUnknown author On the basis of date, it could be Muhammad Sadiq Be",
+  "license": "Public domain",
+  "licenseUrl": ""
+ },
+ "kaaba": {
+  "title": "Kaaba",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Kaaba2.JPG",
+  "artist": "Aiman titi",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "prophet-s-mosque": {
+  "title": "Prophet's Mosque",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Madeena_masjid_nabavi_12122008230.jpg",
+  "artist": "Bluemangoa2z at Malayalam Wikipedia",
+  "license": "Public domain",
+  "licenseUrl": ""
+ },
+ "quba-mosque": {
+  "title": "Quba Mosque",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Quba_Mosque_from_Afar_(2024).jpg",
+  "artist": "Kaliper1",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "masjid-al-qiblatayn": {
+  "title": "Masjid al-Qiblatayn",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Masjid_al-Qiblatain.jpg",
+  "artist": "Aiman titi",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "mount-arafat": {
+  "title": "Mount Arafat",
+  "w": 480,
+  "h": 406,
+  "page": "https://commons.wikimedia.org/wiki/File:Hajj_1965_09.jpg",
+  "artist": "Unknown authorUnknown author",
+  "license": "Public domain",
+  "licenseUrl": ""
+ },
+ "jabal-al-nour": {
+  "title": "Jabal al-Nour",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Jabal_Nur.JPG",
+  "artist": "Adiput (talk)",
+  "license": "Public domain",
+  "licenseUrl": ""
+ },
+ "al-baqi-cemetery": {
+  "title": "Al-Baqi Cemetery",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Al-Baqi_Cemetery_2021.jpg",
+  "artist": "Saleh Al Hussain",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+ },
+ "mount-uhud": {
+  "title": "Mount Uhud",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Mount_Uhud.JPG",
+  "artist": "Adiput (talk)",
+  "license": "Public domain",
+  "licenseUrl": ""
+ },
+ "mina-saudi-arabia": {
+  "title": "Mina, Saudi Arabia",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Mina_Overview.JPG",
+  "artist": "Mubeen Rahman",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+ },
+ "al-aqsa-mosque": {
+  "title": "Al-Aqsa Mosque",
+  "w": 480,
+  "h": 258,
+  "page": "https://commons.wikimedia.org/wiki/File:Jerusalem-2013-Temple_Mount-Al-Aqsa_Mosque_(NE_exposure).jpg",
+  "artist": "Godot13",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "dome-of-the-rock": {
+  "title": "Dome of the Rock",
+  "w": 480,
+  "h": 319,
+  "page": "https://commons.wikimedia.org/wiki/File:16-04-04-Felsendom-Tempelberg-Jerusalem-RalfR-WAT_6385.jpg",
+  "artist": "Ralf Roletschek",
+  "license": "GFDL 1.2",
+  "licenseUrl": "http://www.gnu.org/licenses/old-licenses/fdl-1.2.html"
+ },
+ "ibrahimi-mosque": {
+  "title": "Ibrahimi Mosque",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Hebron_Cave_of_the_Patriarchs.jpg",
+  "artist": "Utilisateur:Djampa - User:Djampa",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "sheikh-zayed-grand-mosque": {
+  "title": "Sheikh Zayed Grand Mosque",
+  "w": 480,
+  "h": 270,
+  "page": "https://commons.wikimedia.org/wiki/File:Sheikh_Zayed_Mosque_Silhouette.jpg",
+  "artist": "PotatoWitch",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "sultan-qaboos-grand-mosque": {
+  "title": "Sultan Qaboos Grand Mosque",
+  "w": 480,
+  "h": 320,
+  "page": "https://commons.wikimedia.org/wiki/File:Sultan_Qaboos_Grand_Mosque_(1).jpg",
+  "artist": "Mostafameraji",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "grand-mosque-kuwait": {
+  "title": "Grand Mosque (Kuwait)",
+  "w": 480,
+  "h": 303,
+  "page": "https://commons.wikimedia.org/wiki/File:Kuwait_City_Grand_Mosque_Exterior_South_Facade_5.jpg",
+  "artist": "Zairon",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+ },
+ "al-fateh-grand-mosque": {
+  "title": "Al Fateh Grand Mosque",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Al_Fateh_outside.jpg",
+  "artist": "أبو الشاي حليب",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "king-abdullah-i-mosque": {
+  "title": "King Abdullah I Mosque",
+  "w": 480,
+  "h": 296,
+  "page": "https://commons.wikimedia.org/wiki/File:Amman_BW_29.JPG",
+  "artist": "Berthold Werner",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+ },
+ "great-mosque-of-sanaa": {
+  "title": "Great Mosque of Sanaa",
+  "w": 480,
+  "h": 719,
+  "page": "https://commons.wikimedia.org/wiki/File:Old_City,_Sana%27a,_Yemen_(15335600470).jpg",
+  "artist": "Rod Waddington from Kergunyah, Australia",
+  "license": "CC BY-SA 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+ },
+ "hagia-sophia": {
+  "title": "Hagia Sophia",
+  "w": 480,
+  "h": 320,
+  "page": "https://commons.wikimedia.org/wiki/File:Hagia_Sophia_Mars_2013.jpg",
+  "artist": "Arild Vågen",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "blue-mosque-istanbul": {
+  "title": "Blue Mosque, Istanbul",
+  "w": 480,
+  "h": 313,
+  "page": "https://commons.wikimedia.org/wiki/File:Exterior_of_Sultan_Ahmed_I_Mosque_in_Istanbul,_Turkey_002.jpg",
+  "artist": "Moonik",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "suleymaniye-mosque": {
+  "title": "Süleymaniye Mosque",
+  "w": 480,
+  "h": 359,
+  "page": "https://commons.wikimedia.org/wiki/File:S%C3%BCleymaniyeMosqueIstanbul_(cropped).jpg",
+  "artist": "Hunanuk",
+  "license": "CC0",
+  "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+ },
+ "selimiye-mosque-edirne": {
+  "title": "Selimiye Mosque, Edirne",
+  "w": 480,
+  "h": 334,
+  "page": "https://commons.wikimedia.org/wiki/File:Edirne_7333_Nevit.JPG",
+  "artist": "Nevit Dilmen",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+ },
+ "eyup-sultan-mosque": {
+  "title": "Eyüp Sultan Mosque",
+  "w": 480,
+  "h": 640,
+  "page": "https://commons.wikimedia.org/wiki/File:%C4%B0stanbul_5999.jpg",
+  "artist": "User:Darwinek",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "green-mosque-bursa": {
+  "title": "Green Mosque, Bursa",
+  "w": 480,
+  "h": 442,
+  "page": "https://commons.wikimedia.org/wiki/File:Green_Mosque_in_Bursa.jpg",
+  "artist": "Brücke-Osteuropa",
+  "license": "Public domain",
+  "licenseUrl": ""
+ },
+ "al-azhar-mosque": {
+  "title": "Al-Azhar Mosque",
+  "w": 480,
+  "h": 484,
+  "page": "https://commons.wikimedia.org/wiki/File:Cairo_-_Islamic_district_-_Al_Azhar_Mosque_and_University.JPG",
+  "artist": "Daniel Mayer",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "mosque-of-muhammad-ali": {
+  "title": "Mosque of Muhammad Ali",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:M.Ali_Mosque2.JPG",
+  "artist": "Charlesdrakew at English Wikipedia",
+  "license": "Public domain",
+  "licenseUrl": ""
+ },
+ "mosque-of-ibn-tulun": {
+  "title": "Mosque of Ibn Tulun",
+  "w": 480,
+  "h": 262,
+  "page": "https://commons.wikimedia.org/wiki/File:Kairo_Ibn_Tulun_Moschee_BW_4.jpg",
+  "artist": "User:Berthold Werner",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+ },
+ "mosque-madrasa-of-sultan-hasan": {
+  "title": "Mosque-Madrasa of Sultan Hasan",
+  "w": 480,
+  "h": 418,
+  "page": "https://commons.wikimedia.org/wiki/File:Flickr_-_archer10_(Dennis)_-_Egypt-13A-061_(cropped).jpg",
+  "artist": "Dennis G. Jarvis",
+  "license": "CC BY-SA 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+ },
+ "mosque-of-amr-ibn-al-as": {
+  "title": "Mosque of Amr ibn al-As",
+  "w": 480,
+  "h": 640,
+  "page": "https://commons.wikimedia.org/wiki/File:Mosque_Amr_ibn_Al-As_Entrance.jpg",
+  "artist": "Buyoof",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "al-hussein-mosque": {
+  "title": "Al-Hussein Mosque",
+  "w": 480,
+  "h": 375,
+  "page": "https://commons.wikimedia.org/wiki/File:Kairo_Al_Hussein_Mosque_BW_1.jpg",
+  "artist": "Berthold Werner",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+ },
+ "hassan-ii-mosque": {
+  "title": "Hassan II Mosque",
+  "w": 480,
+  "h": 319,
+  "page": "https://commons.wikimedia.org/wiki/File:Sunshine_on_mosque_Hassan_II_in_Casablanca,_Morocco_-_Flickr_-_Milamber%27s_portfolio.jpg",
+  "artist": "Milamber's portfolio",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+ },
+ "university-of-al-qarawiyyin": {
+  "title": "University of al-Qarawiyyin",
+  "w": 480,
+  "h": 508,
+  "page": "https://commons.wikimedia.org/wiki/File:University_of_Al_Qaraouiyine.jpg",
+  "artist": "Abdel Hassouni",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "koutoubia-mosque": {
+  "title": "Koutoubia Mosque",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Mosqu%C3%A9e_de_la_Koutoubia_-_marakesh.jpg",
+  "artist": "Baca12",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "great-mosque-of-kairouan": {
+  "title": "Great Mosque of Kairouan",
+  "w": 480,
+  "h": 369,
+  "page": "https://commons.wikimedia.org/wiki/File:Grande_Mosqu%C3%A9e_de_Kairouan,_vue_d%27ensemble.jpg",
+  "artist": "weetoon66",
+  "license": "CC BY-SA 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+ },
+ "al-zaytuna-mosque": {
+  "title": "Al-Zaytuna Mosque",
+  "w": 480,
+  "h": 315,
+  "page": "https://commons.wikimedia.org/wiki/File:MinaretMosqueeZitounaTunis.JPG",
+  "artist": "Citizen59",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "djamaa-el-djazair": {
+  "title": "Djamaa el Djazaïr",
+  "w": 480,
+  "h": 640,
+  "page": "https://commons.wikimedia.org/wiki/File:Grande_Mosqu%C3%A9e_d%27Alger.jpg",
+  "artist": "Askelaadden",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "great-mosque-of-djenne": {
+  "title": "Great Mosque of Djenné",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Great_Mosque_of_Djenn%C3%A9_1.jpg",
+  "artist": "Andy Gilham",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+ },
+ "umayyad-mosque": {
+  "title": "Umayyad Mosque",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Ommayyad_masjed.jpg",
+  "artist": "Unknown author",
+  "license": "Public domain",
+  "licenseUrl": ""
+ },
+ "imam-husayn-shrine": {
+  "title": "Imam Husayn Shrine",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Kerbela.JPG",
+  "artist": "User:HerbertReichart germany",
+  "license": "Public domain",
+  "licenseUrl": ""
+ },
+ "imam-ali-shrine": {
+  "title": "Imam Ali Shrine",
+  "w": 480,
+  "h": 342,
+  "page": "https://commons.wikimedia.org/wiki/File:Meshed_ali_usnavy_(PD).jpg",
+  "artist": "U.S. Navy photo by Photographer's Mate 1st Class Arlo K. Abrahamson.",
+  "license": "Public domain",
+  "licenseUrl": ""
+ },
+ "great-mosque-of-samarra": {
+  "title": "Great Mosque of Samarra",
+  "w": 480,
+  "h": 664,
+  "page": "https://commons.wikimedia.org/wiki/File:Samara_spiralovity_minaret_rijen1973.jpg",
+  "artist": "IgorF",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "al-kadhimiya-mosque": {
+  "title": "Al-Kadhimiya Mosque",
+  "w": 480,
+  "h": 320,
+  "page": "https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D8%B9%D8%AA%D8%A8%D8%A9_%D8%A7%D9%84%D9%83%D8%A7%D8%B8%D9%85%D9%8A%D8%A9_(4).jpg",
+  "artist": "Taisir Mahdi",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "al-abbas-shrine": {
+  "title": "Al-Abbas Shrine",
+  "w": 480,
+  "h": 320,
+  "page": "https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D8%B9%D8%AA%D8%A8%D8%A9_%D8%A7%D9%84%D8%B9%D8%A8%D8%A7%D8%B3%D9%8A%D8%A91.jpg",
+  "artist": "Sameralhusseini1987",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "imam-reza-shrine": {
+  "title": "Imam Reza shrine",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:RezaShrine.jpg",
+  "artist": "Iahsan at English Wikipedia",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+ },
+ "shah-mosque-isfahan": {
+  "title": "Shah Mosque (Isfahan)",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Naghsh-e-jahan_masjed-e-shah_esfahan.jpg",
+  "artist": "Unknown author",
+  "license": "CC BY-SA 2.5",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5"
+ },
+ "nasir-al-mulk-mosque": {
+  "title": "Nasir al-Mulk Mosque",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Nasr_ol_Molk_mosque2.jpg",
+  "artist": "dynamosquito",
+  "license": "CC BY-SA 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+ },
+ "sheikh-lotfollah-mosque": {
+  "title": "Sheikh Lotfollah Mosque",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:%D9%85%D8%B3%D8%AC%D8%AF_%D8%B4%DB%8C%D8%AE_%D9%84%D8%B7%D9%81_%D8%A7%D9%84%D9%84%D9%87_II.jpg",
+  "artist": "شهاب الدین علیشاهی",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "jameh-mosque-of-isfahan": {
+  "title": "Jameh Mosque of Isfahan",
+  "w": 480,
+  "h": 320,
+  "page": "https://commons.wikimedia.org/wiki/File:20180301124354_IMG_4179And6more_Interior_3.jpg",
+  "artist": "Hamidespanani",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "fatima-masumeh-shrine": {
+  "title": "Fatima Masumeh Shrine",
+  "w": 480,
+  "h": 643,
+  "page": "https://commons.wikimedia.org/wiki/File:The_image_of_Hazrat_Masoumeh%27s_shrine.jpg",
+  "artist": "Mahdi Fathi Arjmand",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "blue-mosque-mazar-i-sharif": {
+  "title": "Blue Mosque, Mazar-i-Sharif",
+  "w": 480,
+  "h": 346,
+  "page": "https://commons.wikimedia.org/wiki/File:Mazar-e_sharif_-_Steve_Evans.jpg",
+  "artist": "Steve Evans from Bangalore, India",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+ },
+ "faisal-mosque": {
+  "title": "Faisal Mosque",
+  "w": 480,
+  "h": 334,
+  "page": "https://commons.wikimedia.org/wiki/File:Ali_Mujtaba_WLM2015_FAISAL_MOSQUE_m_10.jpg",
+  "artist": "Ali Mujtaba",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "badshahi-mosque": {
+  "title": "Badshahi Mosque",
+  "w": 480,
+  "h": 320,
+  "page": "https://commons.wikimedia.org/wiki/File:Badshahi_Mosque_July_1_2005_pic32_by_Ali_Imran_(1).jpg",
+  "artist": "Ali Imran",
+  "license": "CC BY-SA 2.5",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5"
+ },
+ "wazir-khan-mosque": {
+  "title": "Wazir Khan Mosque",
+  "w": 480,
+  "h": 474,
+  "page": "https://commons.wikimedia.org/wiki/File:Wazir_khan_mosque_entry.jpg",
+  "artist": "Shahbaz Aslam",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "data-darbar": {
+  "title": "Data Darbar",
+  "w": 480,
+  "h": 300,
+  "page": "https://commons.wikimedia.org/wiki/File:Data_Darbar_Mosque.jpg",
+  "artist": "Meemjee",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "mohabbat-khan-mosque": {
+  "title": "Mohabbat Khan Mosque",
+  "w": 480,
+  "h": 417,
+  "page": "https://commons.wikimedia.org/wiki/File:MKmosque.jpg",
+  "artist": "US Embassy Pakistan",
+  "license": "Public domain",
+  "licenseUrl": ""
+ },
+ "shah-jahan-mosque-thatta": {
+  "title": "Shah Jahan Mosque, Thatta",
+  "w": 480,
+  "h": 270,
+  "page": "https://commons.wikimedia.org/wiki/File:PK_Thatta_asv2020-02_img01_Shah_Jahan_Mosque.jpg",
+  "artist": "A.Savin",
+  "license": "FAL",
+  "licenseUrl": "http://artlibre.org/licence/lal/en"
+ },
+ "grand-jamia-mosque-karachi": {
+  "title": "Grand Jamia Mosque, Karachi",
+  "w": 480,
+  "h": 348,
+  "page": "https://commons.wikimedia.org/wiki/File:Grand_Masjid_construction_Bahria_Town_Karachi_(cropped).JPG",
+  "artist": "Ashrafabdulqadir",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "mazar-e-quaid": {
+  "title": "Mazar-e-Quaid",
+  "w": 480,
+  "h": 480,
+  "page": "https://commons.wikimedia.org/wiki/File:PK_Karachi_asv2020-02_img52_Mazar-e-Quaid.jpg",
+  "artist": "A.Savin",
+  "license": "FAL",
+  "licenseUrl": "http://artlibre.org/licence/lal/en"
+ },
+ "jama-masjid-delhi": {
+  "title": "Jama Masjid, Delhi",
+  "w": 480,
+  "h": 340,
+  "page": "https://commons.wikimedia.org/wiki/File:Jama_Masjid,_Delhi.jpg",
+  "artist": "Muhammad Mahdi Karim",
+  "license": "GFDL 1.2",
+  "licenseUrl": "http://www.gnu.org/licenses/old-licenses/fdl-1.2.html"
+ },
+ "taj-mahal": {
+  "title": "Taj Mahal",
+  "w": 480,
+  "h": 316,
+  "page": "https://commons.wikimedia.org/wiki/File:Taj_Mahal_(Edited).jpeg",
+  "artist": "Yann; edited by Jim Carter",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "qutub-minar": {
+  "title": "Qutub Minar",
+  "w": 480,
+  "h": 640,
+  "page": "https://commons.wikimedia.org/wiki/File:Madrasa_and_tomb_of_Alauddin_Khalji_2.jpg",
+  "artist": "Akbarzoda",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "makkah-masjid-hyderabad": {
+  "title": "Makkah Masjid, Hyderabad",
+  "w": 480,
+  "h": 321,
+  "page": "https://commons.wikimedia.org/wiki/File:Mecca_Masjid_Hyderabad.JPG",
+  "artist": "Suraj Garg",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "charminar": {
+  "title": "Charminar",
+  "w": 480,
+  "h": 599,
+  "page": "https://commons.wikimedia.org/wiki/File:Charminar-Pride_of_Hyderabad.jpg",
+  "artist": "Gopikrishna Narla",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "haji-ali-dargah": {
+  "title": "Haji Ali Dargah",
+  "w": 480,
+  "h": 600,
+  "page": "https://commons.wikimedia.org/wiki/File:Mumbai_03-2016_13_Haji_Ali_Dargah.jpg",
+  "artist": "A.Savin",
+  "license": "FAL",
+  "licenseUrl": "http://artlibre.org/licence/lal/en"
+ },
+ "ajmer-sharif-dargah": {
+  "title": "Ajmer Sharif Dargah",
+  "w": 480,
+  "h": 361,
+  "page": "https://commons.wikimedia.org/wiki/File:Ajmer_dargah.png",
+  "artist": "Irshadchemical",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "nizamuddin-dargah": {
+  "title": "Nizamuddin Dargah",
+  "w": 480,
+  "h": 321,
+  "page": "https://commons.wikimedia.org/wiki/File:Nezamaldin_complex_11-2010_(3).JPG",
+  "artist": "Farzan Kermaninejad (بحث)",
+  "license": "Public domain",
+  "licenseUrl": ""
+ },
+ "taj-ul-masajid": {
+  "title": "Taj-ul-Masajid",
+  "w": 480,
+  "h": 320,
+  "page": "https://commons.wikimedia.org/wiki/File:Taj-ul-Masjid,_Bhopal,_India.jpg",
+  "artist": "Yann (talk)",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "cheraman-juma-mosque": {
+  "title": "Cheraman Juma Mosque",
+  "w": 480,
+  "h": 720,
+  "page": "https://commons.wikimedia.org/wiki/File:Cheraman_Juma_Masjid.jpg",
+  "artist": "Shahinmusthafa",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "baitul-mukarram": {
+  "title": "Baitul Mukarram",
+  "w": 480,
+  "h": 286,
+  "page": "https://commons.wikimedia.org/wiki/File:Baitul_Mukarram_(Arabic,_%D8%A8%D9%8A%D8%AA_%D8%A7%D9%84%D9%85%D9%83%D8%B1%D9%91%D9%85;_Bengali,_%E0%A6%AC%E0%A6%BE%E0%A6%AF%E0%A6%BC%E0%A6%A4%E0%A7%81%E0%A6%B2_%E0%A6%AE%E0%A7%81%E0%A6%95%E0%A6%BE%E0%A6%B0%E0%A6%B0%E0%A6%AE;_The_Holy_House).jpg",
+  "artist": "আহসান হাবীব",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "sixty-dome-mosque": {
+  "title": "Sixty Dome Mosque",
+  "w": 480,
+  "h": 255,
+  "page": "https://commons.wikimedia.org/wiki/File:Sixty_Dome_Mosque,Bagerhat.jpg",
+  "artist": "মোয়ায মাহমুদ",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "star-mosque": {
+  "title": "Star Mosque",
+  "w": 480,
+  "h": 362,
+  "page": "https://commons.wikimedia.org/wiki/File:Tara-masjid.jpg",
+  "artist": "Ishtiaque Ayub Zico.",
+  "license": "CC BY-SA 2.5",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5"
+ },
+ "registan": {
+  "title": "Registan",
+  "w": 480,
+  "h": 214,
+  "page": "https://commons.wikimedia.org/wiki/File:Registan_01.jpg",
+  "artist": "Bernard Gagnon",
+  "license": "CC0",
+  "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+ },
+ "bibi-khanym-mosque": {
+  "title": "Bibi-Khanym Mosque",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Bibi-Khanym_Mosque_(8145400614).jpg",
+  "artist": "David Stanley from Nanaimo, Canada",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+ },
+ "po-i-kalyan": {
+  "title": "Po-i-Kalyan",
+  "w": 480,
+  "h": 320,
+  "page": "https://commons.wikimedia.org/wiki/File:Poi_Kalon.jpg",
+  "artist": "Официальный веб-сайт Агентства культурного наследия Республики Узбекистан",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+ },
+ "istiqlal-mosque-jakarta": {
+  "title": "Istiqlal Mosque, Jakarta",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:View_to_the_northeast_from_Monas.jpg",
+  "artist": "Christophe95",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "baiturrahman-grand-mosque": {
+  "title": "Baiturrahman Grand Mosque",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Meuseujid_Raya_Bayturrahman.JPG",
+  "artist": "Si Gam Acèh",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "putra-mosque": {
+  "title": "Putra Mosque",
+  "w": 480,
+  "h": 632,
+  "page": "https://commons.wikimedia.org/wiki/File:Putra_Mosque_being_reflected_in_the_lake_(crop).jpg",
+  "artist": "Azuladnan",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "sultan-salahuddin-abdul-aziz-mosque": {
+  "title": "Sultan Salahuddin Abdul Aziz Mosque",
+  "w": 480,
+  "h": 320,
+  "page": "https://commons.wikimedia.org/wiki/File:Shah_Alam_Blue_mosque_at_night.jpg",
+  "artist": "Ezry Abdul Rahman from Petaling Jaya, Selangor, Malaysia",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+ },
+ "national-mosque-of-malaysia": {
+  "title": "National Mosque of Malaysia",
+  "w": 480,
+  "h": 320,
+  "page": "https://commons.wikimedia.org/wiki/File:Kuala_Lumpur_Malaysia_National-Mosque-04.jpg",
+  "artist": "CEphoto, Uwe Aranas",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "omar-ali-saifuddien-mosque": {
+  "title": "Omar Ali Saifuddien Mosque",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Sultan_Omar_Ali_Saifuddien_Mosque;_2002.jpg",
+  "artist": "Daniel Weiss",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+ },
+ "crystal-mosque": {
+  "title": "Crystal Mosque",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Masjid_Kristal_(Mei_2011).jpg",
+  "artist": "Ikhwan Salleh",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "mosque-cathedral-of-cordoba": {
+  "title": "Mosque–Cathedral of Córdoba",
+  "w": 480,
+  "h": 319,
+  "page": "https://commons.wikimedia.org/wiki/File:Mezquita_de_C%C3%B3rdoba_desde_el_aire_(C%C3%B3rdoba,_Espa%C3%B1a).jpg",
+  "artist": "Toni Castillo Quero",
+  "license": "CC BY-SA 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+ },
+ "alhambra": {
+  "title": "Alhambra",
+  "w": 480,
+  "h": 325,
+  "page": "https://commons.wikimedia.org/wiki/File:Alhambra_detail.jpg",
+  "artist": "Jebulon",
+  "license": "CC0",
+  "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+ },
+ "gazi-husrev-beg-mosque": {
+  "title": "Gazi Husrev-beg Mosque",
+  "w": 480,
+  "h": 720,
+  "page": "https://commons.wikimedia.org/wiki/File:Gazi_Husrev-beg%27s_Mosque_IMG_9523_sarajevo.jpg",
+  "artist": "Bjoertvedt",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "qolsarif-mosque": {
+  "title": "Qolşärif Mosque",
+  "w": 480,
+  "h": 640,
+  "page": "https://commons.wikimedia.org/wiki/File:Kazan_Kremlin_Qolsharif_Mosque_08-2016_img2.jpg",
+  "artist": "A.Savin",
+  "license": "FAL",
+  "licenseUrl": "http://artlibre.org/licence/lal/en"
+ },
+ "moscow-cathedral-mosque": {
+  "title": "Moscow Cathedral Mosque",
+  "w": 480,
+  "h": 320,
+  "page": "https://commons.wikimedia.org/wiki/File:Moscow_Cathedral_Mosque_(22079109675).jpg",
+  "artist": "Gennady Grachev from Moscow, Russia",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+ },
+ "akhmad-kadyrov-mosque": {
+  "title": "Akhmad Kadyrov Mosque",
+  "w": 480,
+  "h": 320,
+  "page": "https://commons.wikimedia.org/wiki/File:%D0%93%D1%80%D0%BE%D0%B7%D0%BD%D1%8B%D0%B9_%D0%BC%D0%B5%D1%87%D0%B5%D1%82%D1%8C_2011.JPG",
+  "artist": "Салман Д",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "london-central-mosque": {
+  "title": "London Central Mosque",
+  "w": 480,
+  "h": 720,
+  "page": "https://commons.wikimedia.org/wiki/File:London_Central_Mosque_2.jpg",
+  "artist": "Asim Saleem (Asim18)",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+ },
+ "grand-mosque-of-paris": {
+  "title": "Grand Mosque of Paris",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Grande_Mosqu%C3%A9e_de_Paris.JPG",
+  "artist": "LPLT",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "islamic-center-of-washington": {
+  "title": "Islamic Center of Washington",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Islamic_Center_of_Washington_-_2551_Massachusetts_Avenue_NW.jpg",
+  "artist": "AgnosticPreachersKid",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+ },
+ "great-mosque-of-touba": {
+  "title": "Great Mosque of Touba",
+  "w": 480,
+  "h": 360,
+  "page": "https://commons.wikimedia.org/wiki/File:Touba_034_(45718877585).jpg",
+  "artist": "John Crane from Prague, Czech Republic",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+ },
+ "abuja-national-mosque": {
+  "title": "Abuja National Mosque",
+  "w": 480,
+  "h": 359,
+  "page": "https://commons.wikimedia.org/wiki/File:AbujaNationalMosque.jpg",
+  "artist": "Shiraz Chakera",
+  "license": "CC BY-SA 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+ },
+ "camlica-mosque": {
+  "title": "Çamlıca Mosque",
+  "w": 480,
+  "h": 334,
+  "page": "https://commons.wikimedia.org/wiki/File:Camlica-2018-06-14.jpg",
+  "artist": "Håkan Henriksson (Narking)",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+ }
+}

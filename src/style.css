@@ -552,3 +552,18 @@ body.bare { background: var(--surface); margin: 0; }
 .lc-all { margin: 12px 0 0; text-align: center; }
 @media (max-width: 560px) { .live-grid:not(.open) > li:nth-child(n+9) { display: none; } }
 @media (min-width: 561px) { .lc-all.few { display: none; } }
+
+/* Famous mosques and holy places: the guide and the cards on city pages */
+.lm-group { margin-top: 28px; }
+.lm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 12px; }
+.lm-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.lm-card img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; background: var(--surface-2); }
+.lm-body { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px 16px; }
+.lm-body h3 { margin: 0; font-size: 1.05rem; }
+.lm-body p { margin: 0; }
+.lm-type { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--emerald-2); }
+.lm-facts { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.875rem; }
+.lm-facts b { font-weight: 600; color: var(--muted); margin-inline-end: 4px; }
+.lm-credit { font-size: 0.72rem; color: var(--muted); }
+.lm-credit a { color: inherit; }
+.lm-all { margin: 12px 0 0; }

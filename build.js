@@ -201,6 +201,7 @@ const url = {
   methods: (lang) => `${pre(lang)}methods/`,
   method: (lang, key) => `${pre(lang)}methods/${Core.METHOD_SLUG[key]}/`,
   qibla: (lang) => `${pre(lang)}qibla/`,
+  mosques: (lang) => `${pre(lang)}mosques/`,
   widget: (lang) => `${pre(lang)}mosque-widget/`,
   embed: (lang) => `${pre(lang)}embed/`,
   contact: () => '/contact/',
@@ -373,6 +374,7 @@ function footer(lang, kind) {
         GUIDE_PRAYERS.map((k) => `<li><a href="${url.prayer(lang, k)}">${esc(t.prayers[k])}</a></li>`).join('') +
         `<li><a href="${url.hijri(lang)}">${esc(GUIDES[lang].hijriNav)}</a></li>` +
         `<li><a href="${url.qibla(lang)}">${esc(GUIDES[lang].qbNav)}</a></li>` +
+        `<li><a href="${url.mosques(lang)}">${esc(LM_UI[lang].nav)}</a></li>` +
         `<li><a href="${url.methods(lang)}">${esc(GUIDES[lang].mNav)}</a></li>` +
         `<li><a href="${url.widget(lang)}">${esc(GUIDES[lang].wNav)}</a></li>` +
         `<li><a href="${url.about(lang)}">${esc(t.aboutLink)}</a></li></ul></nav>` +
@@ -501,7 +503,7 @@ function withPublisher(ld) {
 }
 function addPage(o) {
   const lang = o.lang, L = LANGS[lang], t = STRINGS[lang];
-  const script = ['about', '404', 'contact', 'privacy', 'terms'].includes(o.data.kind) ? ASSET.jsLite : ASSET.js;
+  const script = ['about', '404', 'contact', 'privacy', 'terms', 'mosques'].includes(o.data.kind) ? ASSET.jsLite : ASSET.js;
   const alternates = o.alternates || [];
   const showLocal = lang !== 'en' && t.brandLocal !== BRAND_AR;
   const canonical = abs(o.path);
@@ -740,6 +742,7 @@ function cityPage(lang, ci) {
     '</div>' +
     `<section class="card jumuah" id="jumuah" aria-labelledby="jumuahTitle">${Core.renderJumuah(loc, ctx, NOW)}</section>` +
     `<section class="card faq" id="faq" aria-labelledby="faqTitle">${Core.renderFaq(loc, ctx, NOW)}</section>` +
+    landmarksNear(lang, ci, cityName, ctx) +
     Core.mosquesCard(ci.lat, ci.lng, tpl(t.mosquesH2, { city: cityName }), ctx) +
     `<p class="muted small updated">${esc(tpl(t.updated, { date: Core.gregorian(p.y, p.m, p.d, 'full', ctx) }))} · <a href="${url.about(lang)}">${esc(t.aboutLink)}</a></p>`;
 
@@ -1010,6 +1013,87 @@ function hijriPage(lang) {
       breadcrumbLd(crumbs),
     ] },
     data: clientData(lang, { kind: 'hijri', defaultSect: ci.defaultSect }),
+  });
+}
+
+/* ---------- Famous mosques and holy places ---------- */
+// Facts and photos: src/landmarks.js, src/sites/ (credits.json), names: src/landmarks-names.json (Wikidata),
+// descriptions: src/landmarks-i18n/<lang>.js, interface text: src/landmarks-ui.js.
+const { LANDMARKS } = require('./src/landmarks');
+const LM_NAMES = require('./src/landmarks-names.json');
+const LM_GEO = require('./src/landmarks-geo.json');
+const { UI: LM_UI } = require('./src/landmarks-ui');
+const LM_CREDITS = JSON.parse(read('src/sites/credits.json'));
+const LM_TEXT = {};
+ALL_LANGS.forEach((l) => { if (l !== 'en') LM_TEXT[l] = require(`./src/landmarks-i18n/${l}`); });
+// Each landmark belongs to the nearest city on the site (all are within 80 km of one).
+LANDMARKS.forEach((lm) => {
+  [lm.lat, lm.lng] = LM_GEO[lm.id] || [];
+  if (lm.lat === undefined) { problems.push(`landmarks: no coordinates for ${lm.id}`); return; }
+  let best = null;
+  ALL_CITIES.forEach((ci) => { const km = Core.distanceKm(lm.lat, lm.lng, ci.lat, ci.lng); if (!best || km < best.km) best = { ci, km }; });
+  lm.city = best.ci;
+  if (best.km > 80) problems.push(`landmarks: ${lm.id} is ${Math.round(best.km)} km from the nearest city`);
+  if (!LM_CREDITS[lm.id] || !fs.existsSync(path.join(ROOT, 'src', 'sites', `${lm.id}.jpg`))) problems.push(`landmarks: no photo or credit for ${lm.id}`);
+  ALL_LANGS.forEach((l) => { if (l !== 'en' && !(LM_TEXT[l] || {})[lm.id]) problems.push(`landmarks: no ${l} text for ${lm.id}`); });
+});
+ALL_LANGS.forEach((l) => { if (!LM_UI[l]) problems.push(`landmarks-ui.js: no strings for ${l}`); });
+const CITY_LANDMARKS = new Map();
+LANDMARKS.forEach((lm) => { if (lm.city) CITY_LANDMARKS.set(lm.city, (CITY_LANDMARKS.get(lm.city) || []).concat(lm)); });
+// Wikidata names; Pashto falls back to Persian, then English. Some labels start lower case ("mosquée Faisal").
+function lmName(lm, lang) {
+  const n = LM_NAMES[lm.id] || {}, name = n[lang] || (lang === 'ps' && n.fa) || n.en || lm.wiki;
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+const wikiUrl = (lm) => `https://en.wikipedia.org/wiki/${encodeURIComponent(lm.wiki.replace(/ /g, '_'))}`;
+function landmarkCard(lang, lm, ctx, withCity) {
+  const u = LM_UI[lang], cr = LM_CREDITS[lm.id], name = lmName(lm, lang);
+  const text = lang === 'en' ? lm.en : LM_TEXT[lang][lm.id];
+  const facts = [];
+  if (lm.built) facts.push(`<span><b>${esc(u.built)}</b> ${esc(Core.num(lm.built, ctx))}</span>`);
+  if (lm.cap) facts.push(`<span><b>${esc(u.cap)}</b> ${esc(tpl(u.capN, { n: Core.numGrouped(lm.cap, ctx) }))}</span>`);
+  return `<article class="lm-card" id="${lm.id}"><img src="/sites/${lm.id}.jpg" alt="${esc(name)}" width="${cr.w}" height="${cr.h}" loading="lazy" decoding="async">` +
+    `<div class="lm-body"><p class="lm-type">${esc(u.types[lm.type])}</p><h3>${esc(name)}</h3><p>${esc(text)}</p>` +
+    (facts.length ? `<p class="lm-facts">${facts.join('')}</p>` : '') +
+    (withCity ? `<p class="lm-links"><a href="${url.city(lang, lm.city)}">${esc(tpl(u.times, { city: nameIn(lm.city.names, lang, lm.city.country) }))}</a></p>` : '') +
+    `<p class="lm-credit">${esc(u.photo)}: <a href="${esc(cr.page)}" rel="noopener nofollow" target="_blank">${esc(cr.artist)}</a>, ${esc(cr.license)} · ` +
+    `<a href="${wikiUrl(lm)}" rel="noopener" target="_blank">${esc(u.source)}</a></p></div></article>`;
+}
+function landmarksNear(lang, ci, cityName, ctx) {
+  const list = CITY_LANDMARKS.get(ci);
+  if (!list) return '';
+  const u = LM_UI[lang];
+  return `<section class="card lm-near" aria-labelledby="lmNearH"><h2 id="lmNearH">${esc(tpl(u.near, { city: cityName }))}</h2>` +
+    `<div class="lm-grid">${list.map((lm) => landmarkCard(lang, lm, ctx, false)).join('')}</div>` +
+    `<p class="lm-all"><a href="${url.mosques(lang)}">${esc(u.all)}</a></p></section>`;
+}
+const lmSchemaType = (lm) => (/mosque|masjid|mezquita/i.test(lm.wiki) ? 'Mosque' : lm.type === 'shrine' ? 'PlaceOfWorship' : 'LandmarksOrHistoricalBuildings');
+function mosquesPage(lang) {
+  const t = STRINGS[lang], u = LM_UI[lang], ctx = ctxFor(lang, 'hanafi');
+  const pagePath = url.mosques(lang);
+  const crumbs = [{ name: t.home, href: url.home(lang) }, { name: u.h1, href: pagePath }];
+  // Grouped by country, in the order of src/landmarks.js (Makkah and Madinah first).
+  const groups = [];
+  LANDMARKS.forEach((lm) => {
+    let g = groups.find((x) => x.c === lm.city.country);
+    if (!g) groups.push(g = { c: lm.city.country, items: [] });
+    g.items.push(lm);
+  });
+  const body = breadcrumbs(crumbs) +
+    `<article class="card about guide lm-head"><h1>${esc(u.h1)}</h1><p class="lede-text">${esc(u.lede)}</p></article>` +
+    groups.map((g) => `<section class="lm-group" aria-labelledby="lm-${g.c.slug}"><h2 class="section-title" id="lm-${g.c.slug}">${esc(nameIn(g.c.name, lang))}</h2>` +
+      `<div class="lm-grid">${g.items.map((lm) => landmarkCard(lang, lm, ctx, true)).join('')}</div></section>`).join('');
+  addPage({
+    lang, tag: langTag(lang), title: u.title, desc: u.desc, path: pagePath, alternates: cluster(url.mosques), indexable: true, body,
+    jsonld: { '@graph': [
+      { '@type': 'CollectionPage', '@id': abs(pagePath), url: abs(pagePath), name: u.title, description: u.desc, inLanguage: langTag(lang),
+        dateModified: TODAY_ISO, isPartOf: { '@id': `${SITE}/#website` },
+        mainEntity: { '@type': 'ItemList', numberOfItems: LANDMARKS.length, itemListElement: LANDMARKS.map((lm, i) => ({ '@type': 'ListItem', position: i + 1,
+          item: { '@type': lmSchemaType(lm), name: lmName(lm, lang), image: abs(`/sites/${lm.id}.jpg`), sameAs: wikiUrl(lm),
+            geo: { '@type': 'GeoCoordinates', latitude: lm.lat, longitude: lm.lng } } })) } },
+      breadcrumbLd(crumbs),
+    ] },
+    data: clientData(lang, { kind: 'mosques', defaultSect: 'hanafi' }),
   });
 }
 
@@ -1327,6 +1411,7 @@ ALL_LANGS.forEach((lang) => {
   methodsHub(lang);
   METHOD_KEYS.forEach((k) => methodPage(lang, k));
   qiblaPage(lang);
+  mosquesPage(lang);
   widgetPage(lang);
   embedPage(lang);
 });
@@ -1348,6 +1433,7 @@ write(ASSET.js.slice(1), JS);
 // Share cards and logo made by scripts/og-images.js (npm run og).
 fs.readdirSync(path.join(ROOT, 'src', 'og')).forEach((f) => write(`og/${f}`, fs.readFileSync(path.join(ROOT, 'src', 'og', f))));
 write('logo.png', fs.readFileSync(path.join(ROOT, 'src', 'logo.png')));
+LANDMARKS.forEach((lm) => write(`sites/${lm.id}.jpg`, fs.readFileSync(path.join(ROOT, 'src', 'sites', `${lm.id}.jpg`))));
 write(ASSET.jsLite.slice(1), JS_LITE);
 write(ASSET.cities.slice(1), CITIES_JSON);
 ALL_LANGS.forEach((lang) => write(SEARCH[lang].path.slice(1), SEARCH[lang].json));
@@ -1401,6 +1487,7 @@ write('llms.txt', [
   ...GUIDE_PRAYERS.map((k) => `  - [${STRINGS.en.prayers[k]}](${SITE}${url.prayer('en', k)})`),
   `- [Islamic date today and Hijri calendar](${SITE}${url.hijri('en')}): Umm al-Qura months and upcoming Ramadan and Eid dates`,
   `- [Prayer time calculation methods](${SITE}${url.methods('en')}): Fajr and Isha angles and safety minutes of each method, and which countries use it`,
+  `- [Famous mosques and holy places](${SITE}${url.mosques('en')}): Masjid al-Haram, the Prophet's Mosque, Al-Aqsa and ${LANDMARKS.length - 3} more, with short histories and photos`,
   `- [Qibla direction](${SITE}${url.qibla('en')}): Qibla bearing and distance from your location and from each country's main city`,
   `- Ramadan timetables: ${SITE}/{country}/{city}/ramadan/ (sehri and iftar for every day of Ramadan, every city)`,
   `- [Free prayer times widget for mosque websites](${SITE}${url.widget('en')})`, '',
