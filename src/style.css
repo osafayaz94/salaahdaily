@@ -522,3 +522,9 @@ body.bare { background: var(--surface); margin: 0; }
 .embed-credit { margin: 10px 0 0; font-size: 0.75rem; color: var(--muted); }
 .embed-credit a { text-decoration: underline; }
 .guide .city-table th a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Contact, privacy and terms */
+.legal { max-width: 760px; }
+.legal-intro { font-size: 1.0625rem; }
+.legal .suggest { margin-top: 20px; }
+.site-footer .site-links a { margin: 0 2px; }

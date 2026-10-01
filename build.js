@@ -7,6 +7,7 @@
  *   /pakistan/lahore/     city                                   /ur/pakistan/lahore/
  *   /near-me/             geolocation page                       /ur/near-me/
  *   /about/               how the times are calculated           /ur/about/
+ *   /contact/ /privacy/ /terms/   English only, linked from every language's footer
  *
  * Every page is fully rendered HTML with today's times, so search and answer engines index real
  * content. Rebuild daily so that content stays current; visitors always get live times because the
@@ -23,6 +24,7 @@ const { LANGS, STRINGS, EN_VARIANTS, COUNTRY_FAQ } = require('./src/i18n');
 const RAW = require('./src/data').concat(require('./src/data-mea')).concat(require('./src/data-europe')).concat(require('./src/data-asia')).concat(require('./src/data-africa')).concat(require('./src/data-more'));
 const NAMES = require('./src/names');
 const { GUIDES, WIKI } = require('./src/guides');
+const LEGAL = require('./src/pages-legal');
 // German, Portuguese, Italian, Japanese, Korean: English first, the translations on top (a gap shows English).
 (function addLanguages() {
   const { MORE } = require('./src/i18n-more');
@@ -190,7 +192,12 @@ const url = {
   qibla: (lang) => `${pre(lang)}qibla/`,
   widget: (lang) => `${pre(lang)}mosque-widget/`,
   embed: (lang) => `${pre(lang)}embed/`,
+  contact: () => '/contact/',
+  privacy: () => '/privacy/',
+  terms: () => '/terms/',
 };
+// The Contact page exists once there is a way to reach us: the Web3Forms key and/or a public address.
+const HAS_CONTACT = Boolean(CONFIG.web3formsKey || CONFIG.contactEmail);
 const abs = (u) => SITE + u;
 // A country's own languages get a region tag (ur-PK, es-MX); others the plain language. Dari is always fa-AF.
 function langTag(lang, country) {
@@ -335,8 +342,11 @@ function langMenu(lang, alternates) {
     '</ul></details>';
 }
 
-function footer(lang) {
-  const t = STRINGS[lang];
+function footer(lang, kind) {
+  const t = STRINGS[lang], lb = LEGAL.LABELS[lang];
+  const enLink = (href, name) => `<a href="${href}"${lang === 'en' ? '' : ' hreflang="en"'}>${esc(name)}</a>`;
+  const siteLinks = [`<a href="${url.about(lang)}">${esc(t.aboutLink)}</a>`]
+    .concat(HAS_CONTACT ? [enLink(url.contact(), lb[0])] : [], [enLink(url.privacy(), lb[1]), enLink(url.terms(), lb[2])]);
   const countries = COUNTRIES.map((c) => `<li><a href="${url.country(lang, c)}">${esc(nameIn(c.name, lang))}</a></li>`).join('');
   const langs = ALL_LANGS.map((l) => `<li><a href="${pre(l)}" hreflang="${langTag(l)}" lang="${langTag(l)}">${esc(LANGS[l].name)}</a></li>`).join('');
   return '<footer class="site-footer"><div class="wrap">' +
@@ -352,24 +362,25 @@ function footer(lang) {
         `<li><a href="${url.widget(lang)}">${esc(GUIDES[lang].wNav)}</a></li>` +
         `<li><a href="${url.about(lang)}">${esc(t.aboutLink)}</a></li></ul></nav>` +
     '</div>' +
-    suggestForm(lang) +
+    (kind === 'contact' ? '' : suggestForm(lang)) +
     `<p>${esc(t.footer1)} <a href="${url.about(lang)}">${esc(t.aboutLink)}</a></p><p>${esc(t.footer2)}</p>` +
+    `<p class="site-links">${siteLinks.join(' · ')}</p>` +
     `<p class="muted">© ${NOW.getUTCFullYear()} ${esc(BRAND)} · <span lang="ar" dir="rtl">${esc(BRAND_AR)}</span></p>` +
     '</div></footer>';
 }
 
 // Suggestion form: posts to Web3Forms, which emails the site owner (their address never appears here).
 // botcheck is a honeypot that people never see; bots that fill it are dropped.
-function suggestForm(lang) {
+function suggestForm(lang, o = {}) {
   if (!CONFIG.web3formsKey) return '';
   const g = GUIDES[lang];
   return `<form class="suggest" data-suggest action="https://api.web3forms.com/submit" method="post" aria-labelledby="sgH">` +
-    `<h2 id="sgH">${esc(g.sgH)}</h2>` +
+    `<h2 id="sgH">${esc(o.heading || g.sgH)}</h2>` +
     `<input type="hidden" name="access_key" value="${esc(CONFIG.web3formsKey)}">` +
-    `<input type="hidden" name="subject" value="SalaahDaily suggestion (${lang})">` +
+    `<input type="hidden" name="subject" value="${o.subject || `SalaahDaily suggestion (${lang})`}">` +
     `<input type="hidden" name="from_name" value="SalaahDaily">` +
     `<input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">` +
-    `<label for="sgMsg">${esc(g.sgLabel)}</label><textarea id="sgMsg" name="message" rows="3" maxlength="2000" required></textarea>` +
+    `<label for="sgMsg">${esc(o.label || g.sgLabel)}</label><textarea id="sgMsg" name="message" rows="${o.rows || 3}" maxlength="2000" required></textarea>` +
     `<label for="sgMail">${esc(g.sgEmail)}</label><input id="sgMail" name="email" type="email" maxlength="120" autocomplete="email">` +
     `<button type="submit" class="btn-primary">${esc(g.sgSend)}</button><p class="sg-status" role="status" data-ok="${esc(g.sgThanks)}" data-err="${esc(g.sgError)}"></p></form>`;
 }
@@ -393,6 +404,7 @@ const ORG = {
   '@type': 'Organization', '@id': `${SITE}/#org`, name: BRAND, alternateName: BRAND_ALT, url: `${SITE}/`,
   logo: { '@type': 'ImageObject', url: `${SITE}/logo.png`, width: 512, height: 512 },
   image: `${SITE}/og/home.jpg`, foundingDate: '2026-09-28',
+  ...(HAS_CONTACT ? { contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', url: `${SITE}/contact/`, ...(CONFIG.contactEmail ? { email: CONFIG.contactEmail } : {}), availableLanguage: 'en' } } : {}),
 };
 const WEBSITE = (lang) => ({ '@type': 'WebSite', '@id': `${SITE}/#website`, name: BRAND, alternateName: BRAND_ALT, url: `${SITE}/`, publisher: { '@id': `${SITE}/#org` }, inLanguage: ALL_LANGS.map((l) => langTag(l)) });
 
@@ -464,7 +476,7 @@ const seenPaths = new Set(); // pages must never collide
 
 function addPage(o) {
   const lang = o.lang, L = LANGS[lang], t = STRINGS[lang];
-  const script = ['home', 'about', '404'].includes(o.data.kind) ? ASSET.jsLite : ASSET.js;
+  const script = ['home', 'about', '404', 'contact', 'privacy', 'terms'].includes(o.data.kind) ? ASSET.jsLite : ASSET.js;
   const alternates = o.alternates || [];
   const showLocal = lang !== 'en' && t.brandLocal !== BRAND_AR;
   const canonical = abs(o.path);
@@ -525,7 +537,7 @@ function addPage(o) {
     '</div></header>' +
     `<main id="main" class="wrap" tabindex="-1">${o.body}</main>` +
     settingsDialog(lang) +
-    footer(lang) +
+    footer(lang, o.data.kind) +
     `<script id="page-data" type="application/json">${jsonForHtml(o.data)}</script>` +
     `<script src="${script}" defer></script>` +
     '</body></html>\n';
@@ -778,6 +790,39 @@ function aboutPage(lang) {
     jsonld: { '@graph': [ORG, { '@type': 'AboutPage', '@id': abs(pagePath), url: abs(pagePath), name: t.aboutTitle, description: t.aboutDesc, inLanguage: langTag(lang), dateModified: TODAY_ISO, publisher: { '@id': `${SITE}/#org` } }] },
     data: clientData(lang, { kind: 'about', defaultSect: 'hanafi' }),
   });
+}
+
+/* ---------- Contact, privacy, terms (English) ---------- */
+function legalText(text) {
+  const link = (href, name) => `<a href="${href}">${esc(name)}</a>`;
+  return esc(text)
+    .replace('{contact}', HAS_CONTACT ? link(url.contact(), 'the Contact page') : 'the suggestion form at the foot of any page')
+    .replace('{google}', link('https://policies.google.com/privacy', 'Google’s privacy policy'))
+    .replace('{web3forms}', link('https://web3forms.com/privacy', 'the Web3Forms privacy policy'));
+}
+function infoPage(kind, P, pagePath, schemaType, inner) {
+  const t = STRINGS.en, crumbs = [{ name: t.home, href: url.home('en') }, { name: P.h1, href: pagePath }];
+  addPage({
+    lang: 'en', tag: 'en', title: P.title, desc: P.desc, path: pagePath, indexable: true,
+    alternates: [{ lang: 'en', tag: 'en', href: pagePath }],
+    body: breadcrumbs(crumbs) + `<article class="card about legal"><h1>${esc(P.h1)}</h1><p class="legal-intro">${legalText(P.lede)}</p>${inner}</article>`,
+    jsonld: { '@graph': [ORG, { '@type': schemaType, '@id': abs(pagePath), url: abs(pagePath), name: P.title, description: P.desc, inLanguage: 'en',
+      isPartOf: { '@id': `${SITE}/#website` }, publisher: { '@id': `${SITE}/#org` }, ...(kind === 'contact' ? { about: { '@id': `${SITE}/#org` } } : { dateModified: LEGAL.POLICY_DATE }) },
+      breadcrumbLd(crumbs)] },
+    data: clientData('en', { kind, defaultSect: 'hanafi' }),
+  });
+}
+function legalPages() {
+  const dated = (P) => P.sections.map(([h, p]) => `<h2>${esc(h)}</h2><p>${legalText(p)}</p>`).join('') +
+    `<p class="muted small">Last updated: ${Core.gregorian(...LEGAL.POLICY_DATE.split('-').map(Number), 'full', ctxFor('en', 'hanafi'))}</p>`;
+  infoPage('privacy', LEGAL.PRIVACY, url.privacy(), 'WebPage', dated(LEGAL.PRIVACY));
+  infoPage('terms', LEGAL.TERMS, url.terms(), 'WebPage', dated(LEGAL.TERMS));
+  if (!HAS_CONTACT) { console.warn('Contact page skipped: set web3formsKey and/or contactEmail in site.config.js'); return; }
+  const C = LEGAL.CONTACT, mail = CONFIG.contactEmail;
+  infoPage('contact', C, url.contact(), 'ContactPage',
+    `<h2>${esc(C.tipsH)}</h2><p>${esc(C.tips)}</p>` +
+    suggestForm('en', { heading: C.formH, label: C.formLabel, subject: 'SalaahDaily contact', rows: 6 }) +
+    (mail ? `<h2>${esc(C.emailH)}</h2><p>${esc(C.emailP)} <a href="mailto:${esc(mail)}">${esc(mail)}</a>.</p>` : ''));
 }
 
 /* ---------- Explainers: the prayers and the Hijri calendar ---------- */
@@ -1181,6 +1226,7 @@ ALL_LANGS.forEach((lang) => {
   widgetPage(lang);
   embedPage(lang);
 });
+legalPages();
 
 // 404: English, not indexed.
 (function () {
@@ -1242,6 +1288,7 @@ write('llms.txt', [
   '## Key pages', '',
   `- [How the times are calculated](${SITE}${url.about('en')}): methods, angles, sect rules, Hijri calendar`,
   `- [All countries](${SITE}/): home page`,
+  ...(HAS_CONTACT ? [`- [Contact](${SITE}${url.contact()}): report a wrong time or a missing city`] : []),
   `- [Prayer times near me](${SITE}${url.near('en')})`,
   `- [The five daily prayers and Jumu‘ah](${SITE}${url.prayers('en')}): when each prayer starts and ends, rak‘ahs, school differences`,
   ...GUIDE_PRAYERS.map((k) => `  - [${STRINGS.en.prayers[k]}](${SITE}${url.prayer('en', k)})`),

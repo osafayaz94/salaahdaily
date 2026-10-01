@@ -11,4 +11,6 @@ module.exports = {
   // Web3Forms access key for the footer suggestion form (web3forms.com). It is meant to be public: it only
   // lets a form send to the inbox chosen at sign-up. Leave empty to hide the form.
   web3formsKey: '',
+  // Public contact address shown on the Contact page (optional). Leave empty to show the form only.
+  contactEmail: '',
 };
