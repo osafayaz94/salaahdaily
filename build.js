@@ -1044,11 +1044,18 @@ function ramadanCities(lang) {
 }
 // "Prayer times now": English gets cities around the world, other languages the main cities of the countries that speak them.
 const LIVE_EN = ['saudi-arabia/makkah', 'saudi-arabia/madinah', 'uk/london', 'usa/new-york', 'pakistan/karachi', 'bangladesh/dhaka',
-  'indonesia/jakarta', 'turkey/istanbul', 'egypt/cairo', 'uae/dubai', 'malaysia/kuala-lumpur', 'india/new-delhi'];
+  'indonesia/jakarta', 'turkey/istanbul', 'egypt/cairo', 'uae/dubai', 'malaysia/kuala-lumpur', 'india/new-delhi',
+  'saudi-arabia/riyadh', 'saudi-arabia/jeddah', 'pakistan/lahore', 'pakistan/islamabad', 'india/mumbai', 'india/hyderabad',
+  'uae/abu-dhabi', 'qatar/doha', 'kuwait/kuwait-city', 'oman/muscat', 'bahrain/manama', 'jordan/amman', 'iraq/baghdad', 'iran/tehran',
+  'turkey/ankara', 'egypt/alexandria', 'morocco/casablanca', 'algeria/algiers', 'tunisia/tunis', 'nigeria/lagos', 'nigeria/kano',
+  'bangladesh/chattogram', 'afghanistan/kabul', 'uzbekistan/tashkent', 'uk/birmingham', 'france/paris', 'germany/berlin',
+  'russia/moscow', 'usa/chicago', 'usa/houston', 'canada/toronto', 'australia/sydney', 'south-africa/johannesburg'];
+// Cards shown before "See all cities" (the rest stay in the page, hidden until asked for).
+const LIVE_SHOWN = 16;
 LIVE_EN.forEach((p) => { if (!cityByPath(p)) problems.push(`live cards: unknown city ${p}`); });
 function liveCities(lang) {
   if (lang === 'en') return LIVE_EN.map(cityByPath).filter(Boolean);
-  return spreadCities(lang, 12);
+  return spreadCities(lang, 20);
 }
 // Each card: city, country, local time, next prayer and a countdown. Drawn here for the build time;
 // the browser redraws them for the visitor's moment and ticks every second.
@@ -1058,13 +1065,14 @@ function liveSection(lang, cities) {
   const cards = cities.map((ci, i) => {
     const ctx = ctxFor(lang, ci.defaultSect), loc = locOf(ci, lang), s = Core.snapshot(loc, ctx, NOW);
     const name = s.next.tomorrow ? `${t.prayers.fajr} ${t.tomorrow}` : t.prayers[s.next.key];
-    return `<li><a class="country-card live-card" href="${url.city(lang, ci)}" data-live="${i}">` +
+    return `<li${i >= LIVE_SHOWN ? ' class="lc-more"' : ''}><a class="country-card live-card" href="${url.city(lang, ci)}" data-live="${i}">` +
       `<span class="cc-name">${esc(loc.name)}</span><span class="muted">${esc(nameIn(ci.country.name, lang))}</span>` +
       `<span class="lc-row"><span class="muted">${esc(t.localTime)}</span> <bdi class="lc-clock">${esc(Core.fmtTime(NOW, ci.tz, ctx))}</bdi></span>` +
       `<span class="lc-row"><span class="muted">${esc(t.next)}</span> <b class="lc-next">${esc(name)}</b> <bdi class="lc-at">${esc(Core.fmtTime(s.next.at, ci.tz, ctx))}</bdi></span>` +
       `<span class="lc-in" hidden><span class="lc-label"></span> <bdi class="lc-cd"></bdi></span></a></li>`;
   }).join('');
-  return `<section class="continent live" aria-labelledby="liveH"><h2 class="section-title" id="liveH">${esc(g.liveH)}</h2><ul class="country-grid live-grid" id="liveCards">${cards}</ul></section>`;
+  return `<section class="continent live" aria-labelledby="liveH"><h2 class="section-title" id="liveH">${esc(g.liveH)}</h2><ul class="country-grid live-grid" id="liveCards">${cards}</ul>` +
+    (cities.length > 8 ? `<p class="lc-all${cities.length <= LIVE_SHOWN ? ' few' : ''}"><button type="button" class="btn-small" id="liveAll">${esc(t.seeAll)}</button></p>` : '') + '</section>';
 }
 function ramadanHome(lang, ctx) {
   const w = ramadanWindow();

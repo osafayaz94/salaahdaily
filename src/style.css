@@ -546,3 +546,9 @@ body.bare { background: var(--surface); margin: 0; }
   .live-card .lc-row .muted { display: none; }
   .live-card .lc-in { font-size: 0.8rem; }
 }
+
+/* Live cards: first 16 (8 on phones) until "See all cities" */
+.live-grid:not(.open) .lc-more { display: none; }
+.lc-all { margin: 12px 0 0; text-align: center; }
+@media (max-width: 560px) { .live-grid:not(.open) > li:nth-child(n+9) { display: none; } }
+@media (min-width: 561px) { .lc-all.few { display: none; } }

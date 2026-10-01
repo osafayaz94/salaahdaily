@@ -107,6 +107,8 @@
       card.el.querySelector('.lc-clock').textContent = C.fmtTime(now, card.loc.tz, c);
       card.el.querySelector('.lc-cd').textContent = C.countdown(card.next.at - now, c);
     }
+    var more = $('liveAll');
+    if (more) more.addEventListener('click', function () { box.classList.add('open'); more.parentNode.hidden = true; });
     function all() { var now = new Date(); cards.forEach(function (card) { draw(card, now); }); }
     all();
     setInterval(all, 1000);
