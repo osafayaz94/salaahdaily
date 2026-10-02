@@ -91,7 +91,7 @@ var VARIANTS = {
  * Placeholders as above; no date in the answer (it would be in English).
  */
 function L(term, latin, q, a) { return { term: term, latin: latin, q: q, a: a }; }
-var BS = L('Vaktija', true, 'Koja su namaska vremena u {city} danas?', 'Vaktija za {city} danas: zora {fajr}, izlazak sunca {sunrise}, podne {dhuhr}, ikindija {asr}, akšam {maghrib}, jacija {isha}.');
+var BS = L('Vaktija', true, 'Vaktija {city}: koja su namaska vremena danas?', 'Vaktija za {city} danas: zora {fajr}, izlazak sunca {sunrise}, podne {dhuhr}, ikindija {asr}, akšam {maghrib}, jacija {isha}.');
 var SQ = L('Kohët e namazit', true, 'Cilat janë kohët e namazit në {city} sot?', 'Kohët e namazit në {city} sot: sabahu {fajr}, lindja e diellit {sunrise}, dreka {dhuhr}, ikindia {asr}, akshami {maghrib}, jacia {isha}.');
 var RU = L('Время намаза', false, 'Какое время намаза на сегодня ({city})?', 'Время намаза на сегодня ({city}): фаджр {fajr}, восход {sunrise}, зухр {dhuhr}, аср {asr}, магриб {maghrib}, иша {isha}.');
 var SW = L('Nyakati za sala', true, 'Nyakati za sala {city} leo ni saa ngapi?', 'Nyakati za sala {city} leo: alfajiri {fajr}, macheo {sunrise}, adhuhuri {dhuhr}, alasiri {asr}, magharibi {maghrib}, isha {isha}.');
@@ -109,7 +109,7 @@ var LOCAL = {
   turkmenistan: L('Namaz wagtlary', true, 'Şu gün {city} üçin namaz wagtlary näçede?', 'Şu gün {city} üçin namaz wagtlary: ertir {fajr}, gün dogýar {sunrise}, öýle {dhuhr}, ikindi {asr}, agşam {maghrib}, ýassy {isha}.'),
   ukraine: L('Час намазу', false, 'Який час намазу сьогодні ({city})?', 'Час намазу на сьогодні ({city}): фаджр {fajr}, схід сонця {sunrise}, зухр {dhuhr}, аср {asr}, магриб {maghrib}, іша {isha}.'),
   bulgaria: L('Време за намаз', false, 'Кога е времето за намаз днес ({city})?', 'Време за намаз днес ({city}): сабах {fajr}, изгрев {sunrise}, йойле {dhuhr}, икиндия {asr}, акшам {maghrib}, ятсъ {isha}.'),
-  poland: L('Czasy modlitw', true, 'Jakie są dziś czasy modlitw w {city}?', 'Czasy modlitw w {city} na dziś: fadżr {fajr}, wschód słońca {sunrise}, zuhr {dhuhr}, asr {asr}, maghrib {maghrib}, isza {isha}.'),
+  poland: L('Czasy modlitw', true, 'Czasy modlitw {city}: o której są dziś modlitwy?', 'Czasy modlitw {city} na dziś: fadżr {fajr}, wschód słońca {sunrise}, zuhr {dhuhr}, asr {asr}, maghrib {maghrib}, isza {isha}.'),
   netherlands: L('Gebedstijden', true, 'Wat zijn de gebedstijden in {city} vandaag?', 'Gebedstijden in {city} vandaag: fajr {fajr}, zonsopgang {sunrise}, dhuhr {dhuhr}, asr {asr}, maghrib {maghrib}, isha {isha}.'),
   belgium: L('Gebedstijden', true, 'Wat zijn de gebedstijden in {city} vandaag?', 'Gebedstijden in {city} vandaag: fajr {fajr}, zonsopgang {sunrise}, dhuhr {dhuhr}, asr {asr}, maghrib {maghrib}, isha {isha}.'),
   sweden: L('Bönetider', true, 'Vilka är bönetiderna i {city} idag?', 'Bönetider i {city} idag: fajr {fajr}, soluppgång {sunrise}, dhuhr {dhuhr}, asr {asr}, maghrib {maghrib}, isha {isha}.'),
