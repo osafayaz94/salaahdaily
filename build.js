@@ -207,6 +207,7 @@ const url = {
   method: (lang, key) => `${pre(lang)}methods/${Core.METHOD_SLUG[key]}/`,
   qibla: (lang) => `${pre(lang)}qibla/`,
   mosques: (lang) => `${pre(lang)}mosques/`,
+  event: (lang, slug) => `${pre(lang)}events/${slug}/`,
   widget: (lang) => `${pre(lang)}mosque-widget/`,
   embed: (lang) => `${pre(lang)}embed/`,
   contact: () => '/contact/',
@@ -515,7 +516,7 @@ function withPublisher(ld) {
 }
 function addPage(o) {
   const lang = o.lang, L = LANGS[lang], t = STRINGS[lang];
-  const script = ['about', '404', 'contact', 'privacy', 'terms', 'mosques'].includes(o.data.kind) ? ASSET.jsLite : ASSET.js;
+  const script = ['about', '404', 'contact', 'privacy', 'terms', 'mosques', 'event'].includes(o.data.kind) ? ASSET.jsLite : ASSET.js;
   const alternates = o.alternates || [];
   const showLocal = lang !== 'en' && t.brandLocal !== BRAND_AR;
   const canonical = abs(o.path);
@@ -963,7 +964,7 @@ function prayerPage(lang, key) {
 const HIJRI_START = {};
 (function () {
   const p = Core.partsInTz(NOW, 'Asia/Riyadh');
-  for (let i = -400; i <= 760; i++) {
+  for (let i = -400; i <= 1160; i++) {
     const d = new Date(Date.UTC(p.y, p.m - 1, p.d + i));
     const gy = d.getUTCFullYear(), gm = d.getUTCMonth() + 1, gd = d.getUTCDate();
     const h = Core.hijriParts(gy, gm, gd, 0);
@@ -971,7 +972,19 @@ const HIJRI_START = {};
     if (h.d === 1 && !HIJRI_START[k]) HIJRI_START[k] = { y: gy, m: gm, d: gd };
   }
 })();
-const EVENTS = [['ramadan', 9, 1], ['fitr', 10, 1], ['arafah', 12, 9], ['adha', 12, 10], ['newYear', 1, 1], ['ashura', 1, 10]];
+const EVENTS = [
+  ['ramadan', 9, 1, 'ramadan', false, 'Ramadan'], ['laylatQadr', 9, 27, 'laylat-al-qadr', true, 'Laylat_al-Qadr'],
+  ['fitr', 10, 1, 'eid-al-fitr', false, 'Eid_al-Fitr'], ['arafah', 12, 9, 'day-of-arafah', false, 'Day_of_Arafah'],
+  ['adha', 12, 10, 'eid-al-adha', false, 'Eid_al-Adha'], ['newYear', 1, 1, 'islamic-new-year', false, 'Islamic_New_Year'],
+  ['ashura', 1, 10, 'ashura', false, 'Ashura'], ['mawlid', 3, 12, 'mawlid', false, 'Mawlid'],
+  ['israMiraj', 7, 27, 'isra-and-miraj', true, 'Isra_and_Mi%27raj'], ['shabBarat', 8, 15, 'shab-e-barat', true, 'Mid-Sha%27ban'],
+];
+const { EV } = require('./src/events');
+Object.keys(LANGS).forEach((l) => {
+  if (!EV[l]) { problems.push(`events.js: no strings for ${l}`); return; }
+  EVENTS.forEach(([k]) => { if (!EV[l].desc[k]) problems.push(`events.js: no ${l} text for ${k}`); });
+});
+const evName = (lang, k) => GUIDES[lang].ev[k] || EV[lang].names[k];
 function hijriToGregorian(hy, hm, hd) {
   const s0 = HIJRI_START[`${hy}-${hm}`];
   if (!s0) return null;
@@ -995,6 +1008,7 @@ function hijriPage(lang) {
   }
   // The next occurrence of each event, on or after today.
   const todayUtc = Date.UTC(today[0], today[1] - 1, today[2]);
+  const EVENT_SLUG = Object.fromEntries(EVENTS.map((e) => [e[0], e[3]]));
   const events = EVENTS.map(([k, hm, hd]) => {
     for (const hy of [h.y, h.y + 1]) {
       const gd = hijriToGregorian(hy, hm, hd);
@@ -1009,7 +1023,7 @@ function hijriPage(lang) {
   const body = breadcrumbs(crumbs) + '<article class="card about guide">' +
     `<h1>${esc(g.hH1)}</h1><p class="answer" id="hijriToday">${esc(todayLine)}</p><p class="muted">${esc(t.aboutHijri)}</p>` +
     `<h2>${esc(g.hEventsH2)}</h2><div class="table-scroll"><table class="city-table"><tbody>` +
-    events.map((e) => `<tr><th scope="row">${esc(g.ev[e.k])}</th><td>${esc(hijriText(e))}</td><td>${esc(gFull(e.gd))}</td></tr>`).join('') +
+    events.map((e) => `<tr><th scope="row"><a href="${url.event(lang, EVENT_SLUG[e.k])}">${esc(evName(lang, e.k))}</a></th><td>${esc(hijriText(e))}</td><td>${esc(gFull(e.gd))}</td></tr>`).join('') +
     '</tbody></table></div>' +
     `<h2>${esc(tpl(g.hMonthsH2, { year: yearText }))}</h2><div class="table-scroll"><table class="city-table">` +
     `<thead><tr><th scope="col">${esc(g.colMonth)}</th><th scope="col">${esc(g.colStarts)}</th><th scope="col">${esc(g.colDays)}</th></tr></thead><tbody>` +
@@ -1028,6 +1042,57 @@ function hijriPage(lang) {
       breadcrumbLd(crumbs),
     ] },
     data: clientData(lang, { kind: 'hijri', defaultSect: ci.defaultSect }),
+  });
+}
+
+/* ---------- Islamic dates: one page per event ---------- */
+function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
+  const t = STRINGS[lang], g = GUIDES[lang], e = EV[lang], pagePath = url.event(lang, slug);
+  const { ci } = guideLoc(lang);
+  const ctx = ctxFor(lang, ci.defaultSect);
+  const today = ymd(NOW, ci.tz), h = Core.hijriParts(today[0], today[1], today[2], 0);
+  const todayUtc = Date.UTC(today[0], today[1] - 1, today[2]);
+  // The next three dates on or after today.
+  const dates = [];
+  for (let hy = h.y; hy <= h.y + 4 && dates.length < 3; hy++) {
+    const gd = hijriToGregorian(hy, hm, hd);
+    if (gd && Date.UTC(gd.y, gd.m - 1, gd.d) >= todayUtc) dates.push({ hy, gd });
+  }
+  if (!dates.length) { problems.push(`events: no date for ${k}`); return; }
+  const next = dates[0], name = evName(lang, k);
+  const gFull = (x) => Core.gregorian(x.y, x.m, x.d, 'full', ctx);
+  const hijriText = (hy) => `${Core.num(hd, ctx)} ${t.hijriMonths[hm - 1]} ${Core.num(hy, ctx)} ${t.hijriEra}`;
+  const year = Core.num(next.gd.y, ctx);
+  const daysTo = Math.round((Date.UTC(next.gd.y, next.gd.m - 1, next.gd.d) - todayUtc) / 864e5);
+  const answer = tpl(e.answer, { event: name, hijri: hijriText(next.hy), date: gFull(next.gd) });
+  const prev = night ? new Date(Date.UTC(next.gd.y, next.gd.m - 1, next.gd.d - 1)) : null;
+  const nightLine = prev ? tpl(e.night, { prev: Core.gregorian(prev.getUTCFullYear(), prev.getUTCMonth() + 1, prev.getUTCDate(), 'full', ctx) }) : '';
+  const crumbs = [{ name: t.home, href: url.home(lang) }, { name: g.hijriNav, href: url.hijri(lang) }, { name, href: pagePath }];
+  const others = EVENTS.filter((x) => x[0] !== k).map((x) => ({ name: evName(lang, x[0]), href: url.event(lang, x[3]) }));
+  const body = breadcrumbs(crumbs) + '<article class="card about guide event">' +
+    `<h1>${esc(tpl(e.h1, { event: name, year }))}</h1><p class="answer" id="evAnswer">${esc(answer)}</p>` +
+    (nightLine ? `<p>${esc(nightLine)}</p>` : '') +
+    `<p class="ev-days" id="evDays">${esc(daysTo === 0 ? e.today : tpl(e.days, { n: Core.num(daysTo, ctx) }))}</p>` +
+    `<p>${esc(e.desc[k])}</p>` +
+    `<h2>${esc(tpl(e.years, { event: name }))}</h2><div class="table-scroll"><table class="city-table"><tbody>` +
+    dates.map((x) => `<tr><th scope="row">${esc(hijriText(x.hy))}</th><td>${esc(gFull(x.gd))}</td></tr>`).join('') +
+    '</tbody></table></div>' +
+    `<p class="muted small">${esc(e.note)}</p>` +
+    `<h2>${esc(e.more)}</h2>` + linkList(others.concat([{ name: g.hijriNav, href: url.hijri(lang) }])) +
+    `<p class="muted small">${esc(tpl(t.updated, { date: Core.gregorian(...today, 'full', ctx) }))}</p></article>`;
+  const title = fitTitle(tpl(e.title, { event: name, year }), lang);
+  const desc = fitDesc(`${answer} ${e.desc[k]}`);
+  addPage({
+    lang, tag: langTag(lang), title, desc, path: pagePath, alternates: cluster((l) => url.event(l, slug)), indexable: true, body,
+    jsonld: { '@graph': [
+      { '@type': 'WebPage', '@id': abs(pagePath), url: abs(pagePath), name: title, description: desc, inLanguage: langTag(lang),
+        dateModified: TODAY_ISO, isPartOf: { '@id': `${SITE}/#website` }, about: aboutThing(name, `https://en.wikipedia.org/wiki/${wiki}`),
+        speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.guide h1', '#evAnswer'] } },
+      { '@type': 'FAQPage', '@id': `${abs(pagePath)}#faq`, inLanguage: langTag(lang),
+        mainEntity: [{ '@type': 'Question', name: tpl(e.q, { event: name, year }), acceptedAnswer: { '@type': 'Answer', text: `${answer} ${nightLine}`.trim() } }] },
+      breadcrumbLd(crumbs),
+    ] },
+    data: clientData(lang, { kind: 'event', defaultSect: ci.defaultSect, evDate: `${next.gd.y}-${next.gd.m}-${next.gd.d}`, evDays: e.days, evToday: e.today }),
   });
 }
 
@@ -1423,6 +1488,7 @@ ALL_LANGS.forEach((lang) => {
   prayersHub(lang);
   GUIDE_PRAYERS.forEach((k) => prayerPage(lang, k));
   hijriPage(lang);
+  EVENTS.forEach((e) => eventPage(lang, e));
   methodsHub(lang);
   METHOD_KEYS.forEach((k) => methodPage(lang, k));
   qiblaPage(lang);
@@ -1503,6 +1569,7 @@ write('llms.txt', [
   ...GUIDE_PRAYERS.map((k) => `  - [${STRINGS.en.prayers[k]}](${SITE}${url.prayer('en', k)})`),
   `- [Islamic date today and Hijri calendar](${SITE}${url.hijri('en')}): Umm al-Qura months and upcoming Ramadan and Eid dates`,
   `- [Prayer time calculation methods](${SITE}${url.methods('en')}): Fajr and Isha angles and safety minutes of each method, and which countries use it`,
+  `- Islamic dates: ${EVENTS.map((e) => `[${EV.en.names[e[0]] || GUIDES.en.ev[e[0]]}](${SITE}${url.event('en', e[3])})`).join(', ')} (next date, countdown, next three years)`,
   `- [Famous mosques and holy places](${SITE}${url.mosques('en')}): Masjid al-Haram, the Prophet's Mosque, Al-Aqsa and ${LANDMARKS.length - 3} more, with short histories and photos`,
   `- [Qibla direction](${SITE}${url.qibla('en')}): Qibla bearing and distance from your location and from each country's main city`,
   `- Ramadan timetables: ${SITE}/{country}/{city}/ramadan/ (sehri and iftar for every day of Ramadan, every city)`,

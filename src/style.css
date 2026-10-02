@@ -567,3 +567,6 @@ body.bare { background: var(--surface); margin: 0; }
 .lm-credit { font-size: 0.72rem; color: var(--muted); }
 .lm-credit a { color: inherit; }
 .lm-all { margin: 12px 0 0; }
+
+/* Islamic date pages: days left */
+.ev-days { font-size: 1.25rem; font-weight: 800; color: var(--emerald-2); margin: 8px 0; }

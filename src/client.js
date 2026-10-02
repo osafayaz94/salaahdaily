@@ -314,6 +314,12 @@
       $('prayerCity').textContent = C.tpl(P.g.seeCity, { city: saved.loc.name });
     }
   }
+  // Islamic date pages: days left until the event, counted in the visitor's own time zone.
+  if (P.kind === 'event' && $('evDays') && P.evDate) {
+    var ez = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', et = C.partsInTz(new Date(), ez), ed = P.evDate.split('-');
+    var left = Math.round((Date.UTC(+ed[0], +ed[1] - 1, +ed[2]) - Date.UTC(et.y, et.m - 1, et.d)) / 864e5);
+    if (left >= 0) $('evDays').textContent = left === 0 ? P.evToday : C.tpl(P.evDays, { n: C.num(left, ctx()) });
+  }
   // Hijri calendar: today's date in the visitor's own time zone, with their Hijri adjustment.
   if (P.kind === 'hijri' && $('hijriToday')) {
     var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', td = C.partsInTz(new Date(), tz), hc = ctx();
