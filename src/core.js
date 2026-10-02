@@ -695,6 +695,53 @@
     Egyptian: [19.5, 17.5], Turkey: [18, 17], Bosnia: [18, 16], Kosovo: [18.5, 16.5], DiyanetEurope: [18, 17], ParisGMP: [15.75, { min: 87 }], IGGO: [18, 17], EMB: [18, 17], Tatarstan: [18, 15], Dagestan: [17.5, 15], QMI: [16, 15], DUMU: [{ before: 100 }, { min: '90-100' }], Singapore: [20, 18], ACJU: [19.8, 18.2], Morocco: [19, 17], Algeria: [18, 17], Kazakhstan: [15, 15], Uzbekistan: [15.5, 15.3], Kyrgyzstan: [18, 16],
   };
 
+  /* ---------- Hijri calendar: conversion and month grid ---------- */
+  // Gregorian date of an Umm al-Qura date, or null when that day does not exist (day 30 of a 29-day month).
+  // Starts from the arithmetic Hijri calendar, then steps to the exact Umm al-Qura day.
+  function hijriToGregorian(hy, hm, hd) {
+    var jd = hd + Math.ceil(29.5 * (hm - 1)) + (hy - 1) * 354 + Math.floor((3 + 11 * hy) / 30) + 1948439;
+    var base = (jd - 2440588) * 864e5, offs = [0, 1, -1, 2, -2, 3, -3];
+    for (var k = 0; k < offs.length; k++) {
+      var dt = new Date(base + offs[k] * 864e5), y = dt.getUTCFullYear(), m = dt.getUTCMonth() + 1, d = dt.getUTCDate();
+      var h = hijriParts(y, m, d, 0);
+      if (h.y === hy && h.m === hm && h.d === hd) return { y: y, m: m, d: d };
+    }
+    return null;
+  }
+  function hijriMonthDays(hy, hm) { return hijriToGregorian(hy, hm, 30) ? 30 : 29; }
+  function hijriText(hy, hm, hd, ctx) { return num(hd, ctx) + ' ' + ctx.t.hijriMonths[hm - 1] + ' ' + num(hy, ctx) + ' ' + ctx.t.hijriEra; }
+  function gMonthShort(y, m, ctx) {
+    if (!ctx.L.locale) return ctx.t.months[m - 1];
+    return dtf(ctx.L.locale + '-u-ca-gregory', { month: 'short', timeZone: 'UTC' }).format(civil(y, m, 1));
+  }
+  // A Hijri month as a week grid (first column = firstDay, 0 = Sunday), each day with its Gregorian date.
+  function renderHijriGrid(hy, hm, ctx, today, firstDay) {
+    var s0 = hijriToGregorian(hy, hm, 1);
+    if (!s0) return null;
+    var n = hijriMonthDays(hy, hm), start = civil(s0.y, s0.m, s0.d), lead = (start.getUTCDay() - firstDay + 7) % 7;
+    var head = '<thead><tr>';
+    for (var i = 0; i < 7; i++) head += '<th scope="col">' + esc(gregorian(2026, 1, 4 + (firstDay + i) % 7, 'weekday', ctx)) + '</th>';
+    var cells = [];
+    for (var b = 0; b < lead; b++) cells.push('<td></td>');
+    var end = null;
+    for (var d = 1; d <= n; d++) {
+      var g = new Date(start.getTime() + (d - 1) * 864e5), gy = g.getUTCFullYear(), gm = g.getUTCMonth() + 1, gd = g.getUTCDate();
+      var isToday = today && today.y === hy && today.m === hm && today.d === d;
+      cells.push('<td' + (isToday ? ' class="is-today" aria-current="date"' : '') + '><span class="hg-h">' + esc(num(d, ctx)) + '</span>' +
+        '<span class="hg-g">' + esc(num(gd, ctx)) + (gd === 1 || d === 1 ? ' ' + esc(gMonthShort(gy, gm, ctx)) : '') + '</span></td>');
+      end = { y: gy, m: gm };
+    }
+    while (cells.length % 7) cells.push('<td></td>');
+    var rows = '';
+    for (var r = 0; r < cells.length; r += 7) rows += '<tr>' + cells.slice(r, r + 7).join('') + '</tr>';
+    var a = gregorian(s0.y, s0.m, 1, 'monthYear', ctx), z = gregorian(end.y, end.m, 1, 'monthYear', ctx);
+    return {
+      title: ctx.t.hijriMonths[hm - 1] + ' ' + num(hy, ctx) + ' ' + ctx.t.hijriEra,
+      sub: a === z ? a : a + ' – ' + z,
+      table: head + '</tr></thead><tbody>' + rows + '</tbody>',
+    };
+  }
+
   // Mosques map: a "mosque" search pinned to exact coordinates (sll = search centre, ll = view centre).
   // Tested against text queries ("mosques near Lahore") and the key-based Maps Embed API: only this
   // form reliably shows several mosque pins in the right place for every country.
@@ -718,5 +765,6 @@
     sectPicker: sectPicker, renderToday: renderToday, renderMonth: renderMonth, qiblaCard: qiblaCard,
     distanceKm: distanceKm, renderJumuah: renderJumuah, renderPrayerLive: renderPrayerLive, hijri: hijri, hijriParts: hijriParts,
     renderRamadan: renderRamadan, METHOD_SLUG: METHOD_SLUG, qibla: qibla, KAABA: KAABA, addDays: addDays, pre: pre,
+    hijriToGregorian: hijriToGregorian, hijriMonthDays: hijriMonthDays, hijriText: hijriText, renderHijriGrid: renderHijriGrid,
   };
 }));

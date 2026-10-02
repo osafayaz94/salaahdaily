@@ -314,6 +314,61 @@
       $('prayerCity').textContent = C.tpl(P.g.seeCity, { city: saved.loc.name });
     }
   }
+  // Hijri calendar: month grid (any month and year), the year's months table, and the two converters.
+  if (P.kind === 'hijri' && $('hgTable')) (function () {
+    var hc = P.hc, cx = ctx(), zone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    var tp = C.partsInTz(new Date(), zone), th = C.hijriParts(tp.y, tp.m, tp.d, 0), gy = th.y, gm = th.m;
+    var clamp = function (y) { return Math.min(P.hMax, Math.max(P.hMin, y)); };
+    function drawGrid() {
+      var r = C.renderHijriGrid(gy, gm, cx, th, P.firstDay);
+      if (!r) return;
+      $('hgTitle').textContent = r.title; $('hgSub').textContent = r.sub; $('hgTable').innerHTML = r.table; $('hgYear').value = gy;
+    }
+    function drawYear() {
+      var rows = '';
+      for (var m = 1; m <= 12; m++) {
+        var s = C.hijriToGregorian(gy, m, 1);
+        if (!s) continue;
+        rows += '<tr' + (gy === th.y && m === th.m ? ' class="is-today"' : '') + '><th scope="row">' + C.esc(cx.t.hijriMonths[m - 1]) + '</th><td>' +
+          C.esc(C.gregorian(s.y, s.m, s.d, 'full', cx)) + '</td><td>' + C.esc(C.num(C.hijriMonthDays(gy, m), cx)) + '</td></tr>';
+      }
+      if ($('hMonths')) $('hMonths').innerHTML = rows;
+      if ($('hMonthsH2')) $('hMonthsH2').textContent = C.tpl(hc.monthsH2, { year: C.num(gy, cx) + ' ' + cx.t.hijriEra });
+    }
+    function go(dm) {
+      gm += dm;
+      if (gm < 1) { gm = 12; gy--; } else if (gm > 12) { gm = 1; gy++; }
+      if (gy < P.hMin || gy > P.hMax) { gy = clamp(gy); gm = dm < 0 ? 1 : 12; }
+      var yearChanged = String(gy) !== $('hgYear').value;
+      drawGrid(); if (yearChanged) drawYear();
+    }
+    $('hgPrev').addEventListener('click', function () { go(-1); });
+    $('hgNext').addEventListener('click', function () { go(1); });
+    $('hgToday').addEventListener('click', function () { gy = th.y; gm = th.m; drawGrid(); drawYear(); });
+    $('hgYear').addEventListener('change', function () {
+      var y = parseInt($('hgYear').value, 10);
+      if (isNaN(y)) return;
+      gy = clamp(y); drawGrid(); drawYear();
+    });
+    drawGrid();
+    $('h2gM').value = String(th.m); $('h2gD').value = String(th.d);
+    $('g2h').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = $('g2hDate').value.split('-'), y = +v[0], m = +v[1], d = +v[2];
+      if (!y || !m || !d) return;
+      var h = C.hijriParts(y, m, d, 0);
+      $('g2hOut').textContent = h.y < P.hMin || h.y > P.hMax ? C.tpl(hc.range, { a: C.num(P.hMin, cx), b: C.num(P.hMax, cx) })
+        : C.tpl(hc.res, { from: C.gregorian(y, m, d, 'full', cx), to: C.hijriText(h.y, h.m, h.d, cx) });
+    });
+    $('h2g').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var y = parseInt($('h2gY').value, 10), m = +$('h2gM').value, d = +$('h2gD').value;
+      if (isNaN(y) || y < P.hMin || y > P.hMax) { $('h2gOut').textContent = C.tpl(hc.range, { a: C.num(P.hMin, cx), b: C.num(P.hMax, cx) }); return; }
+      var g = C.hijriToGregorian(y, m, d);
+      $('h2gOut').textContent = !g ? hc.bad : C.tpl(hc.res, { from: C.hijriText(y, m, d, cx), to: C.gregorian(g.y, g.m, g.d, 'full', cx) });
+    });
+  })();
+
   // Islamic date pages: days left until the event, counted in the visitor's own time zone.
   if (P.kind === 'event' && $('evDays') && P.evDate) {
     var ez = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', et = C.partsInTz(new Date(), ez), ed = P.evDate.split('-');

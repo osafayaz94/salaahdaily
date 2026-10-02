@@ -42,6 +42,9 @@ const LEGAL = require('./src/pages-legal');
     COUNTRY_FAQ[l] = MORE[l].COUNTRY_FAQ.slice();
   });
 })();
+// Hijri calendar converter and grid (src/strings-hijri.js), in every language.
+const { HC } = require('./src/strings-hijri');
+Object.keys(LANGS).forEach((l) => { if (!HC[l]) problems.push(`strings-hijri.js: no strings for ${l}`); });
 // City page questions per prayer (src/strings-faq.js), in every language.
 (function () {
   const { FAQ2 } = require('./src/strings-faq');
@@ -992,6 +995,33 @@ function hijriToGregorian(hy, hm, hd) {
   return { y: d.getUTCFullYear(), m: d.getUTCMonth() + 1, d: d.getUTCDate() };
 }
 
+// Week starts: Saturday for Arabic, Persian and Pashto, Monday for European languages and Turkish, else Sunday.
+const FIRST_DAY = { ar: 6, fa: 6, ps: 6, tr: 1, de: 1, fr: 1, es: 1, it: 1, pt: 1, ms: 1, id: 1 };
+// Years the converter accepts (the Umm al-Qura tables cover these): about 1937 to 2077.
+const HIJRI_MIN = 1356, HIJRI_MAX = 1500;
+function hijriTools(lang, h, today, ctx) {
+  const t = STRINGS[lang], c = HC[lang];
+  const grid = Core.renderHijriGrid(h.y, h.m, ctx, h, FIRST_DAY[lang] || 0);
+  const iso = `${today[0]}-${String(today[1]).padStart(2, '0')}-${String(today[2]).padStart(2, '0')}`;
+  const opts = (n, f) => Array.from({ length: n }, (_, i) => `<option value="${i + 1}">${esc(f(i + 1))}</option>`).join('');
+  return `<section class="hgrid" aria-label="${esc(c.gridH)}"><div class="month-head"><div><h2 id="hgTitle">${esc(grid.title)}</h2><p class="muted" id="hgSub">${esc(grid.sub)}</p></div>` +
+    '<div class="month-nav">' +
+      `<button type="button" class="icon-btn" id="hgPrev" aria-label="${esc(t.prevMonth)}"><span class="flip" aria-hidden="true">‹</span></button>` +
+      `<button type="button" class="btn-small" id="hgToday">${esc(t.todayBtn)}</button>` +
+      `<button type="button" class="icon-btn" id="hgNext" aria-label="${esc(t.nextMonth)}"><span class="flip" aria-hidden="true">›</span></button>` +
+      `<label class="hg-year">${esc(c.yearL)} <input type="number" id="hgYear" min="${HIJRI_MIN}" max="${HIJRI_MAX}" value="${h.y}" inputmode="numeric"></label>` +
+    '</div></div>' +
+    `<div class="table-scroll"><table class="hijri-grid" id="hgTable">${grid.table}</table></div></section>` +
+    `<section class="conv" aria-labelledby="convH"><h2 id="convH">${esc(c.conv)}</h2><div class="conv-grid">` +
+      `<form id="g2h" class="conv-box"><h3>${esc(c.g2h)}</h3><label>${esc(c.dateL)} <input type="date" id="g2hDate" value="${iso}" required></label>` +
+        `<button type="submit" class="btn-primary">${esc(c.go)}</button><p class="conv-out" id="g2hOut" role="status"></p></form>` +
+      `<form id="h2g" class="conv-box"><h3>${esc(c.h2g)}</h3><div class="conv-row">` +
+        `<label>${esc(c.dayL)} <select id="h2gD">${opts(30, (d) => Core.num(d, ctx))}</select></label>` +
+        `<label>${esc(c.monthL)} <select id="h2gM">${opts(12, (m) => t.hijriMonths[m - 1])}</select></label>` +
+        `<label>${esc(c.yearL)} <input type="number" id="h2gY" min="${HIJRI_MIN}" max="${HIJRI_MAX}" value="${h.y}" inputmode="numeric" required></label></div>` +
+        `<button type="submit" class="btn-primary">${esc(c.go)}</button><p class="conv-out" id="h2gOut" role="status"></p></form>` +
+    '</div></section>';
+}
 function hijriPage(lang) {
   const t = STRINGS[lang], g = GUIDES[lang], pagePath = url.hijri(lang);
   const { ci } = guideLoc(lang);
@@ -1022,11 +1052,12 @@ function hijriPage(lang) {
   const crumbs = [{ name: t.home, href: url.home(lang) }, { name: g.hijriNav, href: pagePath }];
   const body = breadcrumbs(crumbs) + '<article class="card about guide">' +
     `<h1>${esc(g.hH1)}</h1><p class="answer" id="hijriToday">${esc(todayLine)}</p><p class="muted">${esc(t.aboutHijri)}</p>` +
+    hijriTools(lang, h, today, ctx) +
     `<h2>${esc(g.hEventsH2)}</h2><div class="table-scroll"><table class="city-table"><tbody>` +
     events.map((e) => `<tr><th scope="row"><a href="${url.event(lang, EVENT_SLUG[e.k])}">${esc(evName(lang, e.k))}</a></th><td>${esc(hijriText(e))}</td><td>${esc(gFull(e.gd))}</td></tr>`).join('') +
     '</tbody></table></div>' +
-    `<h2>${esc(tpl(g.hMonthsH2, { year: yearText }))}</h2><div class="table-scroll"><table class="city-table">` +
-    `<thead><tr><th scope="col">${esc(g.colMonth)}</th><th scope="col">${esc(g.colStarts)}</th><th scope="col">${esc(g.colDays)}</th></tr></thead><tbody>` +
+    `<h2 id="hMonthsH2">${esc(tpl(g.hMonthsH2, { year: yearText }))}</h2><div class="table-scroll"><table class="city-table">` +
+    `<thead><tr><th scope="col">${esc(g.colMonth)}</th><th scope="col">${esc(g.colStarts)}</th><th scope="col">${esc(g.colDays)}</th></tr></thead><tbody id="hMonths">` +
     months.map((x) => `<tr${x.m === h.m ? ' class="is-today"' : ''}><th scope="row">${esc(t.hijriMonths[x.m - 1])}</th><td>${esc(gFull(x.a))}</td><td>${x.days ? esc(Core.num(x.days, ctx)) : ''}</td></tr>`).join('') +
     '</tbody></table></div>' +
     linkList([{ name: g.prayersNav, href: url.prayers(lang) }, { name: t.aboutLink, href: url.about(lang) }]) +
@@ -1041,7 +1072,7 @@ function hijriPage(lang) {
         speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.guide h1', '#hijriToday'] } },
       breadcrumbLd(crumbs),
     ] },
-    data: clientData(lang, { kind: 'hijri', defaultSect: ci.defaultSect }),
+    data: clientData(lang, { kind: 'hijri', defaultSect: ci.defaultSect, hc: Object.assign({ monthsH2: g.hMonthsH2 }, HC[lang]), firstDay: FIRST_DAY[lang] || 0, hMin: HIJRI_MIN, hMax: HIJRI_MAX }),
   });
 }
 
