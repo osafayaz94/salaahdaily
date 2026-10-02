@@ -9,6 +9,7 @@
   var dataEl = document.getElementById('page-data');
   if (!C || !dataEl) return;
   var P = JSON.parse(dataEl.textContent);
+  if (P.cal) C.useCalendar(P.cal);
 
   /* ---------- Per-browser preferences ---------- */
   var KEY = 'namaz.settings.v2';
@@ -315,12 +316,46 @@
     }
   }
   // Hijri calendar: month grid (any month and year), the year's months table, and the two converters.
+  // The visitor's country: chosen on the Hijri page, else the country of the last city opened, else the page's.
+  var HCOUNTRY = 'namaz.hcountry';
+  function visitorCountry() {
+    var saved = load(HCOUNTRY, null);
+    if (saved && P.cn && P.cn[saved]) return saved;
+    var last = lastLoc(), m = last && /^\/(?:[a-z]{2}\/)?([a-z0-9-]+)\//.exec(last.url);
+    return m && P.cn && P.cn[m[1]] ? m[1] : P.defCountry;
+  }
+  function authFor(slug) {
+    var a = P.auth[slug] || ['generic', ''];
+    return P.authT[a[0]].replace('{country}', P.cn[slug]).replace('{authority}', a[1]);
+  }
+  function adjText() {
+    var a = S.hijriAdj || 0;
+    return a ? C.tpl(P.authT.adj, { n: (a > 0 ? '+' : '−') + C.num(Math.abs(a), ctx()) }) : '';
+  }
   if (P.kind === 'hijri' && $('hgTable')) (function () {
-    var hc = P.hc, cx = ctx(), zone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-    var tp = C.partsInTz(new Date(), zone), th = C.hijriParts(tp.y, tp.m, tp.d, 0), gy = th.y, gm = th.m;
+    var hc = P.hc, cx, zone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', tp = C.partsInTz(new Date(), zone), th, gy, gm, country;
+    function setCountry(slug) {
+      country = slug;
+      C.useCalendar(slug === 'turkey' ? P.diyanet : null);
+      $('hcCountry').value = slug; $('hcAuth').textContent = authFor(slug);
+    }
+    function refresh(keepMonth) {
+      cx = ctx(); th = C.hijriParts(tp.y, tp.m, tp.d, cx.hijriAdj);
+      if (!keepMonth) { gy = th.y; gm = th.m; }
+      $('hijriToday').textContent = C.tpl(P.g.hToday, { hijri: C.hijriText(th.y, th.m, th.d, cx), date: C.gregorian(tp.y, tp.m, tp.d, 'full', cx) });
+      $('hcAdjNote').textContent = adjText();
+      document.querySelectorAll('[data-hadj]').forEach(function (b) { b.setAttribute('aria-pressed', String(+b.getAttribute('data-hadj') === (S.hijriAdj || 0))); });
+      drawGrid(); drawYear();
+    }
+    setCountry(visitorCountry());
+    $('hcCountry').addEventListener('change', function () { save(HCOUNTRY, $('hcCountry').value); setCountry($('hcCountry').value); refresh(); });
+    document.querySelectorAll('[data-hadj]').forEach(function (b) {
+      b.addEventListener('click', function () { S.hijriAdj = +b.getAttribute('data-hadj'); save(KEY, S); refresh(); });
+    });
+    cx = ctx(); th = C.hijriParts(tp.y, tp.m, tp.d, cx.hijriAdj); gy = th.y; gm = th.m;
     var clamp = function (y) { return Math.min(P.hMax, Math.max(P.hMin, y)); };
     function drawGrid() {
-      var r = C.renderHijriGrid(gy, gm, cx, th, P.firstDay);
+      var r = C.renderHijriGrid(gy, gm, cx, th, P.firstDay, cx.hijriAdj);
       if (!r) return;
       $('hgTitle').textContent = r.title; $('hgSub').textContent = r.sub; $('hgTable').innerHTML = r.table; $('hgYear').value = gy;
     }
@@ -329,6 +364,7 @@
       for (var m = 1; m <= 12; m++) {
         var s = C.hijriToGregorian(gy, m, 1);
         if (!s) continue;
+        if (cx.hijriAdj) { var sd = new Date(Date.UTC(s.y, s.m - 1, s.d - cx.hijriAdj)); s = { y: sd.getUTCFullYear(), m: sd.getUTCMonth() + 1, d: sd.getUTCDate() }; }
         rows += '<tr' + (gy === th.y && m === th.m ? ' class="is-today"' : '') + '><th scope="row">' + C.esc(cx.t.hijriMonths[m - 1]) + '</th><td>' +
           C.esc(C.gregorian(s.y, s.m, s.d, 'full', cx)) + '</td><td>' + C.esc(C.num(C.hijriMonthDays(gy, m), cx)) + '</td></tr>';
       }
@@ -344,19 +380,19 @@
     }
     $('hgPrev').addEventListener('click', function () { go(-1); });
     $('hgNext').addEventListener('click', function () { go(1); });
-    $('hgToday').addEventListener('click', function () { gy = th.y; gm = th.m; drawGrid(); drawYear(); });
+    $('hgToday').addEventListener('click', function () { refresh(); });
     $('hgYear').addEventListener('change', function () {
       var y = parseInt($('hgYear').value, 10);
       if (isNaN(y)) return;
       gy = clamp(y); drawGrid(); drawYear();
     });
-    drawGrid();
+    refresh();
     $('h2gM').value = String(th.m); $('h2gD').value = String(th.d);
     $('g2h').addEventListener('submit', function (e) {
       e.preventDefault();
       var v = $('g2hDate').value.split('-'), y = +v[0], m = +v[1], d = +v[2];
       if (!y || !m || !d) return;
-      var h = C.hijriParts(y, m, d, 0);
+      var h = C.hijriParts(y, m, d, cx.hijriAdj);
       $('g2hOut').textContent = h.y < P.hMin || h.y > P.hMax ? C.tpl(hc.range, { a: C.num(P.hMin, cx), b: C.num(P.hMax, cx) })
         : C.tpl(hc.res, { from: C.gregorian(y, m, d, 'full', cx), to: C.hijriText(h.y, h.m, h.d, cx) });
     });
@@ -365,6 +401,7 @@
       var y = parseInt($('h2gY').value, 10), m = +$('h2gM').value, d = +$('h2gD').value;
       if (isNaN(y) || y < P.hMin || y > P.hMax) { $('h2gOut').textContent = C.tpl(hc.range, { a: C.num(P.hMin, cx), b: C.num(P.hMax, cx) }); return; }
       var g = C.hijriToGregorian(y, m, d);
+      if (g && cx.hijriAdj) { var gs = new Date(Date.UTC(g.y, g.m - 1, g.d - cx.hijriAdj)); g = { y: gs.getUTCFullYear(), m: gs.getUTCMonth() + 1, d: gs.getUTCDate() }; }
       $('h2gOut').textContent = !g ? hc.bad : C.tpl(hc.res, { from: C.hijriText(y, m, d, cx), to: C.gregorian(g.y, g.m, g.d, 'full', cx) });
     });
   })();
@@ -372,11 +409,18 @@
   // Islamic date pages: days left until the event, counted in the visitor's own time zone.
   if (P.kind === 'event' && $('evDays') && P.evDate) {
     var ez = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', et = C.partsInTz(new Date(), ez), ed = P.evDate.split('-');
-    var left = Math.round((Date.UTC(+ed[0], +ed[1] - 1, +ed[2]) - Date.UTC(et.y, et.m - 1, et.d)) / 864e5);
+    var evAdj = S.hijriAdj || 0, evUtc = Date.UTC(+ed[0], +ed[1] - 1, +ed[2] - evAdj);
+    if ($('evAuth') && P.cn) $('evAuth').textContent = authFor(visitorCountry());
+    if (evAdj) {
+      var eg = new Date(evUtc);
+      $('evAdj').textContent = adjText() + ' ' + C.tpl(P.authT.evAdj, { date: C.gregorian(eg.getUTCFullYear(), eg.getUTCMonth() + 1, eg.getUTCDate(), 'full', ctx()) });
+      $('evAdj').hidden = false;
+    }
+    var left = Math.round((evUtc - Date.UTC(et.y, et.m - 1, et.d)) / 864e5);
     if (left >= 0) $('evDays').textContent = left === 0 ? P.evToday : C.tpl(P.evDays, { n: C.num(left, ctx()) });
   }
   // Hijri calendar: today's date in the visitor's own time zone, with their Hijri adjustment.
-  if (P.kind === 'hijri' && $('hijriToday')) {
+  if (P.kind === 'hijri' && $('hijriToday') && !$('hgTable')) {
     var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', td = C.partsInTz(new Date(), tz), hc = ctx();
     $('hijriToday').textContent = C.tpl(P.g.hToday, { hijri: C.hijri(td.y, td.m, td.d, hc, 'full'), date: C.gregorian(td.y, td.m, td.d, 'full', hc) });
   }

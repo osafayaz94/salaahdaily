@@ -44,6 +44,12 @@ const LEGAL = require('./src/pages-legal');
 })();
 // Hijri calendar converter and grid (src/strings-hijri.js), in every language.
 const { HC } = require('./src/strings-hijri');
+const { DIYANET: DIYANET_CAL } = require('./src/hijri-diyanet');
+const { AUTH, AT, authLine } = require('./src/hijri-authority');
+Object.keys(LANGS).forEach((l) => { if (!AT[l]) problems.push(`hijri-authority.js: no strings for ${l}`); });
+// Turkey's pages follow Diyanet's published calendar (set while they are built, and sent to the browser).
+let CURRENT_CAL = null;
+const withCalendar = (rows, fn) => { CURRENT_CAL = rows; Core.useCalendar(rows); try { fn(); } finally { CURRENT_CAL = null; Core.useCalendar(null); } };
 Object.keys(LANGS).forEach((l) => { if (!HC[l]) problems.push(`strings-hijri.js: no strings for ${l}`); });
 // City page questions per prayer (src/strings-faq.js), in every language.
 (function () {
@@ -311,7 +317,7 @@ function clientStrings(lang) {
 }
 function clientData(lang, extra) {
   const L = LANGS[lang];
-  return Object.assign({
+  return Object.assign(CURRENT_CAL ? { cal: CURRENT_CAL } : {}, {
     lang,
     L: {
       locale: L.locale, timeLocale: L.timeLocale, hour12: L.hour12, force24: !!L.force24, arabicScript: !!L.arabicScript,
@@ -670,6 +676,7 @@ function countryPage(lang, c) {
   });
   html += '</section>';
   html += `<p class="empty-search" id="emptySearch" hidden>${esc(t.noMatch)} <a class="btn-link" href="${url.near(lang)}#locate">${esc(t.showMyLocation)}</a></p>`;
+  html += `<p class="muted small hijri-auth">${esc(authLine(c.slug, country, lang))}</p>`;
   html += `<p class="muted small">${esc(tpl(t.methodLine, { m: Core.methodLabel(c.method, ctx) }))} · ${esc(tpl(t.updated, { date: Core.gregorian(...ymd(NOW, c.tz), 'full', ctx) }))}</p>`;
   // Every city's Ramadan timetable, one click from the country page.
   const ramYear = Core.num(RAMADAN.y, ctx);
@@ -763,6 +770,7 @@ function cityPage(lang, ci) {
     `<section class="card faq" id="faq" aria-labelledby="faqTitle">${Core.renderFaq(loc, ctx, NOW)}</section>` +
     landmarksNear(lang, ci, cityName, ctx) +
     Core.mosquesCard(ci.lat, ci.lng, tpl(t.mosquesH2, { city: cityName }), ctx) +
+    `<p class="muted small hijri-auth">${esc(authLine(c.slug, countryName, lang))}</p>` +
     `<p class="muted small updated">${esc(tpl(t.updated, { date: Core.gregorian(p.y, p.m, p.d, 'full', ctx) }))} · <a href="${url.about(lang)}">${esc(t.aboutLink)}</a></p>`;
 
   const tag = langTag(lang, c);
@@ -999,6 +1007,23 @@ function hijriToGregorian(hy, hm, hd) {
 const FIRST_DAY = { ar: 6, fa: 6, ps: 6, tr: 1, de: 1, fr: 1, es: 1, it: 1, pt: 1, ms: 1, id: 1 };
 // Years the converter accepts (the Umm al-Qura tables cover these): about 1937 to 2077.
 const HIJRI_MIN = 1356, HIJRI_MAX = 1500;
+// Country picker data for the Hijri calendar and the Islamic date pages: names in this language and who decides.
+function hijriCountryData(lang) {
+  const names = {};
+  COUNTRIES.forEach((c) => { names[c.slug] = nameIn(c.name, lang); });
+  const auth = {};
+  Object.keys(AUTH).forEach((k) => { auth[k] = [AUTH[k].type, AUTH[k].name ? (AUTH[k].name[lang] || AUTH[k].name.en) : '']; });
+  return { cn: names, auth, authT: AT[lang], diyanet: DIYANET_CAL };
+}
+function hijriCountry(lang, defSlug) {
+  const a = AT[lang], names = COUNTRIES.map((c) => [c.slug, nameIn(c.name, lang)]).sort((x, y) => x[1].localeCompare(y[1], LANGS[lang].locale || 'en'));
+  return `<section class="hcountry" aria-labelledby="hcL"><label id="hcL">${esc(a.countryL)} <select id="hcCountry">` +
+    names.map(([s, n]) => `<option value="${s}"${s === defSlug ? ' selected' : ''}>${esc(n)}</option>`).join('') + '</select></label>' +
+    `<p id="hcAuth" class="muted">${esc(authLine(defSlug, nameIn(COUNTRIES.find((c) => c.slug === defSlug).name, lang), lang))}</p>` +
+    `<div class="hc-adj" role="group" aria-labelledby="hcL"><button type="button" class="btn-small" data-hadj="-1">${esc(a.later)}</button>` +
+    `<button type="button" class="btn-small" data-hadj="0">${esc(a.same)}</button><button type="button" class="btn-small" data-hadj="1">${esc(a.earlier)}</button></div>` +
+    '<p id="hcAdjNote" class="small" role="status"></p></section>';
+}
 function hijriTools(lang, h, today, ctx) {
   const t = STRINGS[lang], c = HC[lang];
   const grid = Core.renderHijriGrid(h.y, h.m, ctx, h, FIRST_DAY[lang] || 0);
@@ -1052,6 +1077,7 @@ function hijriPage(lang) {
   const crumbs = [{ name: t.home, href: url.home(lang) }, { name: g.hijriNav, href: pagePath }];
   const body = breadcrumbs(crumbs) + '<article class="card about guide">' +
     `<h1>${esc(g.hH1)}</h1><p class="answer" id="hijriToday">${esc(todayLine)}</p><p class="muted">${esc(t.aboutHijri)}</p>` +
+    hijriCountry(lang, ci.country.slug) +
     hijriTools(lang, h, today, ctx) +
     `<h2>${esc(g.hEventsH2)}</h2><div class="table-scroll"><table class="city-table"><tbody>` +
     events.map((e) => `<tr><th scope="row"><a href="${url.event(lang, EVENT_SLUG[e.k])}">${esc(evName(lang, e.k))}</a></th><td>${esc(hijriText(e))}</td><td>${esc(gFull(e.gd))}</td></tr>`).join('') +
@@ -1072,7 +1098,7 @@ function hijriPage(lang) {
         speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.guide h1', '#hijriToday'] } },
       breadcrumbLd(crumbs),
     ] },
-    data: clientData(lang, { kind: 'hijri', defaultSect: ci.defaultSect, hc: Object.assign({ monthsH2: g.hMonthsH2 }, HC[lang]), firstDay: FIRST_DAY[lang] || 0, hMin: HIJRI_MIN, hMax: HIJRI_MAX }),
+    data: clientData(lang, Object.assign({ kind: 'hijri', defaultSect: ci.defaultSect, hc: Object.assign({ monthsH2: g.hMonthsH2 }, HC[lang]), firstDay: FIRST_DAY[lang] || 0, hMin: HIJRI_MIN, hMax: HIJRI_MAX, defCountry: ci.country.slug }, hijriCountryData(lang))),
   });
 }
 
@@ -1103,12 +1129,13 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
   const body = breadcrumbs(crumbs) + '<article class="card about guide event">' +
     `<h1>${esc(tpl(e.h1, { event: name, year }))}</h1><p class="answer" id="evAnswer">${esc(answer)}</p>` +
     (nightLine ? `<p>${esc(nightLine)}</p>` : '') +
+    '<p id="evAdj" class="small" hidden></p>' +
     `<p class="ev-days" id="evDays">${esc(daysTo === 0 ? e.today : tpl(e.days, { n: Core.num(daysTo, ctx) }))}</p>` +
     `<p>${esc(e.desc[k])}</p>` +
     `<h2>${esc(tpl(e.years, { event: name }))}</h2><div class="table-scroll"><table class="city-table"><tbody>` +
     dates.map((x) => `<tr><th scope="row">${esc(hijriText(x.hy))}</th><td>${esc(gFull(x.gd))}</td></tr>`).join('') +
     '</tbody></table></div>' +
-    `<p class="muted small">${esc(e.note)}</p>` +
+    `<p class="muted small">${esc(e.note)}</p><p class="muted small hijri-auth" id="evAuth">${esc(authLine(ci.country.slug, nameIn(ci.country.name, lang), lang))}</p>` +
     `<h2>${esc(e.more)}</h2>` + linkList(others.concat([{ name: g.hijriNav, href: url.hijri(lang) }])) +
     `<p class="muted small">${esc(tpl(t.updated, { date: Core.gregorian(...today, 'full', ctx) }))}</p></article>`;
   const title = fitTitle(tpl(e.title, { event: name, year }), lang);
@@ -1123,7 +1150,7 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
         mainEntity: [{ '@type': 'Question', name: tpl(e.q, { event: name, year }), acceptedAnswer: { '@type': 'Answer', text: `${answer} ${nightLine}`.trim() } }] },
       breadcrumbLd(crumbs),
     ] },
-    data: clientData(lang, { kind: 'event', defaultSect: ci.defaultSect, evDate: `${next.gd.y}-${next.gd.m}-${next.gd.d}`, evDays: e.days, evToday: e.today }),
+    data: clientData(lang, Object.assign({ kind: 'event', defaultSect: ci.defaultSect, evDate: `${next.gd.y}-${next.gd.m}-${next.gd.d}`, evDays: e.days, evToday: e.today, defCountry: ci.country.slug }, hijriCountryData(lang))),
   });
 }
 
@@ -1511,8 +1538,8 @@ fs.rmSync(DIST, { recursive: true, force: true });
 ALL_LANGS.forEach((lang) => {
   homePage(lang);
   COUNTRIES.forEach((c) => {
-    countryPage(lang, c);
-    c.cities.forEach((ci) => { cityPage(lang, ci); ramadanPage(lang, ci); });
+    const pages = () => { countryPage(lang, c); c.cities.forEach((ci) => { cityPage(lang, ci); ramadanPage(lang, ci); }); };
+    if (c.slug === 'turkey') withCalendar(DIYANET_CAL, pages); else pages();
   });
   nearPage(lang);
   aboutPage(lang);

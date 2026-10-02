@@ -590,3 +590,11 @@ body.bare { background: var(--surface); margin: 0; }
 .conv-box input, .conv-box select, .hg-year input { font: inherit; color: var(--text); background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; min-width: 0; }
 .conv-box .btn-primary { justify-self: start; align-self: flex-start; }
 .conv-out { margin: 0; font-weight: 700; color: var(--emerald-2); min-height: 1.4em; }
+
+/* Hijri calendar: the visitor's country and adjustment */
+.hcountry { margin: 16px 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.hcountry label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 700; }
+.hcountry select { font: inherit; color: var(--text); background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; max-width: 100%; }
+.hcountry p { margin: 8px 0 0; }
+.hc-adj { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.hc-adj [aria-pressed="true"] { background: var(--gold-soft); border-color: var(--gold-bright); }

@@ -273,7 +273,20 @@
   }
 
   // Umm al-Qura calendar numbers from Intl, month names from our own translations.
+  // A national calendar published in advance (Turkey: Diyanet), as month starts; null = Umm al-Qura only.
+  // rows: [Hijri year, month, Gregorian year, month, day]; the last row only ends the month before it.
+  var CAL = null;
+  function useCalendar(rows) {
+    CAL = rows && rows.length ? rows.map(function (r) { return [Date.UTC(r[2], r[3] - 1, r[4]) / 864e5, r[0], r[1]]; }) : null;
+  }
+  function calDay(dn) {
+    if (!CAL || dn < CAL[0][0] || dn >= CAL[CAL.length - 1][0]) return null;
+    for (var i = CAL.length - 2; i >= 0; i--) if (dn >= CAL[i][0]) return { d: dn - CAL[i][0] + 1, m: CAL[i][2], y: CAL[i][1] };
+    return null;
+  }
   function hijriParts(y, m, d, adj) {
+    var c = calDay(Date.UTC(y, m - 1, d + (adj || 0)) / 864e5);
+    if (c) return c;
     var o = {};
     dtf('en-u-ca-islamic-umalqura', { timeZone: 'UTC', day: 'numeric', month: 'numeric', year: 'numeric' })
       .formatToParts(new Date(Date.UTC(y, m - 1, d + (adj || 0), 12)))
@@ -699,6 +712,14 @@
   // Gregorian date of an Umm al-Qura date, or null when that day does not exist (day 30 of a 29-day month).
   // Starts from the arithmetic Hijri calendar, then steps to the exact Umm al-Qura day.
   function hijriToGregorian(hy, hm, hd) {
+    if (CAL) {
+      for (var c = 0; c < CAL.length - 1; c++) {
+        if (CAL[c][1] !== hy || CAL[c][2] !== hm) continue;
+        if (hd > CAL[c + 1][0] - CAL[c][0]) return null;
+        var cd = new Date((CAL[c][0] + hd - 1) * 864e5);
+        return { y: cd.getUTCFullYear(), m: cd.getUTCMonth() + 1, d: cd.getUTCDate() };
+      }
+    }
     var jd = hd + Math.ceil(29.5 * (hm - 1)) + (hy - 1) * 354 + Math.floor((3 + 11 * hy) / 30) + 1948439;
     var base = (jd - 2440588) * 864e5, offs = [0, 1, -1, 2, -2, 3, -3];
     for (var k = 0; k < offs.length; k++) {
@@ -715,9 +736,10 @@
     return dtf(ctx.L.locale + '-u-ca-gregory', { month: 'short', timeZone: 'UTC' }).format(civil(y, m, 1));
   }
   // A Hijri month as a week grid (first column = firstDay, 0 = Sunday), each day with its Gregorian date.
-  function renderHijriGrid(hy, hm, ctx, today, firstDay) {
+  function renderHijriGrid(hy, hm, ctx, today, firstDay, adj) {
     var s0 = hijriToGregorian(hy, hm, 1);
     if (!s0) return null;
+    if (adj) { var sh = new Date(Date.UTC(s0.y, s0.m - 1, s0.d - adj)); s0 = { y: sh.getUTCFullYear(), m: sh.getUTCMonth() + 1, d: sh.getUTCDate() }; }
     var n = hijriMonthDays(hy, hm), start = civil(s0.y, s0.m, s0.d), lead = (start.getUTCDay() - firstDay + 7) % 7;
     var head = '<thead><tr>';
     for (var i = 0; i < 7; i++) head += '<th scope="col">' + esc(gregorian(2026, 1, 4 + (firstDay + i) % 7, 'weekday', ctx)) + '</th>';
@@ -765,6 +787,6 @@
     sectPicker: sectPicker, renderToday: renderToday, renderMonth: renderMonth, qiblaCard: qiblaCard,
     distanceKm: distanceKm, renderJumuah: renderJumuah, renderPrayerLive: renderPrayerLive, hijri: hijri, hijriParts: hijriParts,
     renderRamadan: renderRamadan, METHOD_SLUG: METHOD_SLUG, qibla: qibla, KAABA: KAABA, addDays: addDays, pre: pre,
-    hijriToGregorian: hijriToGregorian, hijriMonthDays: hijriMonthDays, hijriText: hijriText, renderHijriGrid: renderHijriGrid,
+    hijriToGregorian: hijriToGregorian, hijriMonthDays: hijriMonthDays, useCalendar: useCalendar, hijriText: hijriText, renderHijriGrid: renderHijriGrid,
   };
 }));
