@@ -325,20 +325,25 @@ function listJoin(lang, items) {
   return new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' }).format(items);
 }
 
-// Fonts load without blocking the first paint: text shows in a system font, then swaps in.
-// FONT_ONLOAD is the site's only inline script; the Content-Security-Policy allows it by hash.
-const FONT_ONLOAD = "this.media='all'";
+// Fonts are served from this site (src/fonts/, downloaded from Google Fonts, SIL Open Font License):
+// no third-party connection before the first paint. Each page inlines the @font-face rules it needs and
+// preloads the Latin face; font-display: optional means a font that is late is used from the next page on.
+const FONT_DATA = JSON.parse(read('src/fonts/fonts.json'));
+const FONT_FILES = {};
+Object.values(FONT_DATA).flat().forEach((f) => {
+  const buf = fs.readFileSync(path.join(ROOT, 'src', 'fonts', f.file));
+  FONT_FILES[f.file] = { buf, url: `/assets/fonts/${f.file.replace(/\.woff2$/, '')}.${shortHash(buf)}.woff2` };
+});
+// Which downloaded family each language's script needs (Latin text uses Manrope everywhere).
+const LANG_FONT = { ur: 'nastaliq', hi: 'devanagari', bn: 'bengali', fa: 'vazirmatn', ps: 'notoarabic', ar: 'notoarabic' };
+Object.keys(LANGS).forEach((l) => { if (LANGS[l].gfont && !LANG_FONT[l]) problems.push(`fonts: no self-hosted font for ${l}`); });
+const fontFace = (f) => `@font-face{font-family:'${f.family}';font-style:normal;font-weight:${f.weight};font-display:optional;` +
+  `src:url(${FONT_FILES[f.file].url}) format('woff2')${f.range ? `;unicode-range:${f.range}` : ''}}`;
 function fontLinks(lang) {
-  const fams = ['Manrope:wght@400;600;700;800'];
-  if (LANGS[lang].gfont) fams.push(LANGS[lang].gfont);
-  const sheets = [
-    `https://fonts.googleapis.com/css2?${fams.map((f) => `family=${f}`).join('&amp;')}&amp;display=optional`,
-    `https://fonts.googleapis.com/css2?family=Amiri&amp;display=optional&amp;text=${encodeURIComponent(AMIRI_TEXT)}`,
-  ];
-  return '<link rel="preconnect" href="https://fonts.googleapis.com">' +
-    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-    sheets.map((h) => `<link rel="stylesheet" href="${h}" media="print" onload="${FONT_ONLOAD}">`).join('') +
-    `<noscript>${sheets.map((h) => `<link rel="stylesheet" href="${h}">`).join('')}</noscript>`;
+  const sets = ['manrope', 'amiri'].concat(LANG_FONT[lang] ? [LANG_FONT[lang]] : []);
+  const latin = FONT_DATA.manrope.find((f) => f.file === 'manrope-latin.woff2');
+  return `<link rel="preload" href="${FONT_FILES[latin.file].url}" as="font" type="font/woff2" crossorigin>` +
+    `<style>${sets.map((k) => FONT_DATA[k].map(fontFace).join('')).join('')}</style>`;
 }
 
 function settingsDialog(lang) {
@@ -1440,6 +1445,7 @@ legalPages();
 
 stopIfProblems();
 write(ASSET.js.slice(1), JS);
+Object.values(FONT_FILES).forEach((f) => write(f.url.slice(1), f.buf));
 // Share cards and logo made by scripts/og-images.js (npm run og).
 fs.readdirSync(path.join(ROOT, 'src', 'og')).forEach((f) => write(`og/${f}`, fs.readFileSync(path.join(ROOT, 'src', 'og', f))));
 write('logo.png', fs.readFileSync(path.join(ROOT, 'src', 'logo.png')));
@@ -1512,14 +1518,14 @@ write('llms.txt', [
 // One address per page: http and the other www form both redirect (301) to siteUrl.
 const HOST = new URL(SITE).host;
 const OTHER_HOST = HOST.startsWith('www.') ? HOST.slice(4) : `www.${HOST}`;
-// Security policy. Scripts only from this site, plus the one inline font loader (by hash); JSON data
-// blocks are never executed. Styles are inline (<style>) and from Google Fonts; the only frame is the
+// Security policy. Scripts, styles and fonts only from this site (plus inline <style>); JSON data
+// blocks are never executed. The only frame is the
 // Google Maps mosque embed; nothing may frame this site.
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-hashes' 'sha256-${crypto.createHash('sha256').update(FONT_ONLOAD).digest('base64')}'`,
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src https://fonts.gstatic.com",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self'",
   "img-src 'self' data:",
   "connect-src 'self' https://api.web3forms.com",
   "frame-src 'self' https://maps.google.com https://www.google.com",
@@ -1555,11 +1561,12 @@ write('.htaccess', [
   'AddDefaultCharset utf-8',
   'AddType application/json .json',
   'AddType text/plain .txt',
+  'AddType font/woff2 .woff2',
   '<IfModule mod_deflate.c>',
   '  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json application/xml image/svg+xml',
   '</IfModule>',
   '<IfModule mod_headers.c>',
-  '  <FilesMatch "\\.[0-9a-f]{10}\\.(css|js|json)$">',
+  '  <FilesMatch "\\.[0-9a-f]{10}\\.(css|js|json|woff2)$">',
   '    Header set Cache-Control "public, max-age=31536000, immutable"',
   '  </FilesMatch>',
   '  <FilesMatch "\\.(html|xml|txt)$">',
