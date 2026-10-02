@@ -91,7 +91,7 @@ var VARIANTS = {
  * Placeholders as above; no date in the answer (it would be in English).
  */
 function L(term, latin, q, a) { return { term: term, latin: latin, q: q, a: a }; }
-var BS = L('Vaktija', true, 'Vaktija {city}: koja su namaska vremena danas?', 'Vaktija za {city} danas: zora {fajr}, izlazak sunca {sunrise}, podne {dhuhr}, ikindija {asr}, akšam {maghrib}, jacija {isha}.');
+var BS = L('Vaktija', true, 'Vaktija {city}: koja su namaska vremena danas?', 'Vaktija {city}, danas: zora {fajr}, izlazak sunca {sunrise}, podne {dhuhr}, ikindija {asr}, akšam {maghrib}, jacija {isha}.');
 var SQ = L('Kohët e namazit', true, 'Cilat janë kohët e namazit në {city} sot?', 'Kohët e namazit në {city} sot: sabahu {fajr}, lindja e diellit {sunrise}, dreka {dhuhr}, ikindia {asr}, akshami {maghrib}, jacia {isha}.');
 var RU = L('Время намаза', false, 'Какое время намаза на сегодня ({city})?', 'Время намаза на сегодня ({city}): фаджр {fajr}, восход {sunrise}, зухр {dhuhr}, аср {asr}, магриб {maghrib}, иша {isha}.');
 var SW = L('Nyakati za sala', true, 'Nyakati za sala {city} leo ni saa ngapi?', 'Nyakati za sala {city} leo: alfajiri {fajr}, macheo {sunrise}, adhuhuri {dhuhr}, alasiri {asr}, magharibi {maghrib}, isha {isha}.');
