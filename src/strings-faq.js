@@ -1,0 +1,47 @@
+/*
+ * City page questions people search for each prayer: "what time is Fajr in Lahore today" and
+ * "how much time is left". Merged into STRINGS (and sent to the browser, which redraws the answers live).
+ * qAt/aAt: {prayer} {city} {start} {end}; qLeft/aLeft: {city} {next} {time}.
+ */
+'use strict';
+
+var FAQ2 = {
+  en: { qAt: 'What time is {prayer} in {city} today?', aAt: '{prayer} in {city} today: from {start} to {end}.',
+    qLeft: 'How much time is left until the next prayer in {city}?', aLeft: 'The countdown at the top of this page shows the time left until the next prayer, updated every second. Next is {next} at {time}.' },
+  ur: { qAt: 'آج {city} میں {prayer} کا وقت کیا ہے؟', aAt: 'آج {city} میں {prayer} کا وقت {start} سے {end} تک ہے۔',
+    qLeft: '{city} میں اگلی نماز میں کتنا وقت باقی ہے؟', aLeft: 'اس صفحے کے اوپر الٹی گنتی اگلی نماز تک باقی وقت دکھاتی ہے اور ہر سیکنڈ اپ ڈیٹ ہوتی ہے۔ اگلی نماز {next} ہے، {time} پر۔' },
+  hi: { qAt: 'आज {city} में {prayer} का समय क्या है?', aAt: 'आज {city} में {prayer} का समय {start} से {end} तक है।',
+    qLeft: '{city} में अगली नमाज़ में कितना समय बाक़ी है?', aLeft: 'इस पेज के ऊपर उलटी गिनती अगली नमाज़ तक बाक़ी समय दिखाती है और हर सेकंड अपडेट होती है। अगली नमाज़ {next} है, {time} पर।' },
+  bn: { qAt: 'আজ {city}-এ {prayer}-এর সময় কখন?', aAt: 'আজ {city}-এ {prayer}-এর সময় {start} থেকে {end} পর্যন্ত।',
+    qLeft: '{city}-এ পরের নামাজের আর কত সময় বাকি?', aLeft: 'এই পাতার ওপরের কাউন্টডাউন পরের নামাজ পর্যন্ত বাকি সময় দেখায় এবং প্রতি সেকেন্ডে হালনাগাদ হয়। পরের নামাজ {next}, {time}-এ।' },
+  id: { qAt: '{prayer} di {city} jam berapa hari ini?', aAt: 'Hari ini waktu {prayer} di {city} mulai pukul {start} sampai {end}.',
+    qLeft: 'Berapa lama lagi sampai waktu sholat berikutnya di {city}?', aLeft: 'Hitung mundur di bagian atas halaman ini menunjukkan sisa waktu sampai sholat berikutnya, diperbarui setiap detik. Berikutnya {next} pukul {time}.' },
+  ms: { qAt: '{prayer} di {city} pukul berapa hari ini?', aAt: 'Hari ini waktu {prayer} di {city} dari pukul {start} hingga {end}.',
+    qLeft: 'Berapa lama lagi sebelum waktu solat seterusnya di {city}?', aLeft: 'Kiraan detik di bahagian atas halaman ini menunjukkan baki masa sebelum solat seterusnya, dikemas kini setiap saat. Seterusnya {next} pada pukul {time}.' },
+  fa: { qAt: 'وقت {prayer} امروز در {city} چه ساعتی است؟', aAt: 'وقت {prayer} امروز در {city} از {start} تا {end} است.',
+    qLeft: 'تا نماز بعدی در {city} چقدر وقت مانده است؟', aLeft: 'شمارش معکوس بالای این صفحه زمان باقی‌مانده تا نماز بعدی را نشان می‌دهد و هر ثانیه به‌روز می‌شود. نماز بعدی {next} در ساعت {time} است.' },
+  ps: { qAt: 'نن په {city} کې د {prayer} وخت څو بجې دی؟', aAt: 'نن په {city} کې د {prayer} وخت له {start} څخه تر {end} پورې دی.',
+    qLeft: 'په {city} کې راتلونکي لمانځه ته څومره وخت پاتې دی؟', aLeft: 'د دې پاڼې په سر کې شمېرنه راتلونکي لمانځه ته پاتې وخت ښيي او هره ثانیه تازه کېږي. راتلونکی لمونځ {next} دی، په {time}.' },
+  es: { qAt: '¿A qué hora es {prayer} hoy en {city}?', aAt: '{prayer} hoy en {city}: de {start} a {end}.',
+    qLeft: '¿Cuánto falta para la próxima oración en {city}?', aLeft: 'La cuenta atrás en la parte superior de esta página muestra el tiempo que falta para la próxima oración y se actualiza cada segundo. La próxima es {next}, a las {time}.' },
+  fr: { qAt: 'À quelle heure est {prayer} aujourd’hui à {city} ?', aAt: '{prayer} aujourd’hui à {city} : de {start} à {end}.',
+    qLeft: 'Combien de temps reste-t-il avant la prochaine prière à {city} ?', aLeft: 'Le compte à rebours en haut de cette page indique le temps restant avant la prochaine prière, mis à jour chaque seconde. La prochaine est {next}, à {time}.' },
+  ar: { qAt: 'متى وقت {prayer} اليوم في {city}؟', aAt: 'وقت {prayer} اليوم في {city} من {start} إلى {end}.',
+    qLeft: 'كم بقي على الصلاة القادمة في {city}؟', aLeft: 'يعرض العد التنازلي أعلى هذه الصفحة الوقت المتبقي حتى الصلاة القادمة، ويتحدّث كل ثانية. الصلاة القادمة {next} الساعة {time}.' },
+  tr: { qAt: 'Bugün {city} için {prayer} vakti saat kaçta?', aAt: 'Bugün {city} için {prayer} vakti {start} ile {end} arasındadır.',
+    qLeft: '{city} için bir sonraki namaza ne kadar kaldı?', aLeft: 'Bu sayfanın üstündeki geri sayım, bir sonraki namaza kalan süreyi gösterir ve her saniye güncellenir. Sıradaki vakit {next}, saat {time}.' },
+  ha: { qAt: 'Yaushe ne lokacin {prayer} a {city} yau?', aAt: 'Lokacin {prayer} a {city} yau daga {start} zuwa {end}.',
+    qLeft: 'Saura lokaci nawa kafin sallah ta gaba a {city}?', aLeft: 'Ƙirgen baya a saman wannan shafi yana nuna lokacin da ya rage kafin sallah ta gaba, ana sabunta shi kowace daƙiƙa. Ta gaba ita ce {next} da ƙarfe {time}.' },
+  de: { qAt: 'Wann ist heute {prayer} in {city}?', aAt: '{prayer} heute in {city}: von {start} bis {end}.',
+    qLeft: 'Wie lange ist es noch bis zum nächsten Gebet in {city}?', aLeft: 'Der Countdown oben auf dieser Seite zeigt sekundengenau, wie lange es noch bis zum nächsten Gebet dauert. Als Nächstes: {next} um {time}.' },
+  pt: { qAt: 'A que horas é {prayer} hoje em {city}?', aAt: '{prayer} hoje em {city}: das {start} às {end}.',
+    qLeft: 'Quanto tempo falta para a próxima oração em {city}?', aLeft: 'A contagem regressiva no topo desta página mostra quanto falta para a próxima oração, atualizada a cada segundo. A próxima é {next}, às {time}.' },
+  it: { qAt: 'A che ora è {prayer} oggi a {city}?', aAt: '{prayer} oggi a {city}: dalle {start} alle {end}.',
+    qLeft: 'Quanto manca alla prossima preghiera a {city}?', aLeft: 'Il conto alla rovescia in cima a questa pagina mostra quanto manca alla prossima preghiera, aggiornato ogni secondo. La prossima è {next}, alle {time}.' },
+  ja: { qAt: '今日の{city}の{prayer}は何時ですか？', aAt: '今日の{city}の{prayer}は{start}から{end}までです。',
+    qLeft: '{city}で次の礼拝まであとどれくらいですか？', aLeft: 'このページ上部のカウントダウンが、次の礼拝までの残り時間を毎秒更新で表示します。次は{next}（{time}）です。' },
+  ko: { qAt: '오늘 {city}의 {prayer} 시간은 언제인가요?', aAt: '오늘 {city}의 {prayer} 시간은 {start}부터 {end}까지입니다.',
+    qLeft: '{city}에서 다음 예배까지 얼마나 남았나요?', aLeft: '이 페이지 위쪽의 카운트다운이 다음 예배까지 남은 시간을 매초 보여 줍니다. 다음은 {next}, {time}입니다.' },
+};
+
+if (typeof module === 'object' && module.exports) module.exports = { FAQ2: FAQ2 };

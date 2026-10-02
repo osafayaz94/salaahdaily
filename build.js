@@ -42,6 +42,11 @@ const LEGAL = require('./src/pages-legal');
     COUNTRY_FAQ[l] = MORE[l].COUNTRY_FAQ.slice();
   });
 })();
+// City page questions per prayer (src/strings-faq.js), in every language.
+(function () {
+  const { FAQ2 } = require('./src/strings-faq');
+  Object.keys(LANGS).forEach((l) => { if (!FAQ2[l]) throw new Error(`strings-faq.js: no strings for ${l}`); Object.assign(STRINGS[l], FAQ2[l]); });
+})();
 // Strings added later (corrections, home page Ramadan section), in every language.
 (function () {
   const { EXTRA } = require('./src/guides-extra');
@@ -289,7 +294,7 @@ function locOf(ci, lang) {
   return { name: nameIn(ci.names, lang, c), lat: ci.lat, lng: ci.lng, tz: ci.tz, method: ci.method, jafariMethod: c.jafariMethod, extraCalendar: c.extraCalendar };
 }
 // Only the strings the browser script renders; titles, descriptions and static copy stay out of the page data.
-const CLIENT_KEYS = ['sects', 'prayers', 'sectLabel', 'nextIn', 'tomorrow', 'localTime', 'next', 'now', 'methodLine',
+const CLIENT_KEYS = ['qAt', 'aAt', 'qLeft', 'aLeft', 'sects', 'prayers', 'sectLabel', 'nextIn', 'tomorrow', 'localTime', 'next', 'now', 'methodLine',
   'asrTwice', 'asrOnce', 'sameTimes', 'maghribAngle', 'changeMethod', 'summary', 'monthTitle', 'range', 'colDate', 'colHijri',
   'qibla', 'qiblaFrom', 'kaaba', 'hijriMonths', 'hijriEra', 'openLast', 'noGeo', 'geoBlocked', 'locating', 'yourLocation',
   'methods', 'months', 'weekdays', 'solarMonths', 'solarEra', 'mapsHl', 'mosquesNearYou', 'mosquesLede', 'openInMaps',

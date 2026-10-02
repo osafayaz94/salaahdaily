@@ -63,25 +63,6 @@ var VARIANTS = {
       ],
     },
   },
-  id: {
-    all: {
-      countries: '*',
-      // Indonesian searches ask "jam berapa".
-      faq: [
-        ['Subuh di {city} jam berapa hari ini?', 'Hari ini ({date}) Subuh di {city} pukul {fajr} dan matahari terbit pukul {sunrise}.'],
-        ['Magrib di {city} jam berapa hari ini?', 'Hari ini Magrib di {city} pukul {maghrib} dan Isya pukul {isha}.'],
-      ],
-    },
-  },
-  ms: {
-    all: {
-      countries: '*',
-      faq: [
-        ['Subuh di {city} pukul berapa hari ini?', 'Hari ini ({date}) Subuh di {city} pada pukul {fajr} dan syuruk pada pukul {sunrise}.'],
-        ['Maghrib di {city} pukul berapa hari ini?', 'Hari ini Maghrib di {city} pada pukul {maghrib} dan Isyak pada pukul {isha}.'],
-      ],
-    },
-  },
 };
 
 /*

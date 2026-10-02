@@ -591,6 +591,19 @@
       var fr = fridays(loc, ctx, now, 1)[0];
       items.splice(3, 0, [tpl(ctx.g.qJ, { city: city }), tpl(ctx.g.aJ, { city: city, time: f(fr.at), date: gregorian(fr.y, fr.m, fr.d, 'full', ctx) })]);
     }
+    // One question per prayer (start and end today), then how much time is left until the next one.
+    if (t.qAt) {
+      var ends = { fajr: tt.sunrise, dhuhr: tt.asr, asr: tt.maghrib, maghrib: tt.isha, isha: nafl[nafl.length - 1][2] };
+      ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(function (k) {
+        items.push([tpl(t.qAt, { prayer: t.prayers[k], city: city }), tpl(t.aAt, { prayer: t.prayers[k], city: city, start: f(tt[k]), end: f(ends[k]) })]);
+      });
+      nafl.forEach(function (r) {
+        if (r[0] === 'awwabin') return;
+        items.push([tpl(t.qAt, { prayer: t.nafl[r[0]], city: city }), tpl(t.aAt, { prayer: t.nafl[r[0]], city: city, start: f(r[1]), end: f(r[2]) })]);
+      });
+      var nk = s.next.key;
+      items.push([tpl(t.qLeft, { city: city }), tpl(t.aLeft, { city: city, next: t.prayers[nk] || nk, time: f(s.next.at) })]);
+    }
     // Regional questions go right after the first answer, where people look first.
     var extra = ((loc.v && loc.v.faq) || []).map(function (x) { return [tpl(x[0], vars), tpl(x[1], vars)]; });
     items.splice.apply(items, [1, 0].concat(extra));
