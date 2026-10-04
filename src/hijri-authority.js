@@ -165,4 +165,58 @@ function authLine(slug, countryName, lang) {
   return t[a.type].replace('{country}', countryName).replace('{authority}', name);
 }
 
+
+// Countries whose announced month starts are recorded (src/hijri-national.js): the "follows Umm al-Qura"
+// sentence becomes "follows those announcements, later months estimated".
+var UQ_NOTE = {
+  en: 'Dates here follow the Umm al-Qura calendar and may differ by a day.',
+  ur: 'یہاں تاریخیں ام القریٰ کیلنڈر کے مطابق ہیں اور ایک دن مختلف ہو سکتی ہیں۔',
+  hi: 'यहाँ तारीख़ें उम्म अल-क़ुरा कैलेंडर के अनुसार हैं और एक दिन अलग हो सकती हैं।',
+  bn: 'এখানের তারিখ উম্মুল কুরা ক্যালেন্ডার অনুযায়ী এবং এক দিন আলাদা হতে পারে।',
+  id: 'Tanggal di sini mengikuti kalender Umm al-Qura dan bisa berbeda satu hari.',
+  ms: 'Tarikh di sini mengikut kalendar Umm al-Qura dan mungkin berbeza satu hari.',
+  fa: 'تاریخ‌های اینجا بر پایهٔ تقویم ام‌القری است و ممکن است یک روز تفاوت داشته باشد.',
+  ps: 'دلته نېټې د ام القری له کلیز سره سمې دي او یوه ورځ توپیر کېدای شي.',
+  es: 'Las fechas de aquí siguen el calendario Umm al-Qura y pueden diferir en un día.',
+  fr: 'Les dates ici suivent le calendrier Umm al-Qura et peuvent différer d’un jour.',
+  ar: 'التواريخ هنا بحسب تقويم أم القرى وقد تختلف بيوم.',
+  tr: 'Buradaki tarihler Ümmü’l-Kurâ takvimine göredir ve bir gün farklı olabilir.',
+  ha: 'Kwanakin nan suna bin kalandar Umm al-Qura kuma suna iya bambanta da kwana ɗaya.',
+  de: 'Die Daten hier folgen dem Umm-al-Qura-Kalender und können um einen Tag abweichen.',
+  pt: 'As datas aqui seguem o calendário Umm al-Qura e podem diferir em um dia.',
+  it: 'Le date qui seguono il calendario Umm al-Qura e possono differire di un giorno.',
+  ja: 'ここの日付はウンム・アル＝クラー暦に基づくため、1日異なることがあります。',
+  ko: '여기 날짜는 움 알쿠라 달력을 따르므로 하루 다를 수 있습니다.',
+};
+var REC_NOTE = {
+  en: 'Dates here follow its announcements, and months not announced yet are estimated and may differ by a day.',
+  ur: 'یہاں تاریخیں انہی اعلانات کے مطابق ہیں، اور جن مہینوں کا اعلان ابھی نہیں ہوا ان کی تاریخیں اندازہ ہیں جو ایک دن مختلف ہو سکتی ہیں۔',
+  hi: 'यहाँ तारीख़ें उन्हीं ऐलानों के अनुसार हैं, और जिन महीनों का ऐलान अभी नहीं हुआ उनकी तारीख़ें अनुमान हैं जो एक दिन अलग हो सकती हैं।',
+  bn: 'এখানের তারিখ সেই ঘোষণা অনুযায়ী, আর যে মাসগুলোর ঘোষণা এখনো হয়নি সেগুলোর তারিখ আনুমানিক এবং এক দিন আলাদা হতে পারে।',
+  id: 'Tanggal di sini mengikuti pengumuman tersebut, dan bulan yang belum diumumkan adalah perkiraan yang bisa berbeda satu hari.',
+  ms: 'Tarikh di sini mengikut pengumuman tersebut, dan bulan yang belum diumumkan ialah anggaran yang mungkin berbeza satu hari.',
+  fa: 'تاریخ‌های اینجا بر پایهٔ همین اعلام‌هاست و ماه‌هایی که هنوز اعلام نشده‌اند تخمینی‌اند و ممکن است یک روز تفاوت داشته باشند.',
+  ps: 'دلته نېټې د همدې اعلانونو سره سمې دي، او هغه میاشتې چې لا نه دي اعلان شوې اټکلي دي او یوه ورځ توپیر کېدای شي.',
+  es: 'Las fechas de aquí siguen esos anuncios, y los meses aún no anunciados son estimaciones que pueden diferir en un día.',
+  fr: 'Les dates ici suivent ces annonces, et les mois pas encore annoncés sont des estimations qui peuvent différer d’un jour.',
+  ar: 'التواريخ هنا بحسب هذه الإعلانات، والأشهر التي لم يُعلن عنها بعد تقديرية وقد تختلف بيوم.',
+  tr: 'Buradaki tarihler bu duyurulara göredir; henüz duyurulmamış aylar tahminidir ve bir gün farklı olabilir.',
+  ha: 'Kwanakin nan suna bin waɗannan sanarwoyi, kuma watannin da ba a sanar ba tukuna kiyasi ne da zai iya bambanta da kwana ɗaya.',
+  de: 'Die Daten hier folgen diesen Bekanntgaben; noch nicht bekanntgegebene Monate sind geschätzt und können um einen Tag abweichen.',
+  pt: 'As datas aqui seguem esses anúncios, e os meses ainda não anunciados são estimativas que podem diferir em um dia.',
+  it: 'Le date qui seguono questi annunci, e i mesi non ancora annunciati sono stime che possono differire di un giorno.',
+  ja: 'ここの日付はその発表に基づき、まだ発表されていない月は推定のため、1日異なることがあります。',
+  ko: '여기 날짜는 그 발표를 따르며, 아직 발표되지 않은 달은 추정이므로 하루 다를 수 있습니다.',
+};
+Object.keys(AT).forEach(function (l) {
+  ['sight', 'mixed'].forEach(function (k) {
+    if (AT[l][k].slice(-UQ_NOTE[l].length) !== UQ_NOTE[l]) throw new Error('hijri-authority: ' + l + '.' + k + ' does not end with the Umm al-Qura note');
+    AT[l][k + 'Rec'] = AT[l][k].slice(0, -UQ_NOTE[l].length) + REC_NOTE[l];
+  });
+});
+var NATIONAL = require('./hijri-national').NATIONAL;
+Object.keys(NATIONAL).forEach(function (c) {
+  if (AUTH[c] && (AUTH[c].type === 'sight' || AUTH[c].type === 'mixed')) AUTH[c].type += 'Rec';
+});
+
 if (typeof module === 'object' && module.exports) module.exports = { AUTH: AUTH, AT: AT, authLine: authLine };

@@ -598,3 +598,11 @@ body.bare { background: var(--surface); margin: 0; }
 .hcountry p { margin: 8px 0 0; }
 .hc-adj { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .hc-adj [aria-pressed="true"] { background: var(--gold-soft); border-color: var(--gold-bright); }
+/* Crescent prediction on the Hijri calendar page */
+.mc-list { list-style: none; padding: 0; margin: 8px 0; }
+.mc-list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 10px 0; }
+.mc-list li + li { border-top: 1px solid var(--line); }
+.mc-list .small { flex-basis: 100%; }
+.mc-z { padding: 2px 10px; border-radius: 999px; font-size: 0.875rem; background: var(--surface-2); }
+.mc-A, .mc-B { background: color-mix(in srgb, var(--emerald) 18%, transparent); }
+.mc-C { background: color-mix(in srgb, var(--gold-soft) 60%, transparent); }

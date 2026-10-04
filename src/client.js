@@ -336,7 +336,7 @@
     var hc = P.hc, cx, zone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', tp = C.partsInTz(new Date(), zone), th, gy, gm, country;
     function setCountry(slug) {
       country = slug;
-      C.useCalendar(slug === 'turkey' ? P.diyanet : null);
+      C.useCalendar(P.natCal[slug] || null);
       $('hcCountry').value = slug; $('hcAuth').textContent = authFor(slug);
     }
     function refresh(keepMonth) {
@@ -406,14 +406,37 @@
     });
   })();
 
+  // Crescent prediction (src/moon.js, loaded only here): redrawn for the visitor's last city and their clock format.
+  if (P.kind === 'hijri' && $('mcOut') && window.Moon && P.moon) (function () {
+    var last = lastLoc(), loc = last ? last.loc : P.ml, cx = ctx();
+    var dayOf = function (ms) { var p = C.partsInTz(new Date(ms), loc.tz); return Date.UTC(p.y, p.m - 1, p.d); };
+    var res = Moon.crescent(Date.now() - 2 * 864e5, loc.lat, loc.lng, dayOf);
+    if (!res) return;
+    var af = new Date(res.conj + 3 * 864e5), hm = C.hijriParts(af.getUTCFullYear(), af.getUTCMonth() + 1, af.getUTCDate(), 0);
+    $('mcH').textContent = C.tpl(P.moon.h, { month: P.t.hijriMonths[hm.m - 1] + ' ' + C.num(hm.y, cx) });
+    $('mcLoc').textContent = C.tpl(P.moon.loc, { city: loc.name });
+    $('mcOut').innerHTML = Moon.html(res, P.moon, {
+      esc: C.esc, time: function (ms) { return C.fmtTime(new Date(ms), loc.tz, cx); },
+      date: function (ms) { var p = C.partsInTz(new Date(ms), 'UTC'); return C.gregorian(p.y, p.m, p.d, 'short', cx); },
+    });
+  })();
+
   // Islamic date pages: days left until the event, counted in the visitor's own time zone.
   if (P.kind === 'event' && $('evDays') && P.evDate) {
     var ez = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', et = C.partsInTz(new Date(), ez), ed = P.evDate.split('-');
+    // A country with its own calendar (announced or published) moves the date before the Settings shift.
+    var evC = P.cn ? visitorCountry() : null, evNat = evC && P.natCal && P.natCal[evC], evMoved = false;
+    if (evNat && P.evH) {
+      C.useCalendar(evNat);
+      var ng = C.hijriToGregorian(P.evH[0], P.evH[1], P.evH[2]);
+      C.useCalendar(null);
+      if (ng && (ng.y !== +ed[0] || ng.m !== +ed[1] || ng.d !== +ed[2])) { ed = [ng.y, ng.m, ng.d]; evMoved = true; }
+    }
     var evAdj = S.hijriAdj || 0, evUtc = Date.UTC(+ed[0], +ed[1] - 1, +ed[2] - evAdj);
-    if ($('evAuth') && P.cn) $('evAuth').textContent = authFor(visitorCountry());
-    if (evAdj) {
-      var eg = new Date(evUtc);
-      $('evAdj').textContent = adjText() + ' ' + C.tpl(P.authT.evAdj, { date: C.gregorian(eg.getUTCFullYear(), eg.getUTCMonth() + 1, eg.getUTCDate(), 'full', ctx()) });
+    if ($('evAuth') && P.cn) $('evAuth').textContent = authFor(evC);
+    if (evAdj || evMoved) {
+      var eg = new Date(evUtc), egs = C.gregorian(eg.getUTCFullYear(), eg.getUTCMonth() + 1, eg.getUTCDate(), 'full', ctx());
+      $('evAdj').textContent = evAdj ? adjText() + ' ' + C.tpl(P.authT.evAdj, { date: egs }) : P.cn[evC] + ': ' + egs;
       $('evAdj').hidden = false;
     }
     var left = Math.round((evUtc - Date.UTC(et.y, et.m - 1, et.d)) / 864e5);

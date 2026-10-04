@@ -20,7 +20,9 @@ var VARIANTS = {
         ['متى الشروق غدًا في {city}؟', 'الشروق غدًا ({dateTomorrow}) في {city} الساعة {sunriseTomorrow}، وأذان الفجر الساعة {fajrTomorrow}.'],
       ],
       // The Maghreb searches "أوقات الصلاة" rather than "مواقيت الصلاة".
-      cityTitleByCountry: Object.fromEntries(["morocco","algeria","tunisia","libya","mauritania"].map((c) => [c, 'أوقات الصلاة في {city} اليوم وأذان الفجر، {country} | SalaahDaily'])),
+      // Egypt searches "موعد اذان الفجر" and "موعد اذان المغرب" most.
+      cityTitleByCountry: Object.assign(Object.fromEntries(["morocco","algeria","tunisia","libya","mauritania"].map((c) => [c, 'أوقات الصلاة في {city} اليوم وأذان الفجر، {country} | SalaahDaily'])),
+        { egypt: 'مواقيت الصلاة في {city} اليوم وموعد أذان الفجر والمغرب | SalaahDaily' }),
       faqByCountry: Object.assign(Object.fromEntries(["morocco","algeria","tunisia","libya","mauritania"].map((c) => [c, [
         ['ما هي أوقات الصلاة في {city} اليوم؟', 'أوقات الصلاة في {city} اليوم ({date}): الفجر {fajr}، الشروق {sunrise}، الظهر {dhuhr}، العصر {asr}، المغرب {maghrib}، العشاء {isha}.'],
       ]])), {
@@ -28,6 +30,9 @@ var VARIANTS = {
         egypt: [
           ['ما هي مواعيد الصلاة في {city} اليوم؟', 'مواعيد الصلاة في {city} اليوم ({date}): الفجر {fajr}، الظهر {dhuhr}، العصر {asr}، المغرب {maghrib}، العشاء {isha}.'],
           ['الفجر بيأذن الساعة كام في {city} النهارده؟', 'الفجر بيأذن في {city} النهارده الساعة {fajr}، والشروق الساعة {sunrise}.'],
+          ['المغرب والعشاء بيأذنوا الساعة كام في {city} النهارده؟', 'المغرب بيأذن في {city} النهارده الساعة {maghrib}، والعشاء الساعة {isha}.'],
+          ['الظهر والعصر بيأذنوا الساعة كام في {city} النهارده؟', 'الظهر بيأذن في {city} النهارده الساعة {dhuhr}، والعصر الساعة {asr}.'],
+          ['الشروق الساعة كام في {city} بكرة؟', 'الشروق في {city} بكرة ({dateTomorrow}) الساعة {sunriseTomorrow}، والفجر بيأذن الساعة {fajrTomorrow}.'],
         ],
       }),
     },

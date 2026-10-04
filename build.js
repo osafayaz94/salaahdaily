@@ -44,10 +44,41 @@ const LEGAL = require('./src/pages-legal');
 })();
 // Hijri calendar converter and grid (src/strings-hijri.js), in every language.
 const { HC } = require('./src/strings-hijri');
-const { DIYANET: DIYANET_CAL } = require('./src/hijri-diyanet');
+const { NATIONAL } = require('./src/hijri-national');
+const Moon = require('./src/moon');
+const { MOON } = require('./src/strings-moon');
+Object.keys(LANGS).forEach((l) => { if (!MOON[l]) problems.push(`strings-moon.js: no strings for ${l}`); });
 const { AUTH, AT, authLine } = require('./src/hijri-authority');
 Object.keys(LANGS).forEach((l) => { if (!AT[l]) problems.push(`hijri-authority.js: no strings for ${l}`); });
-// Turkey's pages follow Diyanet's published calendar (set while they are built, and sent to the browser).
+// Countries with a national calendar (src/hijri-national.js: Diyanet's published one, or recorded moon-sighting
+// announcements) use it while their pages are built, and the browser gets the same table.
+// After the newest announced month, months are estimated: Umm al-Qura month starts moved by the country's last
+// difference from it (at most one day), each month kept to 29 or 30 days. One month is added before the first row.
+const ESTIMATE_MONTHS = 18;
+function nationalCalendar(slug) {
+  const n = NATIONAL[slug];
+  if (!n) return null;
+  Core.useCalendar(null);
+  const dn = (r) => Date.UTC(r[2], r[3] - 1, r[4]) / 864e5;
+  const uq = (hy, hm) => { const g = Core.hijriToGregorian(hy, hm, 1); return Date.UTC(g.y, g.m - 1, g.d) / 864e5; };
+  const step = (hy, hm, k) => { const i = hy * 12 + hm - 1 + k; return [Math.floor(i / 12), (i % 12) + 1]; };
+  const row = (hy, hm, d) => { const g = new Date(d * 864e5); return [hy, hm, g.getUTCFullYear(), g.getUTCMonth() + 1, g.getUTCDate()]; };
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const rows = n.rows.slice();
+  const first = rows[0], [py, pm] = step(first[0], first[1], -1), off0 = clamp(dn(first) - uq(first[0], first[1]), -1, 1);
+  rows.unshift(row(py, pm, clamp(uq(py, pm) + off0, dn(first) - 30, dn(first) - 29)));
+  if (n.open) {
+    const last = rows[rows.length - 1], off = clamp(dn(last) - uq(last[0], last[1]), -1, 1);
+    let prev = dn(last);
+    for (let k = 1; k <= ESTIMATE_MONTHS; k++) {
+      const [hy, hm] = step(last[0], last[1], k), d = clamp(uq(hy, hm) + off, prev + 29, prev + 30);
+      rows.push(row(hy, hm, d)); prev = d;
+    }
+  }
+  return rows;
+}
+const NATIONAL_CAL = {};
+Object.keys(NATIONAL).forEach((c) => { NATIONAL_CAL[c] = nationalCalendar(c); });
 let CURRENT_CAL = null;
 const withCalendar = (rows, fn) => { CURRENT_CAL = rows; Core.useCalendar(rows); try { fn(); } finally { CURRENT_CAL = null; Core.useCalendar(null); } };
 Object.keys(LANGS).forEach((l) => { if (!HC[l]) problems.push(`strings-hijri.js: no strings for ${l}`); });
@@ -235,7 +266,13 @@ function ogLocale(tag, lang) { return tag.includes('-') ? tag.replace('-', '_') 
 const cluster = (fn, country) => ALL_LANGS.map((l) => ({ lang: l, tag: langTag(l, country), href: fn(l) }));
 // Index scope for the templated city and Ramadan pages: English plus the country's own languages.
 // Other language copies are still built for visitors, but are noindex and left out of hreflang and the sitemaps.
-const inScope = (lang, country) => lang === 'en' || country.langs.includes(lang);
+// Communities that search in another language (Search Console, Oct 2026): their city pages are indexed too.
+// Arabic in Western Europe (Maghreb and Syrian communities), Turkish in France, Persian in Iraq (pilgrims to
+// Karbala, Najaf and Samarra), Bengali and Urdu in the Gulf (workers from Bangladesh and Pakistan).
+const GULF_LANGS = ['bn', 'ur'];
+const INDEX_ALSO = { france: ['ar', 'tr'], spain: ['ar'], italy: ['ar'], germany: ['ar'], netherlands: ['ar'], belgium: ['ar'], iraq: ['fa'],
+  'saudi-arabia': GULF_LANGS, uae: GULF_LANGS, qatar: GULF_LANGS, kuwait: GULF_LANGS, bahrain: GULF_LANGS, oman: GULF_LANGS };
+const inScope = (lang, country) => lang === 'en' || country.langs.includes(lang) || (INDEX_ALSO[country.slug] || []).includes(lang);
 const scopedCluster = (fn, country) => cluster(fn, country).filter((a) => inScope(a.lang, country));
 
 /* ---------- Assets ---------- */
@@ -254,6 +291,8 @@ const CSS = minifyCss(read('src/style.css'));
 const JS = [read('src/vendor/adhan.umd.min.js'), minifyJs(read('src/core.js')), minifyJs(read('src/client.js'))].join('\n;\n');
 // Pages that never calculate times (about, contact, privacy, terms, 404) skip the adhan library.
 const JS_LITE = [minifyJs(read('src/core.js')), minifyJs(read('src/client.js'))].join('\n;\n');
+// The crescent prediction, only on the Hijri calendar page.
+const JS_MOON = minifyJs(read('src/moon.js'));
 const CITIES_JSON = JSON.stringify({
   countries: Object.fromEntries(COUNTRIES.map((c) => [c.slug, {
     tz: c.tz, method: c.method, jafariMethod: c.jafariMethod, defaultSect: c.defaultSect, extraCalendar: c.extraCalendar,
@@ -281,6 +320,7 @@ ALL_LANGS.forEach((lang) => {
 const ASSET = {
   js: `/assets/app.${shortHash(JS)}.js`,
   jsLite: `/assets/lite.${shortHash(JS_LITE)}.js`,
+  moon: `/assets/moon.${shortHash(JS_MOON)}.js`,
   cities: `/assets/cities.${shortHash(CITIES_JSON)}.json`,
 };
 const HAYYA_AR = 'حَيَّ عَلَى الصَّلَاةِ، حَيَّ عَلَى الْفَلَاحِ';
@@ -588,6 +628,7 @@ function addPage(o) {
     settingsDialog(lang) +
     footer(lang, o.data.kind) +
     `<script id="page-data" type="application/json">${jsonForHtml(o.data)}</script>` +
+    (o.data.kind === 'hijri' ? `<script src="${ASSET.moon}" defer></script>` : '') +
     `<script src="${script}" defer></script>` +
     '</body></html>\n';
 
@@ -693,6 +734,15 @@ function countryPage(lang, c) {
   ];
   // Midnight sun and light summer nights: how the times are estimated, and the options scholars give.
   if (NORDIC.has(c.slug)) faq.push({ q: GUIDES[lang].nordicQ, a: GUIDES[lang].nordicA });
+  // "Fajr time in Kuwait today": the country's first (largest) city answers, named in the answer.
+  const first = locOf(c.cities[0], lang), fq = Core.faqItems(first, ctx, NOW), other = tpl(t.cOther, { country });
+  const atFirst = (k) => fq.find((it) => it.q === tpl(t.qAt, { prayer: t.prayers[k], city: first.name }));
+  const perPrayer = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((k) => {
+    const it = atFirst(k);
+    return it && { q: tpl(t.qAt, { prayer: t.prayers[k], city: country }), a: `${it.a} ${other}` };
+  }).filter(Boolean);
+  if (perPrayer.length !== 5) problems.push(`country FAQ: per-prayer answers missing for ${c.slug} (${lang})`);
+  faq.unshift({ q: tpl(t.qTimes, { city: country }), a: `${first.name}: ${fq[0].a} ${other}` }, ...perPrayer);
   html += `<section class="card faq" aria-labelledby="faqTitle"><h2 id="faqTitle">${esc(tpl(t.faqH2, { city: country }))}</h2>` +
     faq.map((it) => `<div class="faq-item"><h3>${esc(it.q)}</h3><p>${esc(it.a)}</p></div>`).join('') + '</section>';
   html += `<section class="coming-soon"><h2>${esc(t.cityNotListed)}</h2>` +
@@ -1013,7 +1063,7 @@ function hijriCountryData(lang) {
   COUNTRIES.forEach((c) => { names[c.slug] = nameIn(c.name, lang); });
   const auth = {};
   Object.keys(AUTH).forEach((k) => { auth[k] = [AUTH[k].type, AUTH[k].name ? (AUTH[k].name[lang] || AUTH[k].name.en) : '']; });
-  return { cn: names, auth, authT: AT[lang], diyanet: DIYANET_CAL };
+  return { cn: names, auth, authT: AT[lang], natCal: NATIONAL_CAL };
 }
 function hijriCountry(lang, defSlug) {
   const a = AT[lang], names = COUNTRIES.map((c) => [c.slug, nameIn(c.name, lang)]).sort((x, y) => x[1].localeCompare(y[1], LANGS[lang].locale || 'en'));
@@ -1079,6 +1129,7 @@ function hijriPage(lang) {
     `<h1>${esc(g.hH1)}</h1><p class="answer" id="hijriToday">${esc(todayLine)}</p><p class="muted">${esc(t.aboutHijri)}</p>` +
     hijriCountry(lang, ci.country.slug) +
     hijriTools(lang, h, today, ctx) +
+    crescentSection(lang, ci, ctx) +
     `<h2>${esc(g.hEventsH2)}</h2><div class="table-scroll"><table class="city-table"><tbody>` +
     events.map((e) => `<tr><th scope="row"><a href="${url.event(lang, EVENT_SLUG[e.k])}">${esc(evName(lang, e.k))}</a></th><td>${esc(hijriText(e))}</td><td>${esc(gFull(e.gd))}</td></tr>`).join('') +
     '</tbody></table></div>' +
@@ -1098,8 +1149,26 @@ function hijriPage(lang) {
         speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.guide h1', '#hijriToday'] } },
       breadcrumbLd(crumbs),
     ] },
-    data: clientData(lang, Object.assign({ kind: 'hijri', defaultSect: ci.defaultSect, hc: Object.assign({ monthsH2: g.hMonthsH2 }, HC[lang]), firstDay: FIRST_DAY[lang] || 0, hMin: HIJRI_MIN, hMax: HIJRI_MAX, defCountry: ci.country.slug }, hijriCountryData(lang))),
+    data: clientData(lang, Object.assign({ kind: 'hijri', defaultSect: ci.defaultSect, hc: Object.assign({ monthsH2: g.hMonthsH2 }, HC[lang]), firstDay: FIRST_DAY[lang] || 0, hMin: HIJRI_MIN, hMax: HIJRI_MAX, defCountry: ci.country.slug, moon: MOON[lang], ml: locOf(ci, lang) }, hijriCountryData(lang))),
   });
+}
+
+// Crescent prediction for the page's city; the browser redraws it for the visitor's last city.
+function crescentSection(lang, ci, ctx) {
+  const s = MOON[lang], loc = locOf(ci, lang), r = crescentFor(loc, NOW.getTime(), ctx, lang);
+  return `<section class="crescent" aria-labelledby="mcH"><h2 id="mcH">${esc(r.h)}</h2>` +
+    `<p class="muted" id="mcLoc">${esc(tpl(s.loc, { city: loc.name }))}</p><div id="mcOut">${r.html}</div><p class="muted small">${esc(s.note)}</p></section>`;
+}
+function crescentFor(loc, now, ctx, lang) {
+  const s = MOON[lang], t = STRINGS[lang];
+  const dayOf = (ms) => { const p = Core.partsInTz(new Date(ms), loc.tz); return Date.UTC(p.y, p.m - 1, p.d); };
+  const res = Moon.crescent(now - 2 * 864e5, loc.lat, loc.lng, dayOf);
+  const after = new Date(res.conj + 3 * 864e5), hm = Core.hijriParts(after.getUTCFullYear(), after.getUTCMonth() + 1, after.getUTCDate(), 0);
+  const html = Moon.html(res, s, {
+    esc, time: (ms) => Core.fmtTime(new Date(ms), loc.tz, ctx),
+    date: (ms) => { const p = Core.partsInTz(new Date(ms), 'UTC'); return Core.gregorian(p.y, p.m, p.d, 'short', ctx); },
+  });
+  return { h: tpl(s.h, { month: `${t.hijriMonths[hm.m - 1]} ${Core.num(hm.y, ctx)}` }), html };
 }
 
 /* ---------- Islamic dates: one page per event ---------- */
@@ -1116,7 +1185,8 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
     if (gd && Date.UTC(gd.y, gd.m - 1, gd.d) >= todayUtc) dates.push({ hy, gd });
   }
   if (!dates.length) { problems.push(`events: no date for ${k}`); return; }
-  const next = dates[0], name = evName(lang, k);
+  // The page names the event itself ("Ramadan"), where tables say "Ramadan begins".
+  const next = dates[0], name = EV[lang].names[k] || evName(lang, k);
   const gFull = (x) => Core.gregorian(x.y, x.m, x.d, 'full', ctx);
   const hijriText = (hy) => `${Core.num(hd, ctx)} ${t.hijriMonths[hm - 1]} ${Core.num(hy, ctx)} ${t.hijriEra}`;
   const year = Core.num(next.gd.y, ctx);
@@ -1150,7 +1220,7 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
         mainEntity: [{ '@type': 'Question', name: tpl(e.q, { event: name, year }), acceptedAnswer: { '@type': 'Answer', text: `${answer} ${nightLine}`.trim() } }] },
       breadcrumbLd(crumbs),
     ] },
-    data: clientData(lang, Object.assign({ kind: 'event', defaultSect: ci.defaultSect, evDate: `${next.gd.y}-${next.gd.m}-${next.gd.d}`, evDays: e.days, evToday: e.today, defCountry: ci.country.slug }, hijriCountryData(lang))),
+    data: clientData(lang, Object.assign({ kind: 'event', defaultSect: ci.defaultSect, evDate: `${next.gd.y}-${next.gd.m}-${next.gd.d}`, evH: [next.hy, hm, hd], evDays: e.days, evToday: e.today, defCountry: ci.country.slug }, hijriCountryData(lang))),
   });
 }
 
@@ -1539,7 +1609,7 @@ ALL_LANGS.forEach((lang) => {
   homePage(lang);
   COUNTRIES.forEach((c) => {
     const pages = () => { countryPage(lang, c); c.cities.forEach((ci) => { cityPage(lang, ci); ramadanPage(lang, ci); }); };
-    if (c.slug === 'turkey') withCalendar(DIYANET_CAL, pages); else pages();
+    if (NATIONAL_CAL[c.slug]) withCalendar(NATIONAL_CAL[c.slug], pages); else pages();
   });
   nearPage(lang);
   aboutPage(lang);
@@ -1575,6 +1645,7 @@ fs.readdirSync(path.join(ROOT, 'src', 'og')).forEach((f) => write(`og/${f}`, fs.
 write('logo.png', fs.readFileSync(path.join(ROOT, 'src', 'logo.png')));
 LANDMARKS.forEach((lm) => write(`sites/${lm.id}.jpg`, fs.readFileSync(path.join(ROOT, 'src', 'sites', `${lm.id}.jpg`))));
 write(ASSET.jsLite.slice(1), JS_LITE);
+write(ASSET.moon.slice(1), JS_MOON);
 write(ASSET.cities.slice(1), CITIES_JSON);
 ALL_LANGS.forEach((lang) => write(SEARCH[lang].path.slice(1), SEARCH[lang].json));
 write('favicon.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#0c3a2d"/><path d="M20 7a10 10 0 1 0 5 17A8 8 0 1 1 20 7z" fill="#d9ad5b"/></svg>\n');

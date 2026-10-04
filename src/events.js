@@ -9,7 +9,7 @@
 
 var EV = {
   en: {
-    names: { laylatQadr: 'Laylat al-Qadr', mawlid: 'Mawlid an-Nabi', israMiraj: 'Isra and Mi’raj', shabBarat: 'Shab-e-Barat' },
+    names: { ramadan: 'Ramadan', laylatQadr: 'Laylat al-Qadr', mawlid: 'Mawlid an-Nabi', israMiraj: 'Isra and Mi’raj', shabBarat: 'Shab-e-Barat' },
     title: 'When is {event} {year}? Date and Countdown | SalaahDaily', h1: '{event} {year}',
     answer: '{event} ({hijri}) is expected on {date} by the Umm al-Qura calendar.', night: 'The night begins at sunset the evening before, on {prev}.',
     days: '{n} days to go', today: 'Today', years: '{event} in the coming years', note: 'Dates follow the Umm al-Qura calendar. Where the new moon is sighted locally, the day can move by one.',
@@ -86,7 +86,7 @@ var EV = {
   },
   id: {
     names: { laylatQadr: 'Lailatulkadar', mawlid: 'Maulid Nabi', israMiraj: 'Isra Mikraj', shabBarat: 'Nisfu Syakban' },
-    title: 'Kapan {event} {year}? Tanggal dan Hitung Mundur | SalaahDaily', h1: '{event} {year}',
+    title: 'Kapan {event} {year} Jatuh? Tanggal dan Hitung Mundur | SalaahDaily', h1: '{event} {year}',
     answer: '{event} {hijri} diperkirakan jatuh pada {date} menurut kalender Umm al-Qura.', night: 'Malamnya dimulai saat matahari terbenam sehari sebelumnya, pada {prev}.',
     days: '{n} hari lagi', today: 'Hari ini', years: '{event} pada tahun-tahun mendatang', note: 'Tanggal mengikuti kalender Umm al-Qura. Jika hilal dilihat secara lokal, harinya bisa bergeser satu hari.',
     more: 'Tanggal Islam lainnya', q: 'Kapan {event} {year}?', hub: 'Tanggal Islam',
@@ -161,7 +161,7 @@ var EV = {
     },
   },
   es: {
-    names: { laylatQadr: 'Laylat al-Qadr', mawlid: 'Mawlid an-Nabi', israMiraj: 'Isra y Miraj', shabBarat: 'Noche de mitad de Shabán' },
+    names: { ramadan: 'Ramadán', laylatQadr: 'Laylat al-Qadr', mawlid: 'Mawlid an-Nabi', israMiraj: 'Isra y Miraj', shabBarat: 'Noche de mitad de Shabán' },
     title: '¿Cuándo es {event} {year}? Fecha y cuenta atrás | SalaahDaily', h1: '{event} {year}',
     answer: 'Según el calendario Umm al-Qura, {event} {hijri} será previsiblemente el {date}.', night: 'La noche empieza al atardecer del día anterior, el {prev}.',
     days: 'Faltan {n} días', today: 'Hoy', years: '{event} en los próximos años', note: 'Las fechas siguen el calendario Umm al-Qura. Donde la luna nueva se observa localmente, el día puede variar en uno.',
@@ -180,7 +180,7 @@ var EV = {
     },
   },
   fr: {
-    names: { laylatQadr: 'Laylat al-Qadr', mawlid: 'Mawlid an-Nabi', israMiraj: 'Isra et Miraj', shabBarat: 'Nuit de la mi-Chaabane' },
+    names: { ramadan: 'Ramadan', laylatQadr: 'Laylat al-Qadr', mawlid: 'Mawlid an-Nabi', israMiraj: 'Isra et Miraj', shabBarat: 'Nuit de la mi-Chaabane' },
     title: 'Quand est {event} {year} ? Date et compte à rebours | SalaahDaily', h1: '{event} {year}',
     answer: 'Selon le calendrier Umm al-Qura, {event} {hijri} est prévu le {date}.', night: 'La nuit commence au coucher du soleil la veille, le {prev}.',
     days: 'Plus que {n} jours', today: 'Aujourd’hui', years: '{event} dans les années à venir', note: 'Les dates suivent le calendrier Umm al-Qura. Là où le croissant est observé localement, le jour peut varier d’un.',
@@ -256,7 +256,7 @@ var EV = {
     },
   },
   de: {
-    names: { laylatQadr: 'Laylat al-Qadr', mawlid: 'Mawlid an-Nabi', israMiraj: 'Isra und Miradsch', shabBarat: 'Nacht der Mitte des Schaban' },
+    names: { ramadan: 'Ramadan', laylatQadr: 'Laylat al-Qadr', mawlid: 'Mawlid an-Nabi', israMiraj: 'Isra und Miradsch', shabBarat: 'Nacht der Mitte des Schaban' },
     title: 'Wann ist {event} {year}? Datum und Countdown | SalaahDaily', h1: '{event} {year}',
     answer: 'Nach dem Umm-al-Qura-Kalender fällt {event} {hijri} voraussichtlich auf {date}.', night: 'Die Nacht beginnt am Vorabend bei Sonnenuntergang, am {prev}.',
     days: 'Noch {n} Tage', today: 'Heute', years: '{event} in den kommenden Jahren', note: 'Die Daten folgen dem Umm-al-Qura-Kalender. Wo der Neumond vor Ort gesichtet wird, kann sich der Tag um eins verschieben.',
@@ -275,7 +275,7 @@ var EV = {
     },
   },
   pt: {
-    names: { laylatQadr: 'Laylat al-Qadr', mawlid: 'Mawlid an-Nabi', israMiraj: 'Isra e Miraj', shabBarat: 'Noite do meio de Shaban' },
+    names: { ramadan: 'Ramadã', laylatQadr: 'Laylat al-Qadr', mawlid: 'Mawlid an-Nabi', israMiraj: 'Isra e Miraj', shabBarat: 'Noite do meio de Shaban' },
     title: 'Quando é {event} {year}? Data e contagem regressiva | SalaahDaily', h1: '{event} {year}',
     answer: 'Pelo calendário Umm al-Qura, {event} {hijri} deve cair em {date}.', night: 'A noite começa ao pôr do sol da véspera, em {prev}.',
     days: 'Faltam {n} dias', today: 'Hoje', years: '{event} nos próximos anos', note: 'As datas seguem o calendário Umm al-Qura. Onde a lua nova é avistada localmente, o dia pode variar em um.',
@@ -294,7 +294,7 @@ var EV = {
     },
   },
   it: {
-    names: { laylatQadr: 'Laylat al-Qadr', mawlid: 'Mawlid an-Nabi', israMiraj: 'Isra e Mi’raj', shabBarat: 'Notte di metà Sha’ban' },
+    names: { ramadan: 'Ramadan', laylatQadr: 'Laylat al-Qadr', mawlid: 'Mawlid an-Nabi', israMiraj: 'Isra e Mi’raj', shabBarat: 'Notte di metà Sha’ban' },
     title: 'Quando è {event} {year}? Data e conto alla rovescia | SalaahDaily', h1: '{event} {year}',
     answer: 'Secondo il calendario Umm al-Qura, {event} {hijri} è previsto il {date}.', night: 'La notte inizia al tramonto del giorno prima, il {prev}.',
     days: 'Mancano {n} giorni', today: 'Oggi', years: '{event} nei prossimi anni', note: 'Le date seguono il calendario Umm al-Qura. Dove la luna nuova viene avvistata localmente, il giorno può variare di uno.',
