@@ -455,7 +455,7 @@
       return '<li class="prayer ' + state + (k === 'sunrise' ? ' is-sunrise' : '') + '">' +
         (ctx.L.arabicScript ? '' : '<span class="p-ar" lang="ar" dir="rtl">' + arabic(k) + '</span>') +
         '<span class="p-name">' + (k === 'sunrise' ? esc(label(k))
-          : '<a href="' + pre(ctx) + 'prayers/' + (k === 'dhuhr' && fri ? 'jumuah' : k) + '/">' + esc(label(k)) + '</a>') + '</span>' +
+          : '<a href="' + (loc.pp && !(k === 'dhuhr' && fri) ? loc.pp + k : pre(ctx) + 'prayers/' + (k === 'dhuhr' && fri ? 'jumuah' : k)) + '/">' + esc(label(k)) + '</a>') + '</span>' +
         '<span class="p-time"><bdi>' + esc(fmtTime(at, loc.tz, ctx)) + '</bdi></span>' +
         (state === 'is-next' ? '<span class="p-badge">' + esc(t.next) + '</span>' : state === 'is-current' ? '<span class="p-badge">' + esc(t.now) + '</span>' : '') +
         (k === 'sunrise' ? '' : refToggle(ctx, k)) +

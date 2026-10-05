@@ -522,7 +522,7 @@
       var country = best && data.countries[best.row[0]];
       // Within 60 km of a listed city: open that city's page in the current language.
       if (best && best.km <= 60) {
-        location.replace(P.prefix + best.row[0] + '/' + best.row[1] + '/');
+        location.replace(placePrefix(data, best.row[0]) + best.row[0] + '/' + best.row[1] + '/');
         return;
       }
       var browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
@@ -572,7 +572,7 @@
       var q = '?c=' + c + (sect ? '&s=' + sect : '');
       var credit = C.tpl(P.credit, { city: name }).replace(/&/g, '&amp;').replace(/</g, '&lt;');
       $('wCode').value = '<iframe src="' + P.site + P.embedUrl + q + '" title="' + credit.replace(/"/g, '&quot;') + '" width="100%" height="330" style="border:0;max-width:380px" loading="lazy"></iframe>\n' +
-        '<p><a href="' + P.site + P.prefix + c + '/">' + credit + '</a></p>';
+        '<p><a href="' + P.site + (P.cl && P.cl[c.split('/')[0]] && P.cl[c.split('/')[0]].indexOf(P.lang) === -1 ? '/' : P.prefix) + c + '/">' + credit + '</a></p>';
       // The preview loads after the page itself, so it never slows the first paint.
       if (document.readyState === 'complete') $('wFrame').src = P.embedUrl + q;
       else window.addEventListener('load', function () { $('wFrame').src = P.embedUrl + q; }, { once: true });
@@ -587,6 +587,13 @@
     updateWidget();
   }
 
+  // Outside Europe, the USA, Canada and Russia a country's pages exist only in its own languages (cities.json "l");
+  // other languages link to the English page.
+  function placePrefix(data, country) {
+    var c = data.countries[country];
+    return c && c.l && c.l.indexOf(P.lang) === -1 ? '/' : P.prefix;
+  }
+
   /* ---------- Embedded widget (inside a mosque's website) ---------- */
   if (P.kind === 'embed') {
     var qs = new URLSearchParams(location.search), cp = qs.get('c') || '', sp = qs.get('s');
@@ -594,7 +601,7 @@
     if (/^[a-z0-9-]+\/[a-z0-9-]+$/.test(cp)) {
       Promise.all([fetch(P.citiesUrl).then(function (r) { return r.json(); }), fetch(P.searchUrl).then(function (r) { return r.json(); })])
         .then(function (res) {
-          var data = res[0], idx = res[1], parts = cp.split('/'), row = null, name = null, href = P.prefix + cp + '/';
+          var data = res[0], idx = res[1], parts = cp.split('/'), row = null, name = null, href = placePrefix(data, parts[0]) + cp + '/';
           data.cities.forEach(function (r) { if (r[0] === parts[0] && r[1] === parts[1]) row = r; });
           idx.forEach(function (e) { if (e[2] === href) name = e[0]; });
           if (!row || !name) return;

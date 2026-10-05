@@ -251,14 +251,14 @@ ALL_LANGS.forEach((lang) => {
 const pre = (lang) => (lang === 'en' ? '/' : `/${lang}/`);
 const url = {
   home: (lang) => pre(lang),
-  country: (lang, c) => `${pre(lang)}${c.slug}/`,
-  city: (lang, ci) => `${pre(lang)}${ci.country.slug}/${ci.slug}/`,
+  country: (lang, c) => `${pre(placeLang(lang, c))}${c.slug}/`,
+  city: (lang, ci) => `${pre(placeLang(lang, ci.country))}${ci.country.slug}/${ci.slug}/`,
   near: (lang) => `${pre(lang)}near-me/`,
   about: (lang) => `${pre(lang)}about/`,
   prayers: (lang) => `${pre(lang)}prayers/`,
   prayer: (lang, key) => `${pre(lang)}prayers/${key}/`,
   hijri: (lang) => `${pre(lang)}hijri-calendar/`,
-  ramadan: (lang, ci) => `${pre(lang)}${ci.country.slug}/${ci.slug}/ramadan/`,
+  ramadan: (lang, ci) => `${pre(placeLang(lang, ci.country))}${ci.country.slug}/${ci.slug}/ramadan/`,
   methods: (lang) => `${pre(lang)}methods/`,
   method: (lang, key) => `${pre(lang)}methods/${Core.METHOD_SLUG[key]}/`,
   qibla: (lang) => `${pre(lang)}qibla/`,
@@ -288,7 +288,42 @@ const cluster = (fn, country) => ALL_LANGS.map((l) => ({ lang: l, tag: langTag(l
 const GULF_LANGS = ['bn', 'ur'];
 const INDEX_ALSO = { france: ['ar', 'tr'], spain: ['ar'], italy: ['ar'], germany: ['ar'], netherlands: ['ar'], belgium: ['ar'], iraq: ['fa'],
   'saudi-arabia': GULF_LANGS, uae: GULF_LANGS, qatar: GULF_LANGS, kuwait: GULF_LANGS, bahrain: GULF_LANGS, oman: GULF_LANGS };
-const inScope = (lang, country) => lang === 'en' || country.langs.includes(lang) || (INDEX_ALSO[country.slug] || []).includes(lang);
+// Languages per country (Oct 2026): outside Europe, the USA, Canada and Russia, a country's city and country pages
+// are built only in up to five of the site's languages that people there use. Links to any other language
+// fall back to the English page. Europe, the USA, Canada and Russia keep every language.
+const KEEP_ALL = (c) => c.continent === 'europe' || ['usa', 'canada', 'russia'].includes(c.slug);
+const GULF5 = ['ar', 'en', 'ur', 'hi', 'bn'], ARAB = ['ar', 'en', 'fr'], LATAM = ['es', 'en', 'pt'];
+const TOP_LANGS = {
+  egypt: ['ar', 'en', 'fr', 'de', 'it'],
+  'saudi-arabia': GULF5, uae: GULF5, qatar: GULF5, kuwait: GULF5, bahrain: GULF5, oman: GULF5,
+  pakistan: ['ur', 'en', 'ps', 'ar', 'fa'], india: ['hi', 'en', 'ur', 'bn', 'ar'], bangladesh: ['bn', 'en', 'ar', 'ur', 'hi'],
+  afghanistan: ['fa', 'ps', 'en', 'ur', 'ar'], iran: ['fa', 'en', 'ar', 'tr', 'ur'], maldives: ['en', 'ar'],
+  indonesia: ['id', 'en', 'ms', 'ar'], malaysia: ['ms', 'en', 'id', 'ar'], brunei: ['ms', 'en', 'id', 'ar'], singapore: ['en', 'ms', 'id', 'ar', 'hi'],
+  turkey: ['tr', 'en', 'ar', 'de', 'fa'], cyprus: ['tr', 'en', 'ar'],
+  iraq: ['ar', 'en', 'fa', 'tr', 'ur'], syria: ['ar', 'en', 'fr', 'tr'], lebanon: ARAB, jordan: ['ar', 'en'], palestine: ['ar', 'en'],
+  israel: ['ar', 'en'], yemen: ['ar', 'en'],
+  morocco: ['ar', 'fr', 'en', 'es'], algeria: ARAB, tunisia: ['ar', 'fr', 'en', 'it', 'de'], libya: ['ar', 'en', 'it'],
+  mauritania: ['ar', 'fr', 'en'], sudan: ['ar', 'en'], somalia: ['ar', 'en'], djibouti: ['fr', 'ar', 'en'], comoros: ['fr', 'ar', 'en'],
+  nigeria: ['en', 'ha', 'ar'], niger: ['fr', 'ha', 'ar', 'en'], ghana: ['en', 'ha', 'ar'], chad: ['fr', 'ar', 'ha', 'en'],
+  cameroon: ['fr', 'en', 'ha', 'ar'],
+  'south-africa': ['en', 'ar', 'ur', 'hi'], mauritius: ['en', 'fr', 'hi', 'ur', 'ar'], kenya: ['en', 'ar', 'hi'], tanzania: ['en', 'ar', 'hi'],
+  ethiopia: ['en', 'ar'], eritrea: ['ar', 'en'],
+  japan: ['ja', 'en', 'id', 'ur', 'bn'], 'south-korea': ['ko', 'en', 'id', 'ur', 'bn'], 'north-korea': ['ko', 'en'],
+  china: ['en', 'ar', 'ur'], 'sri-lanka': ['en', 'ar', 'hi'], nepal: ['hi', 'en', 'ur'], bhutan: ['en', 'hi'], myanmar: ['en', 'bn', 'ar'],
+  thailand: ['en', 'ms', 'ar'], philippines: ['en', 'ar', 'id'], kazakhstan: ['en', 'tr', 'ar'], uzbekistan: ['en', 'tr', 'fa', 'ar'],
+  tajikistan: ['fa', 'en', 'ar'], kyrgyzstan: ['en', 'tr', 'ar'], turkmenistan: ['tr', 'en', 'fa', 'ar'],
+  australia: ['en', 'ar', 'ur', 'tr', 'id'], 'new-zealand': ['en', 'ar', 'ur', 'hi'], fiji: ['en', 'hi', 'ur'],
+  brazil: ['pt', 'en', 'es', 'ar'], 'trinidad-and-tobago': ['en', 'hi', 'ur'], guyana: ['en', 'hi', 'ur'], suriname: ['en', 'id', 'hi'],
+};
+const DEFAULT_EXTRA = { africa: ['ar', 'fr'], asia: ['ar', 'ur'], middleEast: ['ar'], northAmerica: ['es', 'ar'], southAmerica: LATAM.concat('ar'), oceania: ['ar', 'ur', 'id'] };
+const LANGS_OF = new Map(COUNTRIES.map((c) => [c.slug, KEEP_ALL(c) ? null
+  : Array.from(new Set(TOP_LANGS[c.slug] || ['en'].concat(c.langs, DEFAULT_EXTRA[c.continent] || []))).filter((l) => LANGS[l]).slice(0, 5)]));
+Object.keys(TOP_LANGS).forEach((s) => { if (!LANGS_OF.has(s)) throw new Error(`TOP_LANGS: no country ${s}`); });
+LANGS_OF.forEach((ls, s) => { if (ls && !ls.includes('en')) ls.push('en'); });
+// Is this country's page built in this language?
+function built(lang, c) { const ls = LANGS_OF.get(c.slug); return !ls || ls.includes(lang); }
+const placeLang = (lang, c) => (built(lang, c) ? lang : 'en');
+const inScope = (lang, country) => (KEEP_ALL(country) ? lang === 'en' || country.langs.includes(lang) || (INDEX_ALSO[country.slug] || []).includes(lang) : built(lang, country));
 const scopedCluster = (fn, country) => cluster(fn, country).filter((a) => inScope(a.lang, country));
 
 /* ---------- Assets ---------- */
@@ -312,6 +347,7 @@ const JS_MOON = minifyJs(read('src/moon.js'));
 const CITIES_JSON = JSON.stringify({
   countries: Object.fromEntries(COUNTRIES.map((c) => [c.slug, {
     tz: c.tz, method: c.method, jafariMethod: c.jafariMethod, defaultSect: c.defaultSect, extraCalendar: c.extraCalendar,
+    l: LANGS_OF.get(c.slug) || undefined,
   }])),
   // 5th value only when the city's time zone differs from its country's.
   // 6th value only when the city's method or default school differs from its country's: [method, sect].
@@ -586,7 +622,8 @@ function addPage(o) {
   const alternates = o.alternates || [];
   const showLocal = lang !== 'en' && t.brandLocal !== BRAND_AR;
   const canonical = abs(o.path);
-  const xDefault = alternates.find((a) => a.lang === 'en');
+  // x-default: the English page, or the only version when a page exists in one language.
+  const xDefault = alternates.find((a) => a.lang === 'en') || (alternates.length === 1 ? alternates[0] : null);
   const head = [
     '<!doctype html>',
     `<html lang="${o.tag}" dir="${L.dir}">`,
@@ -767,7 +804,7 @@ function countryPage(lang, c) {
 
   const tag = langTag(lang, c);
   addPage({
-    lang, tag, title, desc, path: pagePath, alternates: cluster((l) => url.country(l, c), c), indexable: true, body: html, og: c.slug,
+    lang, tag, title, desc, path: pagePath, alternates: cluster((l) => url.country(l, c), c).filter((a) => built(a.lang, c)), indexable: true, body: html, og: c.slug,
     jsonld: {
       '@graph': [
         { '@type': 'WebPage', '@id': abs(pagePath), url: abs(pagePath), name: title, description: desc, inLanguage: tag, dateModified: TODAY_ISO,
@@ -800,8 +837,11 @@ function cityPage(lang, ci) {
   const h1 = tpl(t.cityTitle, { city: titleName, country: countryName }).split(' | ')[0];
   const fullTitle = tpl(variantTitle || localTitle || t.cityTitle, { city: titleName, country: countryName });
   const title = fitTitle(fullTitle, lang, countryName, titleName);
-  const desc = tpl((variant && variant.cityDesc) || t.cityDesc, { city: titleName, country: countryName });
   const pagePath = url.city(lang, ci);
+  const ptimes = lang === 'ar' ? Core.cityRowTimes(loc, ctx, NOW) : null;
+  const desc = ptimes ? tpl(AR_DESC, { city: cityName, fajr: ptimes[0], dhuhr: ptimes[1], asr: ptimes[2], maghrib: ptimes[3], isha: ptimes[4] })
+    : tpl((variant && variant.cityDesc) || t.cityDesc, { city: titleName, country: countryName });
+  if (hasPrayerPages(lang, ci)) loc.pp = pagePath;
   const today = Core.renderToday(loc, ctx, NOW, h1);
   const p = Core.partsInTz(NOW, ci.tz);
   const month = Core.renderMonth(loc, ctx, p.y, p.m, p);
@@ -823,6 +863,7 @@ function cityPage(lang, ci) {
   const body = breadcrumbs(crumbItems) +
     `<section class="today pattern" id="today">${today.html}</section>` +
     `<section class="card nafl" id="nafl" aria-labelledby="naflTitle">${Core.renderNafl(loc, ctx, NOW)}</section>` +
+    (loc.pp ? `<section class="card"><h2>${esc(tpl(EG.chipsH, { city: cityName }))}</h2>${linkList(EG_KEYS.map((k) => ({ name: tpl(EG.h1[k], { city: cityName }), href: `${pagePath}${k}/` })))}</section>` : '') +
     '<div class="layout">' +
       monthCard(lang, month, `${p.y}-${p.m}-${p.d}|${ctx.sect}|${ctx.method}|${ctx.hour12}|${ctx.hijriAdj}`) +
       '<aside class="side">' +
@@ -862,6 +903,84 @@ function cityPage(lang, ci) {
       ],
     },
     data: clientData(lang, { kind: 'city', defaultSect: ci.defaultSect, h1, loc }),
+  });
+}
+
+/* ---------- Egypt: one Arabic page per prayer per city ("موعد اذان المغرب في كفر الشيخ") ---------- */
+// Search Console (Oct 2026): Egyptian searches ask for one adhan at a time, in the spoken "الساعة كام".
+const AR_DESC = 'مواعيد الصلاة في {city} اليوم: الفجر {fajr}، الظهر {dhuhr}، العصر {asr}، المغرب {maghrib}، العشاء {isha}. موعد الأذان الساعة كام، والجدول الشهري والقبلة.';
+const EG_KEYS = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+const EG = {
+  chipsH: 'موعد أذان كل صلاة في {city}',
+  title: {
+    fajr: 'موعد أذان الفجر في {city} اليوم: الفجر بيأذن الساعة كام؟', sunrise: 'موعد الشروق في {city} اليوم وبكرة: الشروق الساعة كام؟',
+    dhuhr: 'موعد أذان الظهر في {city} اليوم: الظهر بيأذن الساعة كام؟', asr: 'موعد أذان العصر في {city} اليوم: العصر بيأذن الساعة كام؟',
+    maghrib: 'موعد أذان المغرب في {city} اليوم: المغرب بيأذن الساعة كام؟', isha: 'موعد أذان العشاء في {city} اليوم: العشاء بيأذن الساعة كام؟',
+  },
+  h1: {
+    fajr: 'موعد أذان الفجر في {city}', sunrise: 'موعد الشروق في {city}', dhuhr: 'موعد أذان الظهر في {city}',
+    asr: 'موعد أذان العصر في {city}', maghrib: 'موعد أذان المغرب في {city}', isha: 'موعد أذان العشاء في {city}',
+  },
+  answer: '{prayer} بيأذن في {city} النهارده ({date}) الساعة {time}، وبكرة الساعة {tomorrow}.',
+  answerSunrise: 'الشروق في {city} النهارده ({date}) الساعة {time}، وبكرة الساعة {tomorrow}.',
+  desc: 'أذان {prayer} في {city} اليوم الساعة {time}، وبكرة الساعة {tomorrow}. موعد أذان {prayer} لكل أيام الشهر، ومواقيت الصلاة كاملة في {city}.',
+  descSunrise: 'الشروق في {city} اليوم الساعة {time}، وبكرة الساعة {tomorrow}. موعد الشروق لكل أيام الشهر، ومواقيت الصلاة كاملة في {city}.',
+  tableH: 'موعد أذان {prayer} في {city} لمدة 30 يومًا', tableHSunrise: 'موعد الشروق في {city} لمدة 30 يومًا',
+  colDate: 'التاريخ', colHijri: 'الهجري', colTime: 'الوقت',
+  faqH: 'أسئلة عن موعد أذان {prayer} في {city}',
+  q1: '{prayer} بيأذن الساعة كام في {city} النهارده؟', a1: 'أذان {prayer} في {city} النهارده الساعة {time}.',
+  q1s: 'الشروق الساعة كام في {city} النهارده؟', a1s: 'الشروق في {city} النهارده الساعة {time}.',
+  q2: 'متى يؤذن {prayer} في {city} بكرة؟', a2: 'بكرة ({date}) أذان {prayer} في {city} الساعة {time}.',
+  q2s: 'وقت الشروق بكرة في {city}؟', a2s: 'بكرة ({date}) الشروق في {city} الساعة {time}.',
+  q3: 'ما هي مواعيد الصلاة في {city} اليوم؟', a3: 'مواعيد الصلاة في {city} اليوم: الفجر {fajr}، الشروق {sunrise}، الظهر {dhuhr}، العصر {asr}، المغرب {maghrib}، العشاء {isha}.',
+  method: 'المواقيت بطريقة الهيئة المصرية العامة للمساحة (الفجر 19.5°، العشاء 17.5°)، وقد تختلف دقيقة أو دقيقتين عن مسجدك.',
+  otherH: 'مواعيد أخرى في {city}', nearH: 'موعد أذان {prayer} في مدن قريبة', nearHSunrise: 'موعد الشروق في مدن قريبة',
+};
+const hasPrayerPages = (lang, ci) => lang === 'ar' && ci.country.slug === 'egypt';
+function cityPrayerPage(ci, key) {
+  const lang = 'ar', t = STRINGS[lang], ctx = ctxFor(lang, ci.defaultSect), loc = locOf(ci, lang), city = loc.name;
+  const base = url.city(lang, ci), pagePath = `${base}${key}/`, sun = key === 'sunrise';
+  const params = Core.paramsFor(loc, ctx), p = Core.partsInTz(NOW, ci.tz);
+  const day = (i) => { const d = Core.addDays(p.y, p.m, p.d, i); return { d, tt: Core.timesFor(loc, ctx, d.y, d.m, d.d, params) }; };
+  const f = (x) => Core.fmtTime(x, ci.tz, ctx), g = (d) => Core.gregorian(d.y, d.m, d.d, 'full', ctx);
+  const t0 = day(0), t1 = day(1), name = t.prayers[key];
+  const v = { prayer: name, city, date: g(t0.d), time: f(t0.tt[key]), tomorrow: f(t1.tt[key]) };
+  const all = Object.fromEntries(['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map((k) => [k, f(t0.tt[k])]));
+  const faq = [
+    { q: tpl(sun ? EG.q1s : EG.q1, v), a: tpl(sun ? EG.a1s : EG.a1, v) },
+    { q: tpl(sun ? EG.q2s : EG.q2, v), a: tpl(sun ? EG.a2s : EG.a2, Object.assign({}, v, { date: g(t1.d), time: v.tomorrow })) },
+    { q: tpl(EG.q3, v), a: tpl(EG.a3, Object.assign({ city }, all)) },
+  ];
+  const rows = Array.from({ length: 30 }, (_, i) => day(i)).map(({ d, tt }, i) =>
+    `<tr${i === 0 ? ' class="is-today"' : ''}><td>${esc(Core.gregorian(d.y, d.m, d.d, 'short', ctx))}</td><td class="c-hijri">${esc(Core.hijri(d.y, d.m, d.d, ctx, 'short'))}</td><td><bdi>${esc(f(tt[key]))}</bdi></td></tr>`).join('');
+  const near = ALL_CITIES.filter((o) => o !== ci && o.country === ci.country)
+    .map((o) => ({ o, km: Core.distanceKm(ci.lat, ci.lng, o.lat, o.lng) })).sort((a, b) => a.km - b.km).slice(0, 8);
+  const crumbs = [{ name: t.home, href: url.home(lang) }, { name: nameIn(ci.country.name, lang), href: url.country(lang, ci.country) },
+    { name: city, href: base }, { name: tpl(EG.h1[key], { city }), href: pagePath }];
+  const body = breadcrumbs(crumbs) + '<article class="card about guide">' +
+    `<h1>${esc(tpl(EG.h1[key], { city }))}</h1><p class="answer">${esc(tpl(sun ? EG.answerSunrise : EG.answer, v))}</p>` +
+    `<p class="muted small">${esc(EG.method)}</p>` +
+    `<h2>${esc(tpl(sun ? EG.tableHSunrise : EG.tableH, v))}</h2><div class="table-scroll"><table class="city-table">` +
+    `<thead><tr><th scope="col">${EG.colDate}</th><th scope="col">${EG.colHijri}</th><th scope="col">${EG.colTime}</th></tr></thead><tbody>${rows}</tbody></table></div>` +
+    `<h2>${esc(tpl(EG.faqH, v))}</h2>` + faq.map((it) => `<h3>${esc(it.q)}</h3><p>${esc(it.a)}</p>`).join('') +
+    `<h2>${esc(tpl(EG.otherH, { city }))}</h2>` +
+    linkList([{ name: tpl(t.cityTitle, { city, country: nameIn(ci.country.name, lang) }).split(' | ')[0], href: base }]
+      .concat(EG_KEYS.filter((k) => k !== key).map((k) => ({ name: tpl(EG.h1[k], { city }), href: `${base}${k}/` })))) +
+    `<h2>${esc(tpl(sun ? EG.nearHSunrise : EG.nearH, v))}</h2>` +
+    linkList(near.map((n) => ({ name: nameIn(n.o.names, lang, n.o.country), href: `${url.city(lang, n.o)}${key}/` }))) +
+    `<p class="muted small">${esc(tpl(t.updated, { date: g(t0.d) }))}</p></article>`;
+  const title = fitTitle(tpl(EG.title[key], { city }) + ' | SalaahDaily', lang);
+  const desc = tpl(sun ? EG.descSunrise : EG.desc, v);
+  addPage({
+    lang, tag: langTag(lang, ci.country), title, desc, path: pagePath, alternates: [{ lang, tag: langTag(lang, ci.country), href: pagePath }], indexable: true, body, og: ci.country.slug,
+    jsonld: { '@graph': [
+      { '@type': 'WebPage', '@id': abs(pagePath), url: abs(pagePath), name: title, description: desc, inLanguage: langTag(lang, ci.country),
+        dateModified: TODAY_ISO, isPartOf: { '@id': `${SITE}/#website` }, speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.guide h1', '.answer'] } },
+      { '@type': 'FAQPage', '@id': `${abs(pagePath)}#faq`, inLanguage: langTag(lang, ci.country),
+        mainEntity: faq.map((it) => ({ '@type': 'Question', name: it.q, acceptedAnswer: { '@type': 'Answer', text: it.a } })) },
+      breadcrumbLd(crumbs),
+    ] },
+    data: clientData(lang, { kind: 'learn' }),
   });
 }
 
@@ -1704,7 +1823,8 @@ function widgetPage(lang) {
         isPartOf: { '@id': `${SITE}/#website` } },
       breadcrumbLd(crumbs),
     ] },
-    data: clientData(lang, { kind: 'widget', defaultSect: 'hanafi', site: SITE, embedUrl: url.embed(lang), credit: g.wCredit }),
+    data: clientData(lang, { kind: 'widget', defaultSect: 'hanafi', site: SITE, embedUrl: url.embed(lang), credit: g.wCredit,
+      cl: Object.fromEntries([...LANGS_OF].filter(([, v]) => v)) }),
   });
 }
 // The page mosques embed in an <iframe>: today's times for ?c=<country>/<city>&s=<school>. Not indexed.
@@ -1734,7 +1854,8 @@ fs.rmSync(DIST, { recursive: true, force: true });
 ALL_LANGS.forEach((lang) => {
   homePage(lang);
   COUNTRIES.forEach((c) => {
-    const pages = () => { countryPage(lang, c); c.cities.forEach((ci) => { cityPage(lang, ci); ramadanPage(lang, ci); }); };
+    if (!built(lang, c)) return;
+    const pages = () => { countryPage(lang, c); c.cities.forEach((ci) => { cityPage(lang, ci); ramadanPage(lang, ci); if (hasPrayerPages(lang, ci)) EG_KEYS.forEach((k) => cityPrayerPage(ci, k)); }); };
     if (NATIONAL_CAL[c.slug]) withCalendar(NATIONAL_CAL[c.slug], pages); else pages();
   });
   nearPage(lang);
@@ -1880,6 +2001,12 @@ write('.htaccess', [
   // Dari and Dhivehi pages were retired on 1 Oct 2026: Dari to the same page in Persian, Dhivehi to English.
   `  RewriteRule ^prs/(.*)$ ${SITE}/fa/$1 [L,R=301]`,
   `  RewriteRule ^dv/(.*)$ ${SITE}/$1 [L,R=301]`,
+  // Since 6 Oct 2026 a country's pages exist only in its own languages (outside Europe, the USA, Canada and Russia);
+  // the other language copies go to the English page.
+  ...[...LANGS_OF].filter(([, ls]) => ls).map(([slug, ls]) => {
+    const gone = ALL_LANGS.filter((l) => l !== 'en' && !ls.includes(l));
+    return gone.length ? `  RewriteRule ^(${gone.join('|')})/${slug}/(.*)$ ${SITE}/${slug}/$2 [L,R=301]` : '';
+  }).filter(Boolean),
   '</IfModule>',
   'ErrorDocument 404 /404.html',
   'AddDefaultCharset utf-8',
