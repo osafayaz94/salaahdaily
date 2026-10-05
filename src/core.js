@@ -433,6 +433,22 @@
       (ctx.sect === 'jafria' ? '' : '<button type="button" class="btn-link light" data-open-settings>' + esc(t.changeMethod) + '</button>');
   }
 
+  // Why each time starts when it does, in the chosen school, with Quran and Hadith references (src/learn.js).
+  // Escaped text with each reference number ("59:22-24", "7392") kept left to right inside right-to-left text.
+  function ltrNums(s) {
+    return esc(s).replace(/[0-9۰-۹০-৯][0-9۰-۹০-৯:.\-–]*[0-9۰-۹০-৯]/g, function (m) { return '<bdi dir="ltr">' + m + '</bdi>'; });
+  }
+  function basisBlock(ctx) {
+    var b = ctx.t.basis;
+    if (!b) return '';
+    var j = ctx.sect === 'jafria', lines = [b.fajr, j ? b.dhuhrJ : b.dhuhr];
+    if (!j) lines.push(SECT_ASR[ctx.sect] === 'Hanafi' ? b.asr2 : b.asr1);
+    lines.push(j ? b.maghribJ : b.maghrib, j ? b.ishaJ : b.isha);
+    return '<details class="basis"><summary>' + esc(tpl(b.sum, { sect: ctx.t.sects[ctx.sect] })) + '</summary><ul>' +
+      lines.map(function (x) { return '<li>' + ltrNums(x) + '</li>'; }).join('') + '</ul>' +
+      '<a href="' + pre(ctx) + 'prayers/evidence/">' + esc(b.more) + '</a></details>';
+  }
+
   // Inner HTML of the #today section. Returns { html, nextAt }.
   function renderToday(loc, ctx, now, h1) {
     var s = snapshot(loc, ctx, now), d = s.date, t = ctx.t;
@@ -478,7 +494,8 @@
       sectPicker(ctx) +
       '<ol class="prayers">' + cards + '</ol>' +
       '<p class="today-summary">' + summary + '</p>' +
-      '<p class="today-meta">' + metaLine(loc, ctx, s.params) + '</p>';
+      '<p class="today-meta">' + metaLine(loc, ctx, s.params) + '</p>' +
+      basisBlock(ctx);
     return { html: html, nextAt: s.next.at.getTime() };
   }
 
@@ -562,10 +579,15 @@
   function renderNafl(loc, ctx, now) {
     var t = ctx.t, rows = naflRows(loc, ctx, now);
     var heading = tpl(ctx.sect === 'jafria' ? t.laylH2 : t.naflH2, { city: loc.name });
+    // Languages with the learn pages link each prayer to its page (Tahajjud, Ishraq, Chasht).
+    var page = { tahajjud: 'tahajjud', layl: 'tahajjud', ishraq: 'ishraq', chasht: 'chasht' };
+    function naflName(k) {
+      return t.basis && page[k] ? '<a href="' + pre(ctx) + 'prayers/' + page[k] + '/">' + esc(t.nafl[k]) + '</a>' : esc(t.nafl[k]);
+    }
     return '<h2 id="naflTitle">' + esc(heading) + '</h2><ul class="nafl-list">' +
       rows.map(function (r) {
         var active = now >= r[1] && now < r[2];
-        return '<li class="nafl-item' + (active ? ' is-now' : '') + '"><span class="n-name">' + esc(t.nafl[r[0]]) + '</span>' +
+        return '<li class="nafl-item' + (active ? ' is-now' : '') + '"><span class="n-name">' + naflName(r[0]) + '</span>' +
           '<span class="n-time">' + tpl(esc(t.range), {
             a: '<bdi>' + esc(fmtTime(r[1], loc.tz, ctx)) + '</bdi>',
             b: '<bdi>' + esc(fmtTime(r[2], loc.tz, ctx)) + '</bdi>',
@@ -779,7 +801,7 @@
   }
 
   return {
-    mosquesCard: mosquesCard, renderNafl: renderNafl, faqItems: faqItems, renderFaq: renderFaq,
+    mosquesCard: mosquesCard, renderNafl: renderNafl, naflRows: naflRows, ltrNums: ltrNums, faqItems: faqItems, renderFaq: renderFaq,
     cityRowTimes: cityRowTimes, METHOD_ANGLES: METHOD_ANGLES, decShort: decShort, gregorian: gregorian,
     PRAYERS: PRAYERS, ARABIC: ARABIC, BISMILLAH: BISMILLAH, SECTS: SECTS, SELECTABLE: SELECTABLE, METHOD_EN: METHOD_EN,
     esc: esc, tpl: tpl, num: num, numGrouped: numGrouped, partsInTz: partsInTz, fmtTime: fmtTime, countdown: countdown,

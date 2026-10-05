@@ -93,6 +93,11 @@ Object.keys(LANGS).forEach((l) => { if (!HC[l]) problems.push(`strings-hijri.js:
   Object.keys(LANGS).forEach((l) => { if (!EXTRA[l]) throw new Error(`guides-extra.js: no strings for ${l}`); Object.assign(GUIDES[l], EXTRA[l]); });
 })();
 const GUIDE_PRAYERS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'jumuah'];
+const { NAMES: ALLAH_NAMES, LEARN } = require('./src/learn');
+fs.readdirSync(path.join(__dirname, 'src/learn-i18n')).forEach((f) => { LEARN[f.replace(/\.js$/, '')] = require('./src/learn-i18n/' + f); });
+const NAFL_PAGES = ['tahajjud', 'ishraq', 'chasht'];
+// Learn pages (src/learn.js, translations in src/learn-i18n/): only languages that have them get the pages and tabs.
+Object.keys(LEARN).forEach((l) => { STRINGS[l].basis = LEARN[l].basis; });
 
 const ROOT = __dirname;
 const DIST = path.join(ROOT, 'dist');
@@ -108,6 +113,14 @@ const TODAY_ISO = NOW.toISOString().slice(0, 10);
 const esc = Core.esc;
 const tpl = Core.tpl;
 const problems = [];
+// Every translation must have the English shape: same keys, same list lengths (99 meanings, the same references).
+{
+  const shape = (o) => Array.isArray(o) ? `[${o.length}${o.length && typeof o[0] === 'object' ? ':' + shape(o[0]) : ''}]`
+    : o && typeof o === 'object' ? `{${Object.keys(o).sort().map((k) => k + ':' + shape(o[k])).join(',')}}` : typeof o;
+  const en = shape(LEARN.en);
+  Object.keys(LANGS).forEach((l) => { if (!LEARN[l]) problems.push(`learn: no strings for ${l}`); else if (shape(LEARN[l]) !== en) problems.push(`learn-i18n/${l}.js: keys or list lengths differ from English`); });
+  if (LEARN.en.names.meanings.length !== ALLAH_NAMES.length) problems.push('learn.js: meanings and names differ in length');
+}
 const CONTINENTS = ['asia', 'middleEast', 'africa', 'europe', 'northAmerica', 'southAmerica', 'oceania'];
 const SECT_KEYS = Core.SECTS;
 
@@ -344,7 +357,7 @@ function locOf(ci, lang) {
   return { name: nameIn(ci.names, lang, c), lat: ci.lat, lng: ci.lng, tz: ci.tz, method: ci.method, jafariMethod: c.jafariMethod, extraCalendar: c.extraCalendar };
 }
 // Only the strings the browser script renders; titles, descriptions and static copy stay out of the page data.
-const CLIENT_KEYS = ['qAt', 'aAt', 'qLeft', 'aLeft', 'sects', 'prayers', 'sectLabel', 'nextIn', 'tomorrow', 'localTime', 'next', 'now', 'methodLine',
+const CLIENT_KEYS = ['basis', 'qAt', 'aAt', 'qLeft', 'aLeft', 'sects', 'prayers', 'sectLabel', 'nextIn', 'tomorrow', 'localTime', 'next', 'now', 'methodLine',
   'asrTwice', 'asrOnce', 'sameTimes', 'maghribAngle', 'changeMethod', 'summary', 'monthTitle', 'range', 'colDate', 'colHijri',
   'qibla', 'qiblaFrom', 'kaaba', 'hijriMonths', 'hijriEra', 'openLast', 'noGeo', 'geoBlocked', 'locating', 'yourLocation',
   'methods', 'months', 'weekdays', 'solarMonths', 'solarEra', 'mapsHl', 'mosquesNearYou', 'mosquesLede', 'openInMaps',
@@ -418,17 +431,15 @@ function langMenu(lang, alternates) {
     '</ul></details>';
 }
 
+// Footer: Learn on the left, languages on the right (countries are listed on the home page).
 function footer(lang, kind) {
   const t = STRINGS[lang], lb = LEGAL.LABELS[lang];
   const enLink = (href, name) => `<a href="${href}"${lang === 'en' ? '' : ' hreflang="en"'}>${esc(name)}</a>`;
   const siteLinks = [`<a href="${url.about(lang)}">${esc(t.aboutLink)}</a>`]
     .concat(HAS_CONTACT ? [enLink(url.contact(), lb[0])] : [], [enLink(url.privacy(), lb[1]), enLink(url.terms(), lb[2])]);
-  const countries = COUNTRIES.map((c) => `<li><a href="${url.country(lang, c)}">${esc(nameIn(c.name, lang))}</a></li>`).join('');
   const langs = ALL_LANGS.map((l) => `<li><a href="${pre(l)}" hreflang="${langTag(l)}" lang="${langTag(l)}">${esc(LANGS[l].name)}</a></li>`).join('');
   return '<footer class="site-footer"><div class="wrap">' +
     '<div class="footer-nav">' +
-      `<nav aria-labelledby="fnCountries"><h2 id="fnCountries">${esc(t.countriesNav)}</h2><ul>${countries}</ul></nav>` +
-      `<nav aria-labelledby="fnLangs"><h2 id="fnLangs">${esc(t.languagesNav)}</h2><ul>${langs}</ul></nav>` +
       `<nav aria-labelledby="fnLearn"><h2 id="fnLearn">${esc(GUIDES[lang].learnNav)}</h2><ul>` +
         `<li><a href="${url.prayers(lang)}">${esc(GUIDES[lang].prayersNav)}</a></li>` +
         GUIDE_PRAYERS.map((k) => `<li><a href="${url.prayer(lang, k)}">${esc(t.prayers[k])}</a></li>`).join('') +
@@ -437,7 +448,10 @@ function footer(lang, kind) {
         `<li><a href="${url.mosques(lang)}">${esc(LM_UI[lang].nav)}</a></li>` +
         `<li><a href="${url.methods(lang)}">${esc(GUIDES[lang].mNav)}</a></li>` +
         `<li><a href="${url.widget(lang)}">${esc(GUIDES[lang].wNav)}</a></li>` +
+        (LEARN[lang] ? [['evidence', learnUrl.evidence], ['wudu', learnUrl.wudu], ['rakahs', learnUrl.rakahs], ['night', learnUrl.night], ['names', learnUrl.names]]
+          .map(([k, fn]) => `<li><a href="${fn(lang)}">${esc(LEARN[lang].tabs[k])}</a></li>`).join('') : '') +
         `<li><a href="${url.about(lang)}">${esc(t.aboutLink)}</a></li></ul></nav>` +
+      `<nav aria-labelledby="fnLangs"><h2 id="fnLangs">${esc(t.languagesNav)}</h2><ul>${langs}</ul></nav>` +
     '</div>' +
     (kind === 'contact' ? '' : suggestForm(lang)) +
     `<p>${esc(t.footer1)} <a href="${url.about(lang)}">${esc(t.aboutLink)}</a></p><p>${esc(t.footer2)}</p>` +
@@ -565,7 +579,7 @@ function withPublisher(ld) {
 }
 function addPage(o) {
   const lang = o.lang, L = LANGS[lang], t = STRINGS[lang];
-  const script = ['about', '404', 'contact', 'privacy', 'terms', 'mosques', 'event'].includes(o.data.kind) ? ASSET.jsLite : ASSET.js;
+  const script = ['about', '404', 'contact', 'privacy', 'terms', 'mosques', 'event', 'learn'].includes(o.data.kind) ? ASSET.jsLite : ASSET.js;
   const alternates = o.alternates || [];
   const showLocal = lang !== 'en' && t.brandLocal !== BRAND_AR;
   const canonical = abs(o.path);
@@ -623,7 +637,7 @@ function addPage(o) {
         langMenu(lang, alternates) +
         `<button type="button" class="btn-ghost" data-open-settings aria-label="${esc(t.settings)}">${ICON.settings}<span class="hide-sm">${esc(t.settings)}</span></button>` +
       '</div>' +
-    '</div></header>' +
+    '</div>' + learnTabs(lang, o.path) + '</header>' +
     `<main id="main" class="wrap" tabindex="-1">${o.body}</main>` +
     settingsDialog(lang) +
     footer(lang, o.data.kind) +
@@ -961,6 +975,92 @@ function guideLoc(lang) {
 }
 const linkList = (items) => `<ul class="chips">${items.map((it) => `<li><a href="${it.href}">${esc(it.name)}</a></li>`).join('')}</ul>`;
 const aboutThing = (name, wiki) => ({ '@type': 'Thing', name, sameAs: wiki });
+
+
+/* ---------- Learn: Quran and Hadith, wudu, rak'ahs, night and forenoon prayers, 99 Names ---------- */
+const learnUrl = {
+  evidence: (l) => `${pre(l)}prayers/evidence/`, wudu: (l) => `${pre(l)}wudu/`, rakahs: (l) => `${pre(l)}prayers/rakahs/`,
+  night: (l) => `${pre(l)}prayers/tahajjud/`, names: (l) => `${pre(l)}names-of-allah/`,
+};
+const learnCluster = (fn) => cluster(fn).filter((a) => LEARN[a.lang]);
+// Tabs under the header: prayer times and the learn pages.
+function learnTabs(lang, current) {
+  const L = LEARN[lang];
+  if (!L) return '';
+  const items = [['times', url.home(lang)], ...['evidence', 'wudu', 'rakahs', 'night', 'names'].map((k) => [k, learnUrl[k](lang)])];
+  const isNafl = NAFL_PAGES.some((k) => current === `${pre(lang)}prayers/${k}/`);
+  return `<nav class="wrap learn-tabs" aria-label="${esc(L.tabs.evidence)}"><ul>` + items.map(([k, href]) => {
+    const on = current === href || (k === 'night' && isNafl);
+    return `<li><a href="${href}"${on ? ' aria-current="page"' : ''}>${esc(L.tabs[k])}</a></li>`;
+  }).join('') + '</ul></nav>';
+}
+const refList = (items) => `<ul class="refs">${items.map(([r, x]) => `<li><span class="ref">${Core.ltrNums(r)}</span> ${Core.ltrNums(x)}</li>`).join('')}</ul>`;
+function learnAdd(lang, o) {
+  const t = STRINGS[lang], crumbs = [{ name: t.home, href: url.home(lang) }].concat(o.crumbs || [], [{ name: o.h1, href: o.path }]);
+  const body = breadcrumbs(crumbs) + `<article class="card about guide learn"><h1>${esc(o.h1)}</h1>${o.body}` +
+    `<p class="muted small">${esc(tpl(t.updated, { date: Core.gregorian(...ymd(NOW, 'UTC'), 'full', ctxFor(lang, 'hanafi')) }))}</p></article>`;
+  const title = fitTitle(o.title, lang);
+  addPage({
+    lang, tag: langTag(lang), title, desc: o.desc, path: o.path, alternates: learnCluster(o.fn), indexable: true, body,
+    jsonld: { '@graph': [
+      { '@type': 'WebPage', '@id': abs(o.path), url: abs(o.path), name: title, description: o.desc, inLanguage: langTag(lang),
+        dateModified: TODAY_ISO, isPartOf: { '@id': `${SITE}/#website` } },
+      breadcrumbLd(crumbs),
+    ] },
+    data: clientData(lang, Object.assign({ kind: 'learn' }, o.data || {})),
+  });
+}
+const prayersCrumb = (lang) => [{ name: GUIDES[lang].prayersNav, href: url.prayers(lang) }];
+function evidencePage(lang) {
+  const e = LEARN[lang].ev;
+  const body = `<p class="answer">${esc(e.lede)}</p><h2>${esc(e.quranH)}</h2>${refList(e.quran)}<h2>${esc(e.hadithH)}</h2>${refList(e.hadith)}` +
+    `<h2>${esc(e.schoolsH)}</h2>` + e.schools.map(([h, p]) => `<h3>${esc(h)}</h3><p>${esc(p)}</p>`).join('') +
+    `<p class="muted small">${esc(e.note)}</p>` +
+    linkList(GUIDE_PRAYERS.map((k) => ({ name: STRINGS[lang].prayers[k], href: url.prayer(lang, k) })));
+  learnAdd(lang, { path: learnUrl.evidence(lang), fn: learnUrl.evidence, title: e.title, h1: e.h1, desc: e.desc, body, crumbs: prayersCrumb(lang) });
+}
+function wuduPage(lang) {
+  const w = LEARN[lang].wudu;
+  const ol = (a) => `<ol class="steps">${a.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>`;
+  const body = `<p class="answer">${esc(w.lede)}</p><h2>${esc(w.whyH)}</h2>${refList(w.why)}` +
+    `<h2>${esc(w.stepsH)}</h2>${ol(w.steps)}<p class="muted small">${esc(w.stepsRef)} ${esc(w.feetRef)}</p>` +
+    `<h2>${esc(w.jafariH)}</h2>${ol(w.jafari)}<p class="muted small">${esc(w.jafariRef)}</p>` +
+    `<h2>${esc(w.diffH)}</h2>` + w.diff.map(([h, p]) => `<h3>${esc(h)}</h3><p>${esc(p)}</p>`).join('') +
+    `<h2>${esc(w.breaksH)}</h2><p>${esc(w.breaks)}</p>`;
+  learnAdd(lang, { path: learnUrl.wudu(lang), fn: learnUrl.wudu, title: w.title, h1: w.h1, desc: w.desc, body });
+}
+function rakahsPage(lang) {
+  const r = LEARN[lang].rk, t = STRINGS[lang];
+  const body = `<p class="answer">${esc(r.lede)}</p><div class="table-scroll"><table class="city-table">` +
+    `<thead><tr><th scope="col">${esc(r.colPrayer)}</th><th scope="col">${esc(r.colFard)}</th><th scope="col">${esc(r.colSunni)}</th><th scope="col">${esc(r.colShafi)}</th><th scope="col">${esc(r.colJafari)}</th></tr></thead><tbody>` +
+    ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((k) => `<tr><th scope="row"><a href="${url.prayer(lang, k)}">${esc(t.prayers[k])}</a></th>${r.rows[k].map((x) => `<td>${esc(x)}</td>`).join('')}</tr>`).join('') +
+    `</tbody></table></div><p>${esc(r.night)}</p><h2>${esc(r.refsH)}</h2>${refList(r.refs)}`;
+  learnAdd(lang, { path: learnUrl.rakahs(lang), fn: learnUrl.rakahs, title: r.title, h1: r.h1, desc: r.desc, body, crumbs: prayersCrumb(lang) });
+}
+function naflPage(lang, key) {
+  const n = LEARN[lang].nafl, p = n.pages[key];
+  const { ci, loc } = guideLoc(lang);
+  const ctx = ctxFor(lang, ci.defaultSect);
+  const fn = (l) => `${pre(l)}prayers/${key}/`, f = (x) => Core.fmtTime(x, loc.tz, ctx);
+  const row = Core.naflRows(loc, ctx, NOW).find((r) => r[0] === key || (key === 'tahajjud' && r[0] === 'layl'));
+  const live = row ? tpl(n.from, { start: f(row[1]), end: f(row[2]) }) : '';
+  const body = `<section class="nafl-today"><h2 id="naflH">${esc(tpl(n.todayH, { city: loc.name }))}</h2>` +
+    `<p class="answer" id="naflLive">${esc(live)}</p><p class="muted small">${esc(n.cityHint)}</p></section>` +
+    `<h2>${esc(n.timeH)}</h2><p>${esc(p.time)}</p><h2>${esc(n.countH)}</h2><p>${esc(p.count)}</p>` +
+    `<h2>${esc(n.refsH)}</h2>${refList(p.refs)}` +
+    linkList(NAFL_PAGES.filter((k) => k !== key).map((k) => ({ name: n.pages[k].h1, href: `${pre(lang)}prayers/${k}/` }))
+      .concat([{ name: LEARN[lang].tabs.rakahs, href: learnUrl.rakahs(lang) }, { name: LEARN[lang].tabs.evidence, href: learnUrl.evidence(lang) }]));
+  learnAdd(lang, { path: fn(lang), fn, title: p.title, h1: p.h1, desc: p.desc, body, crumbs: prayersCrumb(lang),
+    data: { kind: 'nafl', nafl: key, defaultSect: ci.defaultSect, pl: loc, naflT: { todayH: n.todayH, from: n.from } } });
+}
+function namesPage(lang) {
+  const m = LEARN[lang].names, ctx = ctxFor(lang, 'hanafi');
+  const body = `<p class="answer">${esc(m.lede)}</p>${refList(m.refs)}<div class="table-scroll"><table class="city-table names-table">` +
+    `<thead><tr><th scope="col">${esc(m.colNo)}</th><th scope="col">${esc(m.colAr)}</th><th scope="col">${esc(m.colTr)}</th><th scope="col">${esc(m.colMean)}</th></tr></thead><tbody>` +
+    ALLAH_NAMES.map(([ar, tr], i) => `<tr><td>${esc(Core.num(i + 1, ctx))}</td><td class="name-ar" lang="ar" dir="rtl">${esc(ar)}</td><td>${esc(tr)}</td><td>${esc(m.meanings[i])}</td></tr>`).join('') +
+    `</tbody></table></div><p class="muted small">${esc(m.listNote)}</p>`;
+  learnAdd(lang, { path: learnUrl.names(lang), fn: learnUrl.names, title: m.title, h1: m.h1, desc: m.desc, body });
+}
 
 function prayersHub(lang) {
   const t = STRINGS[lang], g = GUIDES[lang], pagePath = url.prayers(lang);
@@ -1615,6 +1715,7 @@ ALL_LANGS.forEach((lang) => {
   aboutPage(lang);
   prayersHub(lang);
   GUIDE_PRAYERS.forEach((k) => prayerPage(lang, k));
+  if (LEARN[lang]) { evidencePage(lang); wuduPage(lang); rakahsPage(lang); NAFL_PAGES.forEach((k) => naflPage(lang, k)); namesPage(lang); }
   hijriPage(lang);
   EVENTS.forEach((e) => eventPage(lang, e));
   methodsHub(lang);

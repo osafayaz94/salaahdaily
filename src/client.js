@@ -406,6 +406,14 @@
     });
   })();
 
+  // Tahajjud, Ishraq and Chasht pages: today's time for the visitor's last city, in their school.
+  if (P.kind === 'nafl' && $('naflLive')) (function () {
+    var last = lastLoc(), loc = last ? last.loc : P.pl, cx = ctx();
+    var r = C.naflRows(loc, cx, new Date()).filter(function (x) { return x[0] === P.nafl || (P.nafl === 'tahajjud' && x[0] === 'layl'); })[0];
+    $('naflH').textContent = C.tpl(P.naflT.todayH, { city: loc.name });
+    $('naflLive').textContent = r ? C.tpl(P.naflT.from, { start: C.fmtTime(r[1], loc.tz, cx), end: C.fmtTime(r[2], loc.tz, cx) }) : '';
+  })();
+
   // Crescent prediction (src/moon.js, loaded only here): redrawn for the visitor's last city and their clock format.
   if (P.kind === 'hijri' && $('mcOut') && window.Moon && P.moon) (function () {
     var last = lastLoc(), loc = last ? last.loc : P.ml, cx = ctx();

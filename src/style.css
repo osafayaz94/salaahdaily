@@ -606,3 +606,23 @@ body.bare { background: var(--surface); margin: 0; }
 .mc-z { padding: 2px 10px; border-radius: 999px; font-size: 0.875rem; background: var(--surface-2); }
 .mc-A, .mc-B { background: color-mix(in srgb, var(--emerald) 18%, transparent); }
 .mc-C { background: color-mix(in srgb, var(--gold-soft) 60%, transparent); }
+/* Learn tabs under the header, and the learn pages */
+.learn-tabs { padding-bottom: 8px; }
+.learn-tabs ul { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; overflow-x: auto; scrollbar-width: none; }
+.learn-tabs ul::-webkit-scrollbar { display: none; }
+.learn-tabs a { display: block; white-space: nowrap; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 0.9rem; font-weight: 600; }
+.learn-tabs a:hover { border-color: var(--gold); text-decoration: none; }
+.learn-tabs a[aria-current="page"] { background: var(--emerald); border-color: var(--emerald); color: var(--bg); }
+.basis { margin-top: 10px; font-size: 0.9rem; }
+.basis summary { cursor: pointer; font-weight: 600; }
+.basis ul { margin: 8px 0; padding-inline-start: 18px; }
+.basis li + li { margin-top: 4px; }
+.refs { list-style: none; padding: 0; margin: 8px 0 16px; }
+.refs li { padding: 10px 14px; border-inline-start: 3px solid var(--gold); background: var(--surface-2); border-radius: 8px; }
+.refs li + li { margin-top: 8px; }
+.refs .ref { display: block; font-weight: 700; font-size: 0.85rem; color: var(--emerald-2); }
+.steps li + li { margin-top: 6px; }
+.names-table .name-ar { font-size: 1.25rem; white-space: nowrap; }
+.basis { color: var(--hero-muted); }
+.basis a { color: inherit; text-decoration: underline; text-decoration-color: var(--gold-bright); text-underline-offset: 3px; }
+.n-name a { color: inherit; text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 3px; }
