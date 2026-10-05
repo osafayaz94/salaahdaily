@@ -286,6 +286,36 @@
     });
   }
 
+  // Header search on every page: searches all cities, loading the index on first use.
+  document.querySelectorAll('[data-search]').forEach(function (box) {
+    var inp = box.querySelector('input'), list = box.querySelector('ul'), idx = null, busy = false;
+    function load(then) {
+      if (idx) { then(); return; }
+      if (busy) return;
+      busy = true;
+      fetch(box.getAttribute('data-search')).then(function (r) { return r.json(); }).then(function (d) { idx = d; then(); })
+        .catch(function () { busy = false; });
+    }
+    function show() {
+      var q = inp.value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      if (!q) { list.hidden = true; list.innerHTML = ''; return; }
+      var hits = idx.filter(function (row) { return row[3].indexOf(q) !== -1; }).slice(0, 8);
+      list.innerHTML = hits.length ? hits.map(function (row) {
+        return '<li><a href="' + C.esc(row[2]) + '"><span>' + C.esc(row[0]) + '</span><span class="muted">' + C.esc(row[1]) + '</span></a></li>';
+      }).join('') : '<li class="muted">' + C.esc(P.t.noMatch) + '</li>';
+      list.hidden = false;
+    }
+    inp.addEventListener('focus', function () { load(function () {}); });
+    inp.addEventListener('input', function () { load(show); });
+    inp.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { list.hidden = true; return; }
+      if (e.key !== 'Enter') return;
+      var first = list.querySelector('a');
+      if (first) location.href = first.getAttribute('href');
+    });
+    document.addEventListener('click', function (e) { if (!box.contains(e.target)) list.hidden = true; });
+  });
+
   /* ---------- Last city visited ---------- */
   var LAST = 'namaz.last.' + P.lang;
   if (P.kind === 'city' && loc) {

@@ -637,7 +637,7 @@ function addPage(o) {
         langMenu(lang, alternates) +
         `<button type="button" class="btn-ghost" data-open-settings aria-label="${esc(t.settings)}">${ICON.settings}<span class="hide-sm">${esc(t.settings)}</span></button>` +
       '</div>' +
-    '</div>' + learnTabs(lang, o.path) + '</header>' +
+    '</div>' + headerBar(lang, o.path, o.data.kind) + '</header>' +
     `<main id="main" class="wrap" tabindex="-1">${o.body}</main>` +
     settingsDialog(lang) +
     footer(lang, o.data.kind) +
@@ -989,10 +989,18 @@ function learnTabs(lang, current) {
   if (!L) return '';
   const items = [['times', url.home(lang)], ...['evidence', 'wudu', 'rakahs', 'night', 'names'].map((k) => [k, learnUrl[k](lang)])];
   const isNafl = NAFL_PAGES.some((k) => current === `${pre(lang)}prayers/${k}/`);
-  return `<nav class="wrap learn-tabs" aria-label="${esc(L.tabs.evidence)}"><ul>` + items.map(([k, href]) => {
+  return `<nav class="learn-tabs" aria-label="${esc(L.tabs.evidence)}"><ul>` + items.map(([k, href]) => {
     const on = current === href || (k === 'night' && isNafl);
     return `<li><a href="${href}"${on ? ' aria-current="page"' : ''}>${esc(L.tabs[k])}</a></li>`;
   }).join('') + '</ul></nav>';
+}
+// The row under the header: the learn tabs, and a city search on every page except the home page (which has its own).
+function headerBar(lang, current, kind) {
+  const t = STRINGS[lang];
+  const search = kind === 'home' ? '' :
+    `<div class="search header-search" data-search="${SEARCH[lang].path}">${ICON.search}<input type="search" placeholder="${esc(t.searchLabel)}" autocomplete="off" aria-label="${esc(t.searchLabel)}">` +
+    '<ul class="search-results" hidden></ul></div>';
+  return `<div class="wrap header-bar">${learnTabs(lang, current)}${search}</div>`;
 }
 const refList = (items) => `<ul class="refs">${items.map(([r, x]) => `<li><span class="ref">${Core.ltrNums(r)}</span> ${Core.ltrNums(x)}</li>`).join('')}</ul>`;
 function learnAdd(lang, o) {
