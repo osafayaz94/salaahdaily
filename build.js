@@ -123,6 +123,8 @@ const problems = [];
   const en = shape(LEARN.en);
   Object.keys(LANGS).forEach((l) => { if (!LEARN[l]) problems.push(`learn: no strings for ${l}`); else if (shape(LEARN[l]) !== en) problems.push(`learn-i18n/${l}.js: keys or list lengths differ from English`); });
   if (LEARN.en.names.meanings.length !== ALLAH_NAMES.length) problems.push('learn.js: meanings and names differ in length');
+  const refEn = shape(REFS.en);
+  Object.keys(REFS).forEach((l) => { if (shape(REFS[l]) !== refEn) problems.push(`prayer-refs-i18n/${l}.js: keys or list lengths differ from English`); });
 }
 const CONTINENTS = ['asia', 'middleEast', 'africa', 'europe', 'northAmerica', 'southAmerica', 'oceania'];
 const SECT_KEYS = Core.SECTS;
