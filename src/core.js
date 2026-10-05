@@ -438,17 +438,10 @@
   function ltrNums(s) {
     return esc(s).replace(/[0-9۰-۹০-৯][0-9۰-۹০-৯:.\-–]*[0-9۰-۹০-৯]/g, function (m) { return '<bdi dir="ltr">' + m + '</bdi>'; });
   }
-  function basisBlock(ctx) {
-    var b = ctx.t.basis;
-    if (!b) return '';
-    var j = ctx.sect === 'jafria', lines = [b.fajr, j ? b.dhuhrJ : b.dhuhr];
-    if (!j) lines.push(SECT_ASR[ctx.sect] === 'Hanafi' ? b.asr2 : b.asr1);
-    lines.push(j ? b.maghribJ : b.maghrib, j ? b.ishaJ : b.isha);
-    return '<details class="basis"><summary>' + esc(tpl(b.sum, { sect: ctx.t.sects[ctx.sect] })) + '</summary><ul>' +
-      lines.map(function (x) { return '<li>' + ltrNums(x) + '</li>'; }).join('') + '</ul>' +
-      '<a href="' + pre(ctx) + 'prayers/evidence/">' + esc(b.more) + '</a></details>';
+  // "Reference" under a prayer: a link to its page of Quran and hadith (Sunni and Shia side by side).
+  function refToggle(ctx, key) {
+    return ctx.t.refLabel ? '<a class="p-ref" href="' + pre(ctx) + 'prayers/' + key + '/reference/">' + esc(ctx.t.refLabel) + '</a>' : '';
   }
-
   // Inner HTML of the #today section. Returns { html, nextAt }.
   function renderToday(loc, ctx, now, h1) {
     var s = snapshot(loc, ctx, now), d = s.date, t = ctx.t;
@@ -465,6 +458,7 @@
           : '<a href="' + pre(ctx) + 'prayers/' + (k === 'dhuhr' && fri ? 'jumuah' : k) + '/">' + esc(label(k)) + '</a>') + '</span>' +
         '<span class="p-time"><bdi>' + esc(fmtTime(at, loc.tz, ctx)) + '</bdi></span>' +
         (state === 'is-next' ? '<span class="p-badge">' + esc(t.next) + '</span>' : state === 'is-current' ? '<span class="p-badge">' + esc(t.now) + '</span>' : '') +
+        (k === 'sunrise' ? '' : refToggle(ctx, k)) +
         '</li>';
     }).join('');
 
@@ -494,8 +488,7 @@
       sectPicker(ctx) +
       '<ol class="prayers">' + cards + '</ol>' +
       '<p class="today-summary">' + summary + '</p>' +
-      '<p class="today-meta">' + metaLine(loc, ctx, s.params) + '</p>' +
-      basisBlock(ctx);
+      '<p class="today-meta">' + metaLine(loc, ctx, s.params) + '</p>';
     return { html: html, nextAt: s.next.at.getTime() };
   }
 
@@ -582,7 +575,7 @@
     // Languages with the learn pages link each prayer to its page (Tahajjud, Ishraq, Chasht).
     var page = { tahajjud: 'tahajjud', layl: 'tahajjud', ishraq: 'ishraq', chasht: 'chasht' };
     function naflName(k) {
-      return t.basis && page[k] ? '<a href="' + pre(ctx) + 'prayers/' + page[k] + '/">' + esc(t.nafl[k]) + '</a>' : esc(t.nafl[k]);
+      return page[k] ? '<a href="' + pre(ctx) + 'prayers/' + page[k] + '/">' + esc(t.nafl[k]) + '</a>' : esc(t.nafl[k]);
     }
     return '<h2 id="naflTitle">' + esc(heading) + '</h2><ul class="nafl-list">' +
       rows.map(function (r) {
@@ -591,9 +584,8 @@
           '<span class="n-time">' + tpl(esc(t.range), {
             a: '<bdi>' + esc(fmtTime(r[1], loc.tz, ctx)) + '</bdi>',
             b: '<bdi>' + esc(fmtTime(r[2], loc.tz, ctx)) + '</bdi>',
-          }) + '</span>' + (active ? '<span class="p-badge">' + esc(t.now) + '</span>' : '') + '</li>';
-      }).join('') + '</ul>' +
-      '<p class="muted small">' + esc(ctx.sect === 'jafria' ? t.laylNote : t.naflNote) + '</p>';
+          }) + '</span>' + (active ? '<span class="p-badge">' + esc(t.now) + '</span>' : '') + refToggle(ctx, r[0] === 'layl' ? 'tahajjud' : r[0]) + '</li>';
+      }).join('') + '</ul>';
   }
 
   // Quick answers: plain-text questions and answers with today's values (also used for FAQPage data).

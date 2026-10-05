@@ -607,13 +607,11 @@ body.bare { background: var(--surface); margin: 0; }
 .mc-A, .mc-B { background: color-mix(in srgb, var(--emerald) 18%, transparent); }
 .mc-C { background: color-mix(in srgb, var(--gold-soft) 60%, transparent); }
 /* Learn tabs under the header, and the learn pages */
-.header-bar { display: flex; align-items: center; gap: 12px; padding-bottom: 8px; }
-.learn-tabs { flex: 1; min-width: 0; }
-.header-search { flex: 0 0 260px; }
+.header-bar { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding-top: 12px; padding-bottom: 4px; }
+.learn-tabs { min-width: 0; }
+.header-search { flex: none; max-width: 460px; width: 100%; }
 .header-search svg { inset-inline-start: 12px; }
-.header-search input { height: 38px; border-radius: 999px; border: 1px solid var(--line); padding-inline: 38px 12px; font-size: 0.95rem; }
-.header-search .search-results { min-width: 260px; }
-@media (max-width: 760px) { .header-bar { flex-wrap: wrap; } .header-search { flex-basis: 100%; order: -1; } }
+.header-search input { height: 40px; border-radius: 999px; border: 1px solid var(--line); padding-inline: 38px 12px; font-size: 0.95rem; }
 .learn-tabs ul { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; overflow-x: auto; scrollbar-width: none; }
 .learn-tabs ul::-webkit-scrollbar { display: none; }
 .learn-tabs a { display: block; white-space: nowrap; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 0.9rem; font-weight: 600; }
@@ -632,3 +630,9 @@ body.bare { background: var(--surface); margin: 0; }
 .basis { color: var(--hero-muted); }
 .basis a { color: inherit; text-decoration: underline; text-decoration-color: var(--gold-bright); text-underline-offset: 3px; }
 .n-name a { color: inherit; text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 3px; }
+/* Reference link under each prayer, and the reference pages (Sunni and Shia side by side) */
+.p-ref { display: inline-block; margin-top: 6px; font-size: 0.8rem; font-weight: 700; color: inherit; text-decoration: underline; text-underline-offset: 3px; opacity: 0.9; }
+.nafl-item .p-ref { color: var(--emerald-2); }
+.ref-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.ref-cols h3 { margin-top: 0; font-size: 1rem; }
+@media (max-width: 760px) { .ref-cols { grid-template-columns: 1fr; gap: 4px; } }

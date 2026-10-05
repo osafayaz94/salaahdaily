@@ -97,7 +97,10 @@ const { NAMES: ALLAH_NAMES, LEARN } = require('./src/learn');
 fs.readdirSync(path.join(__dirname, 'src/learn-i18n')).forEach((f) => { LEARN[f.replace(/\.js$/, '')] = require('./src/learn-i18n/' + f); });
 const NAFL_PAGES = ['tahajjud', 'ishraq', 'chasht'];
 // Learn pages (src/learn.js, translations in src/learn-i18n/): only languages that have them get the pages and tabs.
-Object.keys(LEARN).forEach((l) => { STRINGS[l].basis = LEARN[l].basis; });
+// Quran and hadith under each prayer time (src/prayer-refs.js, translations in src/prayer-refs-i18n/), fetched when opened.
+const { REFS, REF_KEYS } = require('./src/prayer-refs');
+if (fs.existsSync(path.join(__dirname, 'src/prayer-refs-i18n'))) fs.readdirSync(path.join(__dirname, 'src/prayer-refs-i18n')).forEach((f) => { REFS[f.replace(/\.js$/, '')] = require('./src/prayer-refs-i18n/' + f); });
+Object.keys(LANGS).forEach((l) => { STRINGS[l].refLabel = REFS[l] ? REFS[l].label : ''; });
 
 const ROOT = __dirname;
 const DIST = path.join(ROOT, 'dist');
@@ -357,7 +360,7 @@ function locOf(ci, lang) {
   return { name: nameIn(ci.names, lang, c), lat: ci.lat, lng: ci.lng, tz: ci.tz, method: ci.method, jafariMethod: c.jafariMethod, extraCalendar: c.extraCalendar };
 }
 // Only the strings the browser script renders; titles, descriptions and static copy stay out of the page data.
-const CLIENT_KEYS = ['basis', 'qAt', 'aAt', 'qLeft', 'aLeft', 'sects', 'prayers', 'sectLabel', 'nextIn', 'tomorrow', 'localTime', 'next', 'now', 'methodLine',
+const CLIENT_KEYS = ['refLabel', 'qAt', 'aAt', 'qLeft', 'aLeft', 'sects', 'prayers', 'sectLabel', 'nextIn', 'tomorrow', 'localTime', 'next', 'now', 'methodLine',
   'asrTwice', 'asrOnce', 'sameTimes', 'maghribAngle', 'changeMethod', 'summary', 'monthTitle', 'range', 'colDate', 'colHijri',
   'qibla', 'qiblaFrom', 'kaaba', 'hijriMonths', 'hijriEra', 'openLast', 'noGeo', 'geoBlocked', 'locating', 'yourLocation',
   'methods', 'months', 'weekdays', 'solarMonths', 'solarEra', 'mapsHl', 'mosquesNearYou', 'mosquesLede', 'openInMaps',
@@ -637,7 +640,7 @@ function addPage(o) {
         langMenu(lang, alternates) +
         `<button type="button" class="btn-ghost" data-open-settings aria-label="${esc(t.settings)}">${ICON.settings}<span class="hide-sm">${esc(t.settings)}</span></button>` +
       '</div>' +
-    '</div>' + headerBar(lang, o.path, o.data.kind) + '</header>' +
+    '</div></header>' + headerBar(lang, o.path, o.data.kind) +
     `<main id="main" class="wrap" tabindex="-1">${o.body}</main>` +
     settingsDialog(lang) +
     footer(lang, o.data.kind) +
@@ -987,10 +990,9 @@ const learnCluster = (fn) => cluster(fn).filter((a) => LEARN[a.lang]);
 function learnTabs(lang, current) {
   const L = LEARN[lang];
   if (!L) return '';
-  const items = [['times', url.home(lang)], ...['evidence', 'wudu', 'rakahs', 'night', 'names'].map((k) => [k, learnUrl[k](lang)])];
-  const isNafl = NAFL_PAGES.some((k) => current === `${pre(lang)}prayers/${k}/`);
+  const items = ['names', 'rakahs', 'wudu'].map((k) => [k, learnUrl[k](lang)]);
   return `<nav class="learn-tabs" aria-label="${esc(L.tabs.evidence)}"><ul>` + items.map(([k, href]) => {
-    const on = current === href || (k === 'night' && isNafl);
+    const on = current === href;
     return `<li><a href="${href}"${on ? ' aria-current="page"' : ''}>${esc(L.tabs[k])}</a></li>`;
   }).join('') + '</ul></nav>';
 }
@@ -1009,7 +1011,7 @@ function learnAdd(lang, o) {
     `<p class="muted small">${esc(tpl(t.updated, { date: Core.gregorian(...ymd(NOW, 'UTC'), 'full', ctxFor(lang, 'hanafi')) }))}</p></article>`;
   const title = fitTitle(o.title, lang);
   addPage({
-    lang, tag: langTag(lang), title, desc: o.desc, path: o.path, alternates: learnCluster(o.fn), indexable: true, body,
+    lang, tag: langTag(lang), title, desc: o.desc, path: o.path, alternates: (o.cluster || learnCluster)(o.fn), indexable: true, body,
     jsonld: { '@graph': [
       { '@type': 'WebPage', '@id': abs(o.path), url: abs(o.path), name: title, description: o.desc, inLanguage: langTag(lang),
         dateModified: TODAY_ISO, isPartOf: { '@id': `${SITE}/#website` } },
@@ -1060,6 +1062,22 @@ function naflPage(lang, key) {
       .concat([{ name: LEARN[lang].tabs.rakahs, href: learnUrl.rakahs(lang) }, { name: LEARN[lang].tabs.evidence, href: learnUrl.evidence(lang) }]));
   learnAdd(lang, { path: fn(lang), fn, title: p.title, h1: p.h1, desc: p.desc, body, crumbs: prayersCrumb(lang),
     data: { kind: 'nafl', nafl: key, defaultSect: ci.defaultSect, pl: loc, naflT: { todayH: n.todayH, from: n.from } } });
+}
+// A prayer's Quran and hadith: timing, benefits and rak'ahs, Sunni and Shia side by side.
+function refPage(lang, key) {
+  const R = REFS[lang], t = STRINGS[lang], it = R.items[key];
+  const name = t.prayers[key] || t.nafl[key];
+  const fn = (l) => `${pre(l)}prayers/${key}/reference/`;
+  const parent = GUIDE_PRAYERS.includes(key) ? { name, href: url.prayer(lang, key) }
+    : NAFL_PAGES.includes(key) && LEARN[lang] ? { name: LEARN[lang].nafl.pages[key].h1, href: `${pre(lang)}prayers/${key}/` } : null;
+  const cols = (sec) => '<div class="ref-cols">' +
+    `<section><h3>${esc(R.sunniH)}</h3>${refList(sec.s)}</section><section><h3>${esc(R.shiaH)}</h3>${refList(sec.j)}</section></div>`;
+  const body = `<p class="answer">${esc(R.lede)}</p>` +
+    [['time', R.timeH], ['virtue', R.virtueH], ['prayer', R.prayerH]].map(([k, h]) => `<h2>${esc(tpl(h, { prayer: name }))}</h2>${cols(it[k])}`).join('') +
+    `<p class="muted small">${esc(R.note)}</p><h2>${esc(R.otherH)}</h2>` +
+    linkList(REF_KEYS.filter((k) => k !== key).map((k) => ({ name: t.prayers[k] || t.nafl[k], href: fn(lang).replace(`/${key}/`, `/${k}/`) })));
+  learnAdd(lang, { path: fn(lang), fn, title: tpl(R.title, { prayer: name }), h1: tpl(R.h1, { prayer: name }), desc: tpl(R.desc, { prayer: name }), body,
+    crumbs: prayersCrumb(lang).concat(parent ? [parent] : []), cluster: (f) => cluster(f).filter((a) => REFS[a.lang]) });
 }
 function namesPage(lang) {
   const m = LEARN[lang].names, ctx = ctxFor(lang, 'hanafi');
@@ -1723,6 +1741,7 @@ ALL_LANGS.forEach((lang) => {
   aboutPage(lang);
   prayersHub(lang);
   GUIDE_PRAYERS.forEach((k) => prayerPage(lang, k));
+  if (REFS[lang]) REF_KEYS.forEach((k) => refPage(lang, k));
   if (LEARN[lang]) { evidencePage(lang); wuduPage(lang); rakahsPage(lang); NAFL_PAGES.forEach((k) => naflPage(lang, k)); namesPage(lang); }
   hijriPage(lang);
   EVENTS.forEach((e) => eventPage(lang, e));
