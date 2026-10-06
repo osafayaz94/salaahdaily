@@ -101,14 +101,27 @@ const NAFL_PAGES = ['tahajjud', 'ishraq', 'chasht'];
 const TABS_MORE = require('./src/tabs-more');
 const { REFS, REF_KEYS } = require('./src/prayer-refs');
 if (fs.existsSync(path.join(__dirname, 'src/prayer-refs-i18n'))) fs.readdirSync(path.join(__dirname, 'src/prayer-refs-i18n')).forEach((f) => { REFS[f.replace(/\.js$/, '')] = require('./src/prayer-refs-i18n/' + f); });
-// More Fajr hadith and the adhkar after Fajr (src/prayer-refs-more/), one file per language.
+// More Fajr hadith and the adhkar after each prayer (src/prayer-refs-more/), one file per language.
+// Numbers pick from the Fajr adhkar (the first four are said after every prayer); names from daily/<lang>.js.
+const AZKAR_OF = {
+  fajr: { s: [0, 1, 2, 3, 'ainni', 'muawwidhat', 4, 5, 6, 7, 8, 9, 10, 11], j: [0, 1, 2] },
+  dhuhr: { s: [0, 1, 2, 3, 'ainni', 'muawwidhat', 'zubayr'], j: [0, 2] },
+  asr: { s: [0, 1, 2, 3, 'ainni', 'muawwidhat', 'sunset', 'amsayna', 11], j: [0, 2] },
+  maghrib: { s: [0, 1, 2, 3, 'ainni', 'muawwidhat', 'amsayna', 'bikaM', 'kalimat', 9, 10], j: [0, 2] },
+  isha: { s: [0, 1, 2, 3, 'ainni', 'muawwidhat', 'kursiBed', 'baqarah', 'quls', 'bismika', 'mulk', 'tasbihBed'], j: [0, 1, 2] },
+};
 Object.keys(REFS).forEach((l) => {
   const f = path.join(__dirname, 'src/prayer-refs-more', l + '.js');
   if (!fs.existsSync(f)) return;
-  const m = require(f), fj = REFS[l].items.fajr;
+  const m = require(f), daily = require(`./src/prayer-refs-more/daily/${l}`), fj = REFS[l].items.fajr;
   REFS[l].azkarH = m.azkarH;
   ['time', 'virtue', 'prayer'].forEach((k) => { fj[k] = { ...fj[k], s: fj[k].s.concat(m.add[k]) }; });
-  fj.azkar = m.azkar;
+  Object.entries(AZKAR_OF).forEach(([key, pick]) => {
+    REFS[l].items[key].azkar = {
+      s: pick.s.map((x) => typeof x === 'number' ? m.azkar.s[x] : daily[x]),
+      j: pick.j.map((x) => m.azkar.j[x]),
+    };
+  });
 });
 Object.keys(LANGS).forEach((l) => { STRINGS[l].refLabel = REFS[l] ? REFS[l].label : ''; });
 const REF_LINKS = require('./src/ref-links');
@@ -136,6 +149,9 @@ const problems = [];
   const en = shape(LEARN.en);
   Object.keys(LANGS).forEach((l) => { if (!LEARN[l]) problems.push(`learn: no strings for ${l}`); else if (shape(LEARN[l]) !== en) problems.push(`learn-i18n/${l}.js: keys or list lengths differ from English`); });
   Object.keys(LANGS).forEach((l) => { if (!REF_LINKS[l]) problems.push(`ref-links.js: no labels for ${l}`); });
+  Object.keys(REFS).forEach((l) => Object.entries(REFS[l].items).forEach(([k, it]) => {
+    if (it.azkar && it.azkar.s.concat(it.azkar.j).some((x) => !Array.isArray(x))) problems.push(`prayer-refs-more/daily/${l}.js: an adhkar for ${k} is missing`);
+  }));
   Object.keys(LANGS).forEach((l) => { if (!TABS_MORE[l] || ['hijri', 'ramadan', 'sehri'].some((k) => !TABS_MORE[l][k])) problems.push(`tabs-more.js: missing tabs for ${l}`); });
   if (LEARN.en.names.meanings.length !== ALLAH_NAMES.length) problems.push('learn.js: meanings and names differ in length');
   const refEn = shape(REFS.en);
