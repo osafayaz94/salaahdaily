@@ -1261,6 +1261,17 @@ var EN_VARIANTS = {
     summary: 'Namaz timing in {city} today: Fajr is at {fajr} and Maghrib is at {maghrib}.',
     faq: [['What is the namaz timing in {city} today?', 'Namaz timing in {city} on {date}: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
     faqByCountry: {
+      // Search Console, India (Oct 2026): nafl times by name, and when each prayer ends.
+      india: [
+        ['Aaj {city} mein namaz ka time kya hai?', 'Aaj {city} mein namaz ka time: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).'],
+        ['What is the Ishraq namaz time in {city} today?', 'Ishraq in {city} today starts at {ishraq} and its last time is {ishraqEnd}.'],
+        ['What is the Chasht namaz time in {city} today?', 'Chasht (Duha) in {city} today starts at {chasht} and its last time is {chashtEnd}.'],
+        ['What is the Tahajjud namaz time in {city} tonight, and its last time?', 'Tahajjud in {city} starts at {tahajjud} and its last time is {tahajjudEnd}, when Fajr begins.'],
+        ['What is the Awwabin namaz time in {city} today?', 'Awwabin in {city} today is from {awwabin} to {awwabinEnd}, between Maghrib and Isha.'],
+        ['What is the Fajr end time in {city} today?', 'Fajr in {city} today starts at {fajr} and ends at {fajrEnd}, at sunrise.'],
+        ['What is the Zohar and Asar last time in {city} today?', 'In {city} today Zohar (Zuhr) ends at {dhuhrEnd} and the last time for Asar (Asr) is {asrEnd}, at sunset ({sect}).'],
+        ['When does Maghrib end and Isha start in {city} today?', 'Maghrib in {city} today is from {maghrib} to {maghribEnd}; Isha starts at {isha} ({sect}).'],
+      ],
       pakistan: [
         ['Aaj {city} mein namaz ka waqt kya hai?', 'Aaj {city} mein namaz ka waqt: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).'],
         // Spellings Pakistan searches with: fajar, zohar, asar.

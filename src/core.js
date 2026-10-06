@@ -621,13 +621,16 @@
     if (loc.v) {
       var tm = addDays(d.y, d.m, d.d, 1), t2 = timesFor(loc, ctx, tm.y, tm.m, tm.d, s.params);
       vars.dateTomorrow = gregorian(tm.y, tm.m, tm.d, 'full', ctx); vars.fajrTomorrow = f(t2.fajr); vars.sunriseTomorrow = f(t2.sunrise);
+      var en = prayerEnds(tt, nafl[nafl.length - 1][2], ctx);
+      ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(function (k) { vars[k + 'End'] = f(en[k]); });
+      nafl.forEach(function (r) { var k = r[0] === 'layl' ? 'tahajjud' : r[0]; vars[k] = f(r[1]); vars[k + 'End'] = f(r[2]); });
     }
     var items = [
       [tpl(t.qTimes, { city: city }), tpl(t.aTimes, vars)],
       [tpl(t.qFajr, { city: city }), tpl(t.aFajr, { fajr: f(tt.fajr), sunrise: f(tt.sunrise) })],
       [tpl(t.qMaghrib, { city: city }), tpl(t.aMaghrib, { maghrib: f(tt.maghrib), isha: f(tt.isha) })],
       ctx.sect === 'jafria'
-        ? [tpl(t.qLayl, { city: city }), tpl(t.aLayl, { layl: f(nafl[0][1]), fajr: f(nafl[0][2]) })]
+        ? [tpl(t.qLayl, { city: city }), tpl(t.aLayl, { layl: f(nafl[nafl.length - 1][1]), fajr: f(nafl[nafl.length - 1][2]) })]
         : [tpl(t.qNafl, { city: city }), tpl(t.aNafl, { ishraq: f(nafl[0][1]), chasht: f(nafl[1][1]), tahajjud: f(nafl[3][1]) })],
       [tpl(t.qQibla, { city: city }), tpl(t.aQibla, { city: city, deg: dec(q, ctx, 1), km: numGrouped(Math.round(distanceKm(loc.lat, loc.lng, KAABA.lat, KAABA.lng)), ctx) })],
       [t.qMethod, tpl(t.aMethod, { method: methodLabel(methodKey(loc, ctx), ctx), sect: sect })],
@@ -650,7 +653,8 @@
       items.push([tpl(t.qLeft, { city: city }), tpl(t.aLeft, { city: city, next: t.prayers[nk] || nk, time: f(s.next.at) })]);
     }
     // Regional questions go right after the first answer, where people look first.
-    var extra = ((loc.v && loc.v.faq) || []).map(function (x) { return [tpl(x[0], vars), tpl(x[1], vars)]; });
+    var extra = ((loc.v && loc.v.faq) || []).map(function (x) { return [tpl(x[0], vars), tpl(x[1], vars)]; })
+      .filter(function (x) { return !/\{[A-Za-z]+\}/.test(x[0] + x[1]); });
     items.splice.apply(items, [1, 0].concat(extra));
     return items.map(function (x) { return { q: x[0], a: x[1] }; });
   }

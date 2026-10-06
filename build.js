@@ -339,7 +339,7 @@ const GULF5 = ['ar', 'en', 'ur', 'hi', 'bn'], ARAB = ['ar', 'en', 'fr'], LATAM =
 const TOP_LANGS = {
   egypt: ['ar', 'en', 'fr', 'de', 'it'],
   'saudi-arabia': GULF5, uae: GULF5, qatar: GULF5, kuwait: GULF5, bahrain: GULF5, oman: GULF5,
-  pakistan: ['ur', 'en', 'ps', 'ar', 'fa'], india: ['hi', 'en', 'ur', 'bn', 'ar'], bangladesh: ['bn', 'en', 'ar', 'ur', 'hi'],
+  pakistan: ['ur', 'en', 'ps', 'ar', 'fa'], india: ['hi', 'en', 'bn', 'ar'], bangladesh: ['bn', 'en', 'ar', 'ur', 'hi'],
   afghanistan: ['fa', 'ps', 'en', 'ur', 'ar'], iran: ['fa', 'en', 'ar', 'tr', 'ur'], maldives: ['en', 'ar'],
   indonesia: ['id', 'en', 'ms', 'ar'], malaysia: ['ms', 'en', 'id', 'ar'], brunei: ['ms', 'en', 'id', 'ar'], singapore: ['en', 'ms', 'id', 'ar', 'hi'],
   turkey: ['tr', 'en', 'ar', 'de', 'fa'], cyprus: ['tr', 'en', 'ar'],
@@ -906,7 +906,7 @@ function cityPage(lang, ci) {
   const body = breadcrumbs(crumbItems) +
     `<section class="today pattern" id="today">${today.html}</section>` +
     `<section class="card nafl" id="nafl" aria-labelledby="naflTitle">${Core.renderNafl(loc, ctx, NOW)}</section>` +
-    (loc.pp ? `<section class="card"><h2>${esc(tpl(PP_COMMON.chipsH, { city: cityName }))}</h2>${linkList(EG_KEYS.map((k) => ({ name: tpl(PP_H1[k], { city: cityName }), href: `${pagePath}${k}/` })))}</section>` : '') +
+    (loc.pp ? `<section class="card"><h2>${esc(tpl(ppStr(lang, ci).chipsH, { city: cityName }))}</h2>${linkList(EG_KEYS.map((k) => ({ name: tpl(ppStr(lang, ci).h1[k], { city: cityName }), href: `${pagePath}${k}/` })))}</section>` : '') +
     '<div class="layout">' +
       monthCard(lang, month, `${p.y}-${p.m}-${p.d}|${ctx.sect}|${ctx.method}|${ctx.hour12}|${ctx.hijriAdj}`) +
       '<aside class="side">' +
@@ -1004,15 +1004,43 @@ const MSA = Object.assign({}, PP_COMMON, {
 // Countries where Arabic is spoken and the Arabic site is built get the pages.
 const PP_COUNTRIES = new Set(['egypt', 'saudi-arabia', 'uae', 'kuwait', 'qatar', 'bahrain', 'oman', 'yemen', 'iraq', 'syria', 'jordan', 'lebanon',
   'palestine', 'sudan', 'libya', 'tunisia', 'algeria', 'morocco', 'mauritania', 'somalia', 'djibouti', 'comoros']);
-const ppStr = (ci) => (ci.country.slug === 'egypt' ? EG : MSA);
-const hasPrayerPages = (lang, ci) => lang === 'ar' && PP_COUNTRIES.has(ci.country.slug) && built('ar', ci.country);
-function cityPrayerPage(ci, key) {
-  const lang = 'ar', t = STRINGS[lang], ctx = ctxFor(lang, ci.defaultSect), loc = locOf(ci, lang), city = loc.name;
+// Persian: Search Console, Iran (Oct 2026): "اذان صبح {city}", "اذان صبح به افق {city}", "نماز صبح ساعت چند است", "طلوع فردا".
+const FA_PP = {
+  chipsH: 'ساعت اذان هر نماز در {city}',
+  h1: { fajr: 'اذان صبح {city}', sunrise: 'طلوع آفتاب {city}', dhuhr: 'اذان ظهر {city}', asr: 'اذان عصر {city}', maghrib: 'اذان مغرب {city}', isha: 'اذان عشا {city}' },
+  title: {
+    fajr: 'اذان صبح {city} امروز: نماز صبح ساعت چند است؟', sunrise: 'ساعت طلوع آفتاب {city} امروز و فردا',
+    dhuhr: 'اذان ظهر {city} امروز: نماز ظهر ساعت چند است؟', asr: 'اذان عصر {city} امروز: نماز عصر ساعت چند است؟',
+    maghrib: 'اذان مغرب {city} امروز: نماز مغرب ساعت چند است؟', isha: 'اذان عشا {city} امروز: نماز عشا ساعت چند است؟',
+  },
+  answer: 'اذان {prayer} به افق {city} امروز ({date}) ساعت {time} و فردا ساعت {tomorrow} است.',
+  answerSunrise: 'طلوع آفتاب {city} امروز ({date}) ساعت {time} و فردا ساعت {tomorrow} است.',
+  desc: 'اذان {prayer} به افق {city} امروز ساعت {time} و فردا ساعت {tomorrow}. ساعت اذان {prayer} در ۳۰ روز آینده و اوقات شرعی کامل {city}.',
+  descSunrise: 'طلوع آفتاب {city} امروز ساعت {time} و فردا ساعت {tomorrow}. ساعت طلوع در ۳۰ روز آینده و اوقات شرعی کامل {city}.',
+  tableH: 'اذان {prayer} به افق {city} در ۳۰ روز آینده', tableHSunrise: 'طلوع آفتاب {city} در ۳۰ روز آینده',
+  colDate: 'تاریخ', colHijri: 'قمری', colTime: 'ساعت',
+  faqH: 'پرسش‌ها درباره اذان {prayer} {city}',
+  q1: 'نماز {prayer} امروز در {city} ساعت چند است؟', a1: 'اذان {prayer} امروز به افق {city} ساعت {time} است.',
+  q1s: 'طلوع آفتاب امروز در {city} ساعت چند است؟', a1s: 'طلوع آفتاب امروز در {city} ساعت {time} است.',
+  q2: 'اذان {prayer} فردا در {city} ساعت چند است؟', a2: 'فردا ({date}) اذان {prayer} به افق {city} ساعت {time} است.',
+  q2s: 'طلوع فردا در {city} ساعت چند است؟', a2s: 'فردا ({date}) طلوع آفتاب در {city} ساعت {time} است.',
+  q4: 'اذان {prayer} به وقت {city} چه ساعتی است؟', a4: 'اذان {prayer} به وقت {city} امروز ساعت {time} و فردا ساعت {tomorrow} است.',
+  q4s: 'ساعت طلوع آفتاب {city} امروز و فردا چند است؟', a4s: 'طلوع آفتاب {city} امروز ساعت {time} و فردا ساعت {tomorrow} است.',
+  q3: 'اوقات شرعی امروز {city} چیست؟', a3: 'اوقات شرعی امروز {city}: اذان صبح {fajr}، طلوع آفتاب {sunrise}، اذان ظهر {dhuhr}، عصر {asr}، اذان مغرب {maghrib}، عشا {isha}.',
+  method: (m) => `اوقات به روش ${m} محاسبه شده و ممکن است یکی دو دقیقه با مسجد شما فرق داشته باشد.`,
+  otherH: 'اوقات دیگر در {city}', nearH: 'اذان {prayer} در شهرهای نزدیک', nearHSunrise: 'طلوع آفتاب در شهرهای نزدیک',
+};
+const FA_PP_COUNTRIES = new Set(['iran', 'iraq', 'afghanistan']);
+const ppStr = (lang, ci) => (lang === 'fa' ? FA_PP : ci.country.slug === 'egypt' ? EG : MSA);
+const hasPrayerPages = (lang, ci) => built(lang, ci.country) &&
+  ((lang === 'ar' && PP_COUNTRIES.has(ci.country.slug)) || (lang === 'fa' && FA_PP_COUNTRIES.has(ci.country.slug)));
+function cityPrayerPage(lang, ci, key) {
+  const t = STRINGS[lang], ctx = ctxFor(lang, ci.defaultSect), loc = locOf(ci, lang), city = loc.name;
   const base = url.city(lang, ci), pagePath = `${base}${key}/`, sun = key === 'sunrise';
   const params = Core.paramsFor(loc, ctx), p = Core.partsInTz(NOW, ci.tz);
   const day = (i) => { const d = Core.addDays(p.y, p.m, p.d, i); return { d, tt: Core.timesFor(loc, ctx, d.y, d.m, d.d, params) }; };
   const f = (x) => Core.fmtTime(x, ci.tz, ctx), g = (d) => Core.gregorian(d.y, d.m, d.d, 'full', ctx);
-  const t0 = day(0), t1 = day(1), name = t.prayers[key], EG = ppStr(ci);
+  const t0 = day(0), t1 = day(1), name = t.prayers[key], EG = ppStr(lang, ci);
   const v = { prayer: name, city, date: g(t0.d), time: f(t0.tt[key]), tomorrow: f(t1.tt[key]) };
   const all = Object.fromEntries(['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map((k) => [k, f(t0.tt[k])]));
   const faq = [
@@ -1512,6 +1540,23 @@ function crescentFor(loc, now, ctx, lang) {
 }
 
 /* ---------- Islamic dates: one page per event ---------- */
+// Search Console (Oct 2026): how India and Iran search for these dates.
+const EV_ALIASES = {
+  en: {
+    shabBarat: ['When is Shab e Barat in 2027 (Shubh Raat, Sobrat)?', '2027 mein Shab-e-Barat (Shubh Raat) kab hai?'],
+    ramadan: ['When does Ramzan 2027 start?', 'Ramadan 2027 kab hai?'],
+  },
+  hi: {
+    shabBarat: ['शबे बारात 2027 में कब है?', 'शब ए बारात (सबे बारात, सुबरात) 2027 की तारीख़ क्या है?'],
+    adha: ['ईद उल अजहा 2027 कब है?'],
+  },
+  bn: { shabBarat: ['শবে বরাত ২০২৭ কবে?'] },
+  fa: {
+    adha: ['عید قربان ۲۰۲۷ چه روزی است؟'],
+    fitr: ['عید فطر ۲۰۲۷ چه روزی است؟'],
+    ramadan: ['ماه رمضان ۲۰۲۷ از چه روزی شروع می‌شود؟'],
+  },
+};
 function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
   const t = STRINGS[lang], g = GUIDES[lang], e = EV[lang], pagePath = url.event(lang, slug);
   const { ci } = guideLoc(lang);
@@ -1540,12 +1585,13 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
   const monthHtml = month ? `<section class="hgrid ev-month" aria-labelledby="evMonthT"><h2 id="evMonthT">${esc(month.title + ' (' + TABS_MORE[lang].ksa + ')')}</h2>` +
     `<p class="muted" id="evMonthSub">${esc(month.sub)}</p><div class="table-scroll"><table class="hijri-grid" id="evMonth">${month.table}</table></div></section>` : '';
   const others = EVENTS.filter((x) => x[0] !== k).map((x) => ({ name: evName(lang, x[0]), href: url.event(lang, x[3]) }));
+  const aliasQs = (EV_ALIASES[lang] && EV_ALIASES[lang][k]) || [];
   const body = breadcrumbs(crumbs) + '<article class="card about guide event">' +
     `<h1>${esc(tpl(e.h1, { event: name, year }))}</h1><p class="answer" id="evAnswer">${esc(answer)}</p>` +
     (nightLine ? `<p>${esc(nightLine)}</p>` : '') +
     '<p id="evAdj" class="small" hidden></p>' +
     `<p class="ev-days" id="evDays">${esc(daysTo === 0 ? e.today : tpl(e.days, { n: Core.num(daysTo, ctx) }))}</p>` +
-    `<p>${esc(e.desc[k])}</p>` + monthHtml +
+    `<p>${esc(e.desc[k])}</p>` + aliasQs.map((q) => `<h3>${esc(q)}</h3><p>${esc(`${answer} ${nightLine}`.trim())}</p>`).join('') + monthHtml +
     `<h2>${esc(tpl(e.years, { event: name }))}</h2><div class="table-scroll"><table class="city-table"><tbody>` +
     dates.map((x) => `<tr><th scope="row">${esc(hijriText(x.hy))}</th><td>${esc(gFull(x.gd))}</td></tr>`).join('') +
     '</tbody></table></div>' +
@@ -1561,7 +1607,7 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
         dateModified: TODAY_ISO, isPartOf: { '@id': `${SITE}/#website` }, about: aboutThing(name, `https://en.wikipedia.org/wiki/${wiki}`),
         speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.guide h1', '#evAnswer'] } },
       { '@type': 'FAQPage', '@id': `${abs(pagePath)}#faq`, inLanguage: langTag(lang),
-        mainEntity: [{ '@type': 'Question', name: tpl(e.q, { event: name, year }), acceptedAnswer: { '@type': 'Answer', text: `${answer} ${nightLine}`.trim() } }] },
+        mainEntity: [tpl(e.q, { event: name, year })].concat(aliasQs).map((q) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: `${answer} ${nightLine}`.trim() } })) },
       breadcrumbLd(crumbs),
     ] },
     data: clientData(lang, Object.assign({ kind: 'event', defaultSect: ci.defaultSect, evDate: `${next.gd.y}-${next.gd.m}-${next.gd.d}`, evH: [next.hy, hm, hd], firstDay: FIRST_DAY[lang] || 0, ksa: TABS_MORE[lang].ksa, evDays: e.days, evToday: e.today, defCountry: ci.country.slug }, hijriCountryData(lang))),
@@ -1952,7 +1998,7 @@ ALL_LANGS.forEach((lang) => {
   homePage(lang);
   COUNTRIES.forEach((c) => {
     if (!built(lang, c)) return;
-    const pages = () => { countryPage(lang, c); c.cities.forEach((ci) => { cityPage(lang, ci); ramadanPage(lang, ci); if (hasPrayerPages(lang, ci)) EG_KEYS.forEach((k) => cityPrayerPage(ci, k)); }); };
+    const pages = () => { countryPage(lang, c); c.cities.forEach((ci) => { cityPage(lang, ci); ramadanPage(lang, ci); if (hasPrayerPages(lang, ci)) EG_KEYS.forEach((k) => cityPrayerPage(lang, ci, k)); }); };
     if (NATIONAL_CAL[c.slug]) withCalendar(NATIONAL_CAL[c.slug], pages); else pages();
   });
   nearPage(lang);
