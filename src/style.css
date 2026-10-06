@@ -624,6 +624,8 @@ body.bare { background: var(--surface); margin: 0; }
 .refs { list-style: none; padding: 0; margin: 8px 0 16px; }
 .refs li { padding: 10px 14px; border-inline-start: 3px solid var(--gold); background: var(--surface-2); border-radius: 8px; }
 .refs li + li { margin-top: 8px; }
+.refs .dhikr { font-size: 1.12em; }
+.refs .dhikr-line { display: block; margin: 6px 0; line-height: 1.9; }
 .refs .ref { display: block; font-weight: 700; font-size: 0.85rem; color: var(--emerald-2); }
 .steps li + li { margin-top: 6px; }
 .names-table .name-ar { font-size: 1.25rem; white-space: nowrap; }

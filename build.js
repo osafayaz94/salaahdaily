@@ -100,6 +100,15 @@ const NAFL_PAGES = ['tahajjud', 'ishraq', 'chasht'];
 // Quran and hadith under each prayer time (src/prayer-refs.js, translations in src/prayer-refs-i18n/), fetched when opened.
 const { REFS, REF_KEYS } = require('./src/prayer-refs');
 if (fs.existsSync(path.join(__dirname, 'src/prayer-refs-i18n'))) fs.readdirSync(path.join(__dirname, 'src/prayer-refs-i18n')).forEach((f) => { REFS[f.replace(/\.js$/, '')] = require('./src/prayer-refs-i18n/' + f); });
+// More Fajr hadith and the adhkar after Fajr (src/prayer-refs-more/), one file per language.
+Object.keys(REFS).forEach((l) => {
+  const f = path.join(__dirname, 'src/prayer-refs-more', l + '.js');
+  if (!fs.existsSync(f)) return;
+  const m = require(f), fj = REFS[l].items.fajr;
+  REFS[l].azkarH = m.azkarH;
+  ['time', 'virtue', 'prayer'].forEach((k) => { fj[k] = { ...fj[k], s: fj[k].s.concat(m.add[k]) }; });
+  fj.azkar = m.azkar;
+});
 Object.keys(LANGS).forEach((l) => { STRINGS[l].refLabel = REFS[l] ? REFS[l].label : ''; });
 
 const ROOT = __dirname;
@@ -1191,10 +1200,14 @@ function refPage(lang, key) {
   const fn = (l) => `${pre(l)}prayers/${key}/reference/`;
   const parent = GUIDE_PRAYERS.includes(key) ? { name, href: url.prayer(lang, key) }
     : NAFL_PAGES.includes(key) && LEARN[lang] ? { name: LEARN[lang].nafl.pages[key].h1, href: `${pre(lang)}prayers/${key}/` } : null;
+  // In left-to-right languages the voweled Arabic of an adhkar gets its own direction so its words keep their order.
+  const arRuns = LANGS[lang].dir === 'rtl' ? (h) => h : (h) => h.replace(/[\u0600-\u06FF][\u0600-\u06FF\s]*[\u0600-\u06FF]/g,
+    (m) => /[\u064B-\u0652]/.test(m) ? `<bdi class="dhikr${m.split(/\s+/).length > 3 ? ' dhikr-line' : ''}" lang="ar" dir="rtl">${m}</bdi>` : m);
+  const list = (items) => arRuns(refList(items));
   const cols = (sec) => '<div class="ref-cols">' +
-    `<section><h3>${esc(R.sunniH)}</h3>${refList(sec.s)}</section><section><h3>${esc(R.shiaH)}</h3>${refList(sec.j)}</section></div>`;
+    `<section><h3>${esc(R.sunniH)}</h3>${list(sec.s)}</section><section><h3>${esc(R.shiaH)}</h3>${list(sec.j)}</section></div>`;
   const body = `<p class="answer">${esc(R.lede)}</p>` +
-    [['time', R.timeH], ['virtue', R.virtueH], ['prayer', R.prayerH]].map(([k, h]) => `<h2>${esc(tpl(h, { prayer: name }))}</h2>${cols(it[k])}`).join('') +
+    [['time', R.timeH], ['virtue', R.virtueH], ['prayer', R.prayerH]].concat(it.azkar ? [['azkar', R.azkarH]] : []).map(([k, h]) => `<h2>${esc(tpl(h, { prayer: name }))}</h2>${cols(it[k])}`).join('') +
     `<p class="muted small">${esc(R.note)}</p><h2>${esc(R.otherH)}</h2>` +
     linkList(REF_KEYS.filter((k) => k !== key).map((k) => ({ name: t.prayers[k] || t.nafl[k], href: fn(lang).replace(`/${key}/`, `/${k}/`) })));
   learnAdd(lang, { path: fn(lang), fn, title: tpl(R.title, { prayer: name }), h1: tpl(R.h1, { prayer: name }), desc: tpl(R.desc, { prayer: name }), body,
