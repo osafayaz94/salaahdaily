@@ -210,7 +210,7 @@ function nameIn(names, lang, country) {
 /* ---------- Data ---------- */
 // Merge src/towns.js: towns join an existing region with the same English name, or form a new one.
 const TOWNS2 = require('./src/towns-2');
-[require('./src/towns'), TOWNS2, require('./src/towns-3'), require('./src/towns-4')].forEach((TOWNS) => Object.keys(TOWNS).filter((k) => k === k.toLowerCase()).forEach((slug) => {
+[require('./src/towns'), TOWNS2, require('./src/towns-3'), require('./src/towns-4'), require('./src/towns-5')].forEach((TOWNS) => Object.keys(TOWNS).filter((k) => k === k.toLowerCase()).forEach((slug) => {
   const country = RAW.find((c) => c.slug === slug);
   if (!country) { problems.push(`towns.js: unknown country ${slug}`); return; }
   TOWNS[slug].forEach((r) => {

@@ -419,6 +419,13 @@ module.exports.ALIASES = {
   'pakistan/Karachi': 'KHI', 'pakistan/Dera Ghazi Khan': 'DG Khan DGK', 'pakistan/Dera Ismail Khan': 'DI Khan DIKhan',
   'pakistan/Bahawalpur': 'BWP', 'pakistan/Mingora': 'Swat', 'india/Belagavi': 'Belgaum', 'india/Kalaburagi': 'Gulbarga',
   'india/Kochi': 'Ernakulam Cochin', 'india/Panaji': 'Goa', 'bangladesh/Chattogram': 'Chittagong',
+  // Spellings in the October 2026 keyword file (akhtar app.csv).
+  'saudi-arabia/Makkah': 'Mecca Mekkah Makka مكه', 'saudi-arabia/Hail': 'حايل', 'saudi-arabia/Taif': 'الطايف', 'saudi-arabia/Hafar Al-Batin': 'الحفر',
+  'saudi-arabia/Unaizah': 'Unayzah عنيزه', 'morocco/Agadir': 'اكادير اگادير', 'turkey/Konya': 'قونيا', 'turkey/Adana': 'اضنه', 'turkey/Antakya': 'انطاكيا hatay',
+  'uae/Al Ain': 'Alain', 'uae/Ras Al Khaimah': 'RAK', 'qatar/Al Wakrah': 'Wakra', 'malaysia/Johor Bahru': 'JB', 'malaysia/Kuala Lumpur': 'KL',
+  'pakistan/Lahore': 'LHR', 'usa/Philadelphia': 'Philly', 'usa/Boston': 'بوسطن', 'usa/Denver': 'دنفر', 'uk/Birmingham': 'برمنجهام',
+  'spain/Alicante': 'اليكانتي', 'egypt/Cairo': 'Kaherah', 'philippines/General Santos': 'Gensan', 'france/Mulhouse': 'ميلوز', 'sweden/Helsingborg': 'هلسنبوري',
+  'india/Prayagraj': 'Allahabad', 'india/Mangaluru': 'Mangalore', 'india/Hubballi': 'Hubli', 'india/Bardhaman': 'Burdwan',
 };
 // English pages show the older spelling next to the official one where people still search with it most.
 module.exports.EN_SHOWN = {
@@ -426,5 +433,6 @@ module.exports.EN_SHOWN = {
   'india/Gurugram': 'Gurgaon', 'india/Tiruchirappalli': 'Trichy', 'bangladesh/Cumilla': 'Comilla',
   'bangladesh/Bogura': 'Bogra', 'bangladesh/Jashore': 'Jessore', 'saudi-arabia/Al-Ahsa': 'Hofuf',
   'india/Mysuru': 'Mysore', 'india/Belagavi': 'Belgaum', 'india/Kalaburagi': 'Gulbarga', 'bangladesh/Chattogram': 'Chittagong',
-  'pakistan/Mingora': 'Swat', 'india/Panaji': 'Goa',
+  'pakistan/Mingora': 'Swat', 'india/Panaji': 'Goa', 'saudi-arabia/Makkah': 'Mecca', 'saudi-arabia/Madinah': 'Medina',
+  'india/Prayagraj': 'Allahabad', 'india/Mangaluru': 'Mangalore', 'india/Hubballi': 'Hubli', 'india/Kochi': 'Cochin',
 };
