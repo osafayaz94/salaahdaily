@@ -1,0 +1,65 @@
+'use strict';
+// 99 Names of the Prophet ﷺ, in the order of the traditional list the site uses: [Arabic, transliteration].
+// Meanings and page text per language: here for English, src/prophet-names-i18n/<lang>.js for the rest.
+var NAMES = [
+  ['عَادِلٌ', '‘Adil'], ['عَالِمٌ', '‘Alim'], ['عَبْدُ اللَّهِ', '‘Abdullah'], ['أَبُو الْقَاسِمِ', 'Abul-Qasim'], ['أَبُو الطَّاهِرِ', 'Abut-Tahir'],
+  ['أَبُو الطَّيِّبِ', 'Abut-Tayyib'], ['أَبُو إِبْرَاهِيمَ', 'Abu Ibrahim'], ['عَفُوٌّ', '‘Afuww'], ['أَحِيدُ', 'Ahid'], ['أَحْمَدُ', 'Ahmad'],
+  ['أَجِيرٌ', 'Ajir'], ['عَلَمُ الْإِيمَانِ', '‘Alam al-Iman'], ['عَلَمُ الْيَقِينِ', '‘Alam al-Yaqin'], ['عَلَمُ الْهُدَى', '‘Alam al-Huda'], ['عَلِيمٌ', '‘Alim'],
+  ['أَمِينٌ', 'Amin'], ['النَّجْمُ الثَّاقِبُ', 'An-Najm ath-Thaqib'], ['عَاقِبٌ', '‘Aqib'], ['عَرَبِيٌّ', '‘Arabi'], ['أَوَّلُ', 'Awwal'],
+  ['عَيْنُ الْغُرِّ', '‘Ayn al-Ghurr'], ['عَيْنُ النَّعِيمِ', '‘Ayn an-Na‘im'], ['عَزِيزٌ', '‘Aziz'], ['بَالِغٌ', 'Baligh'], ['بَرٌّ', 'Barr'],
+  ['بَشِيرٌ', 'Bashir'], ['بَيَانٌ', 'Bayan'], ['بُرْهَانٌ', 'Burhan'], ['بُشْرَى', 'Bushra'], ['دَاعٍ', 'Da‘i'],
+  ['دَلِيلُ الْخَيْرَاتِ', 'Dalil al-Khayrat'], ['فَاتِحٌ', 'Fatih'], ['فَاضِلٌ', 'Fadil'], ['فَصِيحُ اللِّسَانِ', 'Fasih al-Lisan'], ['فَتَّاحٌ', 'Fattah'],
+  ['غَنِيٌّ', 'Ghani'], ['قَرِيبٌ', 'Qarib'], ['غَوْثٌ', 'Ghawth'], ['غَيْثٌ', 'Ghayth'], ['غِيَاثٌ', 'Ghiyath'],
+  ['هَادٍ', 'Hadi'], ['حَبِيبُ اللَّهِ', 'Habibullah'], ['حَبِيبٌ', 'Habib'], ['حَفِيٌّ', 'Hafiyy'], ['حَافِظٌ', 'Hafiz'],
+  ['حَكِيمٌ', 'Hakim'], ['حَامِدٌ', 'Hamid'], ['حَمِيدٌ', 'Hamid'], ['حَقٌّ', 'Haqq'], ['حَرِيصٌ عَلَيْكُمْ', 'Harisun ‘Alaykum'],
+  ['هَاشِمٌ', 'Hashim'], ['حَاشِرٌ', 'Hashir'], ['هَاشِمِيٌّ', 'Hashimi'], ['هَدِيَّةُ اللَّهِ', 'Hadiyyatullah'], ['حِجَازِيٌّ', 'Hijazi'],
+  ['حِزْبُ اللَّهِ', 'Hizbullah'], ['هُدًى', 'Huda'], ['حُجَّةٌ', 'Hujjah'], ['إِكْلِيلٌ', 'Iklil'], ['إِمَامٌ', 'Imam'],
+  ['إِمَامُ الْمُتَّقِينَ', 'Imam al-Muttaqin'], ['عِزُّ الْعَرَبِ', '‘Izz al-‘Arab'], ['جَامِعٌ', 'Jami‘'], ['جَبَّارٌ', 'Jabbar'], ['جَوَادٌ', 'Jawad'],
+  ['كَافٍ', 'Kafi'], ['كَامِلٌ', 'Kamil'], ['كَاشِفُ الْكُرَبِ', 'Kashif al-Kurab'], ['كَفِيلٌ', 'Kafil'], ['كَلِيمُ اللَّهِ', 'Kalimullah'],
+  ['كَرِيمٌ', 'Karim'], ['خَلِيلُ الرَّحْمَنِ', 'Khalil ar-Rahman'], ['خَلِيلٌ', 'Khalil'], ['خَاتَمُ الْأَنْبِيَاءِ', 'Khatam al-Anbiya’'], ['خَاتَمُ الرُّسُلِ', 'Khatam ar-Rusul'],
+  ['خَطِيبُ الْأُمَمِ', 'Khatib al-Umam'], ['خَطِيبٌ', 'Khatib'], ['خَاتَمٌ', 'Khatam'], ['مَاحٍ', 'Mahi'], ['مَدَنِيٌّ', 'Madani'],
+  ['مَدْعُوٌّ', 'Mad‘uw'], ['مُهْدٍ', 'Muhdi'], ['مَهْدِيٌّ', 'Mahdi'], ['مَهْدِيٌّ', 'Mahdi'], ['مَحْمُودٌ', 'Mahmud'],
+  ['مَكِينٌ', 'Makin'], ['مَكِينٌ', 'Makin'], ['مَخْصُوصٌ بِالْعِزِّ', 'Makhsus bil-‘Izz'], ['مَخْصُوصٌ بِالْمَجْدِ', 'Makhsus bil-Majd'], ['مَخْصُوصٌ بِالشَّرَفِ', 'Makhsus bish-Sharaf'],
+  ['مَعْلُومٌ', 'Ma‘lum'], ['مَأْمُونٌ', 'Ma’mun'], ['مَنْصُورٌ', 'Mansur'], ['مِعْرَاجٌ', 'Mi‘raj'], ['مَشْهُودٌ', 'Mashhud'],
+  ['مَشْكُورٌ', 'Mashkur'], ['مَتِينٌ', 'Matin'], ['مَوْصُولٌ', 'Mawsul'], ['مِفْتَاحٌ', 'Miftah'],
+];
+
+var EN = {
+  tab: '99 Names of Prophet ﷺ',
+  title: '99 Names of Prophet Muhammad ﷺ: Arabic and Meaning | SalaahDaily',
+  h1: '99 Names of Prophet Muhammad ﷺ',
+  desc: 'The 99 names of Prophet Muhammad ﷺ in Arabic with transliteration and meaning, with the Quran verses and hadith about his names.',
+  lede: 'The Prophet ﷺ is called by many names and titles in the Quran and hadith. Most of them describe his qualities and his mission.',
+  refs: [
+    ['Quran 48:29', 'Muhammad is the Messenger of Allah.'],
+    ['Quran 61:6', 'Isa (Jesus) gave glad tidings of a messenger to come after him whose name is Ahmad.'],
+    ['Quran 33:45-46', 'O Prophet, We have sent you as a witness, a bearer of glad tidings and a warner, a caller to Allah by His leave, and a light-giving lamp.'],
+    ['Sahih al-Bukhari 3532, Sahih Muslim 2354', 'I have five names: I am Muhammad and Ahmad; I am al-Mahi, through whom Allah erases disbelief; I am al-Hashir, at whose feet people will be gathered; and I am al-‘Aqib, after whom there is no prophet.'],
+    ['Sahih Muslim 2355', 'He ﷺ named himself Muhammad, Ahmad, al-Muqaffi, al-Hashir, the Prophet of Repentance and the Prophet of Mercy.'],
+  ],
+  listNote: 'This is a traditional list of 99 names and titles. Many are descriptions taken from the Quran and hadith rather than names in the strict sense, and scholars count his names differently.',
+  meanings: [
+    'The Just', 'The Learned', 'The servant of Allah', 'Father of al-Qasim', 'Father of at-Tahir',
+    'Father of at-Tayyib', 'Father of Ibrahim', 'The Forgiving', 'He who turns people away from the Fire', 'The much praised',
+    'He who is rewarded', 'The banner of faith', 'The banner of certainty', 'The banner of guidance', 'The Knowledgeable',
+    'The Trustworthy', 'The shining star', 'The Last, after whom there is no prophet', 'The Arab', 'The First',
+    'Chief of the radiant ones', 'The spring of blessing', 'The Honoured', 'He who reached the highest station', 'The Pious',
+    'Bearer of good news', 'Clear speech', 'The Proof', 'Good tidings', 'The caller to Allah',
+    'The guide to good deeds', 'The Opener, the Victor', 'The Virtuous', 'Eloquent of speech', 'The Opener',
+    'The Self-sufficient', 'The Near', 'Help in need, who hears complaints', 'Rain of mercy', 'Full of help',
+    'The Guide', 'Beloved of Allah', 'The Beloved', 'The very kind', 'The Guardian',
+    'The Wise', 'The one who praises', 'The Praiseworthy', 'The Truth', 'Deeply concerned for the believers',
+    'He who crushes evil', 'The Gatherer', 'Of Banu Hashim', 'Gift of Allah', 'Of the Hijaz',
+    'Of the party of Allah', 'Guidance', 'The Proof', 'The Crown of the prophets', 'The Leader',
+    'Leader of the pious', 'Honour of the Arabs', 'He who gathers all good', 'The mighty one who sets things right', 'The Generous',
+    'The Sufficient', 'The Perfect', 'Remover of distress', 'The Guarantor', 'He to whom Allah spoke',
+    'The Noble', 'Friend of the Most Merciful', 'The true friend', 'Seal of the Prophets', 'Seal of the Messengers',
+    'Preacher to the nations', 'The Preacher', 'The Seal, the final one', 'He who erases disbelief', 'Of Madinah',
+    'He who is called', 'He who leads to guidance', 'He who is guided', 'The well guided', 'The Praised',
+    'Given a firm rank', 'Firmly established with Allah', 'Singled out for honour', 'Singled out for glory', 'Singled out for nobility',
+    'The Known', 'The Trusted', 'Helped to victory', 'He of the Ascension', 'He who is witnessed',
+    'He who is thanked', 'The Firm', 'Joined to Allah', 'The Key',
+  ],
+};
+
+module.exports = { NAMES: NAMES, PN: { en: EN } };

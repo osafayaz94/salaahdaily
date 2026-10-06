@@ -40,7 +40,7 @@ var NAMES = [
 
 var EN = {
   // Tabs under the header, on every page.
-  tabs: { times: 'Prayer times', evidence: 'Quran & Hadith', wudu: 'Wudu', rakahs: 'Namaz Rak‘ahs', night: 'Tahajjud, Ishraq, Chasht', names: '99 Names of ALLAH' },
+  tabs: { times: 'Prayer times', evidence: 'Quran & Hadith', wudu: 'Wudu', rakahs: 'The Five Prayers', night: 'Tahajjud, Ishraq, Chasht', names: '99 Names of ALLAH' },
   ref: 'Reference',
 
   // Under today's times: why each time starts when it does, in the chosen school.

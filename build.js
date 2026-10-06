@@ -96,6 +96,9 @@ const GUIDE_PRAYERS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'jumuah'];
 const { NAMES: ALLAH_NAMES, LEARN } = require('./src/learn');
 fs.readdirSync(path.join(__dirname, 'src/learn-i18n')).forEach((f) => { LEARN[f.replace(/\.js$/, '')] = require('./src/learn-i18n/' + f); });
 const NAFL_PAGES = ['tahajjud', 'ishraq', 'chasht'];
+// Names of the Prophet ﷺ (src/prophet-names.js, translations in src/prophet-names-i18n/).
+const { NAMES: PROPHET_NAMES, PN } = require('./src/prophet-names');
+if (fs.existsSync(path.join(__dirname, 'src/prophet-names-i18n'))) fs.readdirSync(path.join(__dirname, 'src/prophet-names-i18n')).forEach((f) => { PN[f.replace(/.js$/, '')] = require('./src/prophet-names-i18n/' + f); });
 // Learn pages (src/learn.js, translations in src/learn-i18n/): only languages that have them get the pages and tabs.
 // Quran and hadith under each prayer time (src/prayer-refs.js, translations in src/prayer-refs-i18n/), fetched when opened.
 const TABS_MORE = require('./src/tabs-more');
@@ -124,6 +127,9 @@ Object.keys(REFS).forEach((l) => {
   });
 });
 Object.keys(LANGS).forEach((l) => { STRINGS[l].refLabel = REFS[l] ? REFS[l].label : ''; });
+// Jafria's night prayer is shown as "Tahajjud - Witr (Salat al-Layl)", under Ishraq and Chasht (src/layl-names.js).
+const LAYL = require('./src/layl-names');
+Object.keys(LANGS).forEach((l) => { if (LAYL[l]) { STRINGS[l].nafl = { ...STRINGS[l].nafl, layl: LAYL[l].layl }; STRINGS[l].laylH2 = LAYL[l].laylH2; } });
 const REF_LINKS = require('./src/ref-links');
 const AZKAR_KEYS = REF_KEYS.filter((k) => REFS.en.items[k].azkar);
 Object.keys(LANGS).forEach((l) => { STRINGS[l].refLinks = REF_LINKS[l] && { ...REF_LINKS[l], az: AZKAR_KEYS }; });
@@ -153,6 +159,8 @@ const problems = [];
     if (it.azkar && it.azkar.s.concat(it.azkar.j).some((x) => !Array.isArray(x))) problems.push(`prayer-refs-more/daily/${l}.js: an adhkar for ${k} is missing`);
   }));
   Object.keys(LANGS).forEach((l) => { if (!TABS_MORE[l] || ['hijri', 'ramadan', 'sehri'].some((k) => !TABS_MORE[l][k])) problems.push(`tabs-more.js: missing tabs for ${l}`); });
+  Object.keys(PN).forEach((l) => { if (shape(PN[l]) !== shape(PN.en)) problems.push(`prophet-names-i18n/${l}.js: keys or list lengths differ from English`); });
+  if (PN.en.meanings.length !== PROPHET_NAMES.length) problems.push('prophet-names.js: meanings and names differ in length');
   if (LEARN.en.names.meanings.length !== ALLAH_NAMES.length) problems.push('learn.js: meanings and names differ in length');
   const refEn = shape(REFS.en);
   Object.keys(REFS).forEach((l) => { if (shape(REFS[l]) !== refEn) problems.push(`prayer-refs-i18n/${l}.js: keys or list lengths differ from English`); });
@@ -522,6 +530,7 @@ function footer(lang, kind) {
         `<li><a href="${url.widget(lang)}">${esc(GUIDES[lang].wNav)}</a></li>` +
         (LEARN[lang] ? [['evidence', learnUrl.evidence], ['wudu', learnUrl.wudu], ['rakahs', learnUrl.rakahs], ['night', learnUrl.night], ['names', learnUrl.names]]
           .map(([k, fn]) => `<li><a href="${fn(lang)}">${esc(LEARN[lang].tabs[k])}</a></li>`).join('') : '') +
+        (PN[lang] ? `<li><a href="${learnUrl.prophet(lang)}">${esc(PN[lang].tab)}</a></li>` : '') +
         `<li><a href="${url.about(lang)}">${esc(t.aboutLink)}</a></li></ul></nav>` +
       `<nav aria-labelledby="fnLangs"><h2 id="fnLangs">${esc(t.languagesNav)}</h2><ul>${langs}</ul></nav>` +
     '</div>' +
@@ -804,7 +813,6 @@ function countryPage(lang, c) {
   });
   html += '</section>';
   html += `<p class="empty-search" id="emptySearch" hidden>${esc(t.noMatch)} <a class="btn-link" href="${url.near(lang)}#locate">${esc(t.showMyLocation)}</a></p>`;
-  html += `<p class="muted small hijri-auth">${esc(authLine(c.slug, country, lang))}</p>`;
   html += `<p class="muted small">${esc(tpl(t.methodLine, { m: Core.methodLabel(c.method, ctx) }))} · ${esc(tpl(t.updated, { date: Core.gregorian(...ymd(NOW, c.tz), 'full', ctx) }))}</p>`;
   // Every city's Ramadan timetable, one click from the country page.
   const ramYear = Core.num(RAMADAN.y, ctx);
@@ -911,7 +919,6 @@ function cityPage(lang, ci) {
     `<section class="card faq" id="faq" aria-labelledby="faqTitle">${Core.renderFaq(loc, ctx, NOW)}</section>` +
     landmarksNear(lang, ci, cityName, ctx) +
     Core.mosquesCard(ci.lat, ci.lng, tpl(t.mosquesH2, { city: cityName }), ctx) +
-    `<p class="muted small hijri-auth">${esc(authLine(c.slug, countryName, lang))}</p>` +
     `<p class="muted small updated">${esc(tpl(t.updated, { date: Core.gregorian(p.y, p.m, p.d, 'full', ctx) }))} · <a href="${url.about(lang)}">${esc(t.aboutLink)}</a></p>`;
 
   const tag = langTag(lang, c);
@@ -923,7 +930,7 @@ function cityPage(lang, ci) {
           '@type': 'WebPage', '@id': abs(pagePath), url: abs(pagePath), name: title, description: desc, inLanguage: tag,
           dateModified: TODAY_ISO, isPartOf: { '@id': `${SITE}/#website` },
           // Voice assistants read these parts aloud: the H1, the one-line answer and the five times.
-          speakable: { '@type': 'SpeakableSpecification', cssSelector: ['#today h1', '.today-summary', '.prayers'] },
+          speakable: { '@type': 'SpeakableSpecification', cssSelector: ['#today h1', '.prayers'] },
           about: {
             '@type': 'City', name: cityName,
             geo: { '@type': 'GeoCoordinates', latitude: ci.lat, longitude: ci.lng },
@@ -1135,7 +1142,7 @@ const aboutThing = (name, wiki) => ({ '@type': 'Thing', name, sameAs: wiki });
 /* ---------- Learn: Quran and Hadith, wudu, rak'ahs, night and forenoon prayers, 99 Names ---------- */
 const learnUrl = {
   evidence: (l) => `${pre(l)}prayers/evidence/`, wudu: (l) => `${pre(l)}wudu/`, rakahs: (l) => `${pre(l)}prayers/rakahs/`,
-  night: (l) => `${pre(l)}prayers/tahajjud/`, names: (l) => `${pre(l)}names-of-allah/`,
+  night: (l) => `${pre(l)}prayers/tahajjud/`, names: (l) => `${pre(l)}names-of-allah/`, prophet: (l) => `${pre(l)}names-of-prophet/`,
 };
 const learnCluster = (fn) => cluster(fn).filter((a) => LEARN[a.lang]);
 // Tabs under the header: prayer times and the learn pages.
@@ -1147,8 +1154,9 @@ function learnTabs(lang, current) {
   const seg = current.replace(/^\/+/, '').split('/');
   if (LANGS[seg[0]]) seg.shift();
   const ci = cityByPath(`${seg[0]}/${seg[1]}`) || cityByPath(DEFAULT_CITY[lang]);
-  const items = ['names', 'rakahs', 'wudu'].map((k) => [L.tabs[k], learnUrl[k](lang)])
-    .concat([[M.hijri, url.hijri(lang)], [M.ramadan, url.event(lang, 'ramadan')], [M.sehri, url.ramadan(lang, ci)]]);
+  const items = [[L.tabs.names, learnUrl.names(lang)]].concat(PN[lang] ? [[PN[lang].tab, learnUrl.prophet(lang)]] : [], ['rakahs', 'wudu'].map((k) => [L.tabs[k], learnUrl[k](lang)]))
+    .concat([[M.hijri, url.hijri(lang)], [M.ramadan, url.event(lang, 'ramadan')], [M.sehri, url.ramadan(lang, ci)],
+      [evName(lang, 'fitr'), url.event(lang, 'eid-al-fitr')], [evName(lang, 'adha'), url.event(lang, 'eid-al-adha')]]);
   return `<nav class="learn-tabs" aria-label="${esc(L.tabs.evidence)}"><ul>` + items.map(([name, href]) => {
     const on = current === href;
     return `<li><a href="${href}"${on ? ' aria-current="page"' : ''}>${esc(name)}</a></li>`;
@@ -1241,6 +1249,16 @@ function refPage(lang, key) {
     linkList(REF_KEYS.filter((k) => k !== key).map((k) => ({ name: t.prayers[k] || t.nafl[k], href: fn(lang).replace(`/${key}/`, `/${k}/`) })));
   learnAdd(lang, { path: fn(lang), fn, title: tpl(R.title, { prayer: name }), h1: tpl(R.h1, { prayer: name }), desc: tpl(R.desc, { prayer: name }), body,
     crumbs: prayersCrumb(lang).concat(parent ? [parent] : []), cluster: (f) => cluster(f).filter((a) => REFS[a.lang]) });
+}
+// Names of the Prophet ﷺ: the same table as the Names of Allah.
+function prophetNamesPage(lang) {
+  const p = PN[lang], m = LEARN[lang].names, ctx = ctxFor(lang, 'hanafi');
+  const body = `<p class="answer">${esc(p.lede)}</p>${refList(p.refs)}<div class="table-scroll"><table class="city-table names-table">` +
+    `<thead><tr><th scope="col">${esc(m.colNo)}</th><th scope="col">${esc(m.colAr)}</th><th scope="col">${esc(m.colTr)}</th><th scope="col">${esc(m.colMean)}</th></tr></thead><tbody>` +
+    PROPHET_NAMES.map(([ar, tr], i) => `<tr><td>${esc(Core.num(i + 1, ctx))}</td><td class="name-ar" lang="ar" dir="rtl">${esc(ar)}</td><td>${esc(tr)}</td><td>${esc(p.meanings[i])}</td></tr>`).join('') +
+    `</tbody></table></div><p class="muted small">${esc(p.listNote)}</p>`;
+  learnAdd(lang, { path: learnUrl.prophet(lang), fn: learnUrl.prophet, title: p.title, h1: p.h1, desc: p.desc, body,
+    cluster: (f) => cluster(f).filter((a) => PN[a.lang] && LEARN[a.lang]) });
 }
 function namesPage(lang) {
   const m = LEARN[lang].names, ctx = ctxFor(lang, 'hanafi');
@@ -1358,10 +1376,7 @@ function hijriCountry(lang, defSlug) {
   const a = AT[lang], names = COUNTRIES.map((c) => [c.slug, nameIn(c.name, lang)]).sort((x, y) => x[1].localeCompare(y[1], LANGS[lang].locale || 'en'));
   return `<section class="hcountry" aria-labelledby="hcL"><label id="hcL">${esc(a.countryL)} <select id="hcCountry">` +
     names.map(([s, n]) => `<option value="${s}"${s === defSlug ? ' selected' : ''}>${esc(n)}</option>`).join('') + '</select></label>' +
-    `<p id="hcAuth" class="muted">${esc(authLine(defSlug, nameIn(COUNTRIES.find((c) => c.slug === defSlug).name, lang), lang))}</p>` +
-    `<div class="hc-adj" role="group" aria-labelledby="hcL"><button type="button" class="btn-small" data-hadj="-1">${esc(a.later)}</button>` +
-    `<button type="button" class="btn-small" data-hadj="0">${esc(a.same)}</button><button type="button" class="btn-small" data-hadj="1">${esc(a.earlier)}</button></div>` +
-    '<p id="hcAdjNote" class="small" role="status"></p></section>';
+    '</section>';
 }
 function hijriTools(lang, h, today, ctx) {
   const t = STRINGS[lang], c = HC[lang];
@@ -1484,17 +1499,21 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
   const prev = night ? new Date(Date.UTC(next.gd.y, next.gd.m - 1, next.gd.d - 1)) : null;
   const nightLine = prev ? tpl(e.night, { prev: Core.gregorian(prev.getUTCFullYear(), prev.getUTCMonth() + 1, prev.getUTCDate(), 'full', ctx) }) : '';
   const crumbs = [{ name: t.home, href: url.home(lang) }, { name: g.hijriNav, href: url.hijri(lang) }, { name, href: pagePath }];
+  // Ramadan: the whole month as a calendar, each day with its Gregorian date.
+  const month = k === 'ramadan' ? Core.renderHijriGrid(next.hy, hm, ctx, null, FIRST_DAY[lang] || 0) : null;
+  const monthHtml = month ? `<section class="hgrid ev-month" aria-labelledby="evMonthT"><h2 id="evMonthT">${esc(month.title + ' (' + TABS_MORE[lang].ksa + ')')}</h2>` +
+    `<p class="muted" id="evMonthSub">${esc(month.sub)}</p><div class="table-scroll"><table class="hijri-grid" id="evMonth">${month.table}</table></div></section>` : '';
   const others = EVENTS.filter((x) => x[0] !== k).map((x) => ({ name: evName(lang, x[0]), href: url.event(lang, x[3]) }));
   const body = breadcrumbs(crumbs) + '<article class="card about guide event">' +
     `<h1>${esc(tpl(e.h1, { event: name, year }))}</h1><p class="answer" id="evAnswer">${esc(answer)}</p>` +
     (nightLine ? `<p>${esc(nightLine)}</p>` : '') +
     '<p id="evAdj" class="small" hidden></p>' +
     `<p class="ev-days" id="evDays">${esc(daysTo === 0 ? e.today : tpl(e.days, { n: Core.num(daysTo, ctx) }))}</p>` +
-    `<p>${esc(e.desc[k])}</p>` +
+    `<p>${esc(e.desc[k])}</p>` + monthHtml +
     `<h2>${esc(tpl(e.years, { event: name }))}</h2><div class="table-scroll"><table class="city-table"><tbody>` +
     dates.map((x) => `<tr><th scope="row">${esc(hijriText(x.hy))}</th><td>${esc(gFull(x.gd))}</td></tr>`).join('') +
     '</tbody></table></div>' +
-    `<p class="muted small">${esc(e.note)}</p><p class="muted small hijri-auth" id="evAuth">${esc(authLine(ci.country.slug, nameIn(ci.country.name, lang), lang))}</p>` +
+    `<p class="muted small">${esc(e.note)}</p>` +
     `<h2>${esc(e.more)}</h2>` + linkList(others.concat([{ name: g.hijriNav, href: url.hijri(lang) }])) +
     `<p class="muted small">${esc(tpl(t.updated, { date: Core.gregorian(...today, 'full', ctx) }))}</p></article>`;
   const title = fitTitle(tpl(e.title, { event: name, year }), lang);
@@ -1509,7 +1528,7 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
         mainEntity: [{ '@type': 'Question', name: tpl(e.q, { event: name, year }), acceptedAnswer: { '@type': 'Answer', text: `${answer} ${nightLine}`.trim() } }] },
       breadcrumbLd(crumbs),
     ] },
-    data: clientData(lang, Object.assign({ kind: 'event', defaultSect: ci.defaultSect, evDate: `${next.gd.y}-${next.gd.m}-${next.gd.d}`, evH: [next.hy, hm, hd], evDays: e.days, evToday: e.today, defCountry: ci.country.slug }, hijriCountryData(lang))),
+    data: clientData(lang, Object.assign({ kind: 'event', defaultSect: ci.defaultSect, evDate: `${next.gd.y}-${next.gd.m}-${next.gd.d}`, evH: [next.hy, hm, hd], firstDay: FIRST_DAY[lang] || 0, ksa: TABS_MORE[lang].ksa, evDays: e.days, evToday: e.today, defCountry: ci.country.slug }, hijriCountryData(lang))),
   });
 }
 
@@ -1907,7 +1926,7 @@ ALL_LANGS.forEach((lang) => {
   prayersHub(lang);
   GUIDE_PRAYERS.forEach((k) => prayerPage(lang, k));
   if (REFS[lang]) REF_KEYS.forEach((k) => refPage(lang, k));
-  if (LEARN[lang]) { evidencePage(lang); wuduPage(lang); rakahsPage(lang); NAFL_PAGES.forEach((k) => naflPage(lang, k)); namesPage(lang); }
+  if (LEARN[lang]) { evidencePage(lang); wuduPage(lang); rakahsPage(lang); NAFL_PAGES.forEach((k) => naflPage(lang, k)); namesPage(lang); if (PN[lang]) prophetNamesPage(lang); }
   hijriPage(lang);
   EVENTS.forEach((e) => eventPage(lang, e));
   methodsHub(lang);

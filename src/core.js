@@ -392,6 +392,24 @@
     var s = Math.max(0, Math.floor(ms / 1000));
     return num(Math.floor(s / 3600), ctx, 2) + ':' + num(Math.floor((s % 3600) / 60), ctx, 2) + ':' + num(s % 60, ctx, 2);
   }
+  // The same time left in words ("1 hour, 4 minutes and 23 seconds"), worded by the browser's Intl for the language.
+  function countdownWords(ms, ctx) {
+    var s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+    var loc = ctx.L.locale;
+    if (!loc || typeof Intl === 'undefined' || !Intl.ListFormat || !Intl.NumberFormat.prototype.formatToParts) return countdown(ms, ctx);
+    try {
+      var parts = [];
+      if (h) parts.push(['hour', h]);
+      if (h || m) parts.push(['minute', m]);
+      parts.push(['second', sec]);
+      var words = parts.map(function (p) {
+        return nf(loc, { style: 'unit', unit: p[0], unitDisplay: 'long' }).formatToParts(p[1])
+          .map(function (x) { return x.type === 'integer' ? num(p[1], ctx) : x.value; }).join('');
+      });
+      var lk = 'l' + loc;
+      return (cache[lk] || (cache[lk] = new Intl.ListFormat(loc, { style: 'long', type: 'conjunction' }))).format(words);
+    } catch (e) { return countdown(ms, ctx); }
+  }
 
   /* ---------- Qibla ---------- */
   function qibla(lat, lng) {
@@ -416,21 +434,6 @@
       SECTS.map(function (k) {
         return '<button type="button" data-sect="' + k + '" aria-pressed="' + (ctx.sect === k) + '">' + esc(ctx.t.sects[k]) + '</button>';
       }).join('') + '</div></div>';
-  }
-
-  function metaLine(loc, ctx, params) {
-    var t = ctx.t;
-    var mk = methodKey(loc, ctx), ml = esc(tpl(t.methodLine, { m: methodLabel(mk, ctx) }));
-    var parts = [METHOD_SLUG[mk] ? '<a href="' + pre(ctx) + 'methods/' + METHOD_SLUG[mk] + '/">' + ml + '</a>' : '<span>' + ml + '</span>'];
-    if (ctx.sect === 'jafria') {
-      parts.push('<span>' + esc(tpl(t.maghribAngle, { deg: decShort(params.maghribAngle, ctx) })) + '</span>');
-      if (params.asrMadhab) parts.push('<a href="' + pre(ctx) + 'prayers/asr/">' + esc(t.asrTwice) + '</a>');
-    } else {
-      parts.push('<a href="' + pre(ctx) + 'prayers/asr/">' + esc(SECT_ASR[ctx.sect] === 'Hanafi' ? t.asrTwice : t.asrOnce) + '</a>');
-      if (SECT_ASR[ctx.sect] === 'Shafi') parts.push('<span>' + esc(t.sameTimes) + '</span>');
-    }
-    return parts.join('<span class="dot" aria-hidden="true">•</span>') +
-      (ctx.sect === 'jafria' ? '' : '<button type="button" class="btn-link light" data-open-settings>' + esc(t.changeMethod) + '</button>');
   }
 
   // Why each time starts when it does, in the chosen school, with Quran and Hadith references (src/learn.js).
@@ -490,27 +493,18 @@
     if (solar) dateBits.push(esc(solar));
     dateBits.push('<a href="' + pre(ctx) + 'hijri-calendar/">' + esc(hijri(d.y, d.m, d.d, ctx, 'full')) + '</a>');
 
-    // loc.v: regional English wording ("namaz timing", "Salah"), set by the build for some countries.
-    var summary = tpl(esc((loc.v && loc.v.summary) || t.summary), {
-      city: esc(loc.name),
-      fajr: '<bdi>' + esc(fmtTime(s.times.fajr, loc.tz, ctx)) + '</bdi>',
-      maghrib: '<bdi>' + esc(fmtTime(s.times.maghrib, loc.tz, ctx)) + '</bdi>',
-    });
-
     var html = '' +
       '<div class="today-head">' +
         '<div><h1>' + esc(h1) + '</h1>' +
           '<p class="today-date">' + dateBits.join('<span class="dot" aria-hidden="true">•</span>') + '</p></div>' +
         '<div class="next-box">' +
           '<span class="next-label">' + esc(tpl(t.nextIn, { prayer: nextName })) + '</span>' +
-          '<span class="next-count"><bdi id="countdown">' + countdown(s.next.at - now, ctx) + '</bdi></span>' +
+          '<span class="next-count"><bdi id="countdown">' + esc(countdownWords(s.next.at - now, ctx)) + '</bdi></span>' +
           '<span class="next-clock">' + esc(t.localTime) + ' <bdi id="clock">' + esc(fmtTime(now, loc.tz, ctx, true)) + '</bdi></span>' +
         '</div>' +
       '</div>' +
       sectPicker(ctx) +
-      '<ol class="prayers">' + cards + '</ol>' +
-      '<p class="today-summary">' + summary + '</p>' +
-      '<p class="today-meta">' + metaLine(loc, ctx, s.params) + '</p>';
+      '<ol class="prayers">' + cards + '</ol>';
     return { html: html, nextAt: s.next.at.getTime() };
   }
 
@@ -565,7 +559,7 @@
   //   Chasht    sunrise + a quarter of the day (sunrise to sunset), until 10 min before Dhuhr
   //   Awwabin   Maghrib to Isha
   //   Tahajjud  last third of the night (Maghrib to Fajr), until Fajr
-  //   Jafria: Salat al-Layl from midnight (halfway between sunset and Fajr) until Fajr.
+  //   Jafria: Ishraq and Chasht, then Salat al-Layl from midnight (halfway between sunset and Fajr) until Fajr.
   // Before today's Fajr, the night shown is the one still running (from yesterday evening).
   function naflRows(loc, ctx, now) {
     var MIN = 60000;
@@ -579,16 +573,18 @@
       var tm = addDays(p.y, p.m, p.d, 1);
       night = { sunset: today.sunset, maghrib: today.maghrib, fajr: timesFor(loc, ctx, tm.y, tm.m, tm.d, params).fajr };
     }
-    if (ctx.sect === 'jafria') {
-      return [['layl', new Date(night.sunset.getTime() + (night.fajr - night.sunset) / 2), night.fajr]];
-    }
     var chasht = new Date(today.sunrise.getTime() + (today.sunset - today.sunrise) / 4);
-    return [
+    var day = [
       ['ishraq', new Date(today.sunrise.getTime() + 15 * MIN), chasht],
       ['chasht', chasht, new Date(today.dhuhr.getTime() - 10 * MIN)],
+    ];
+    if (ctx.sect === 'jafria') {
+      return day.concat([['layl', new Date(night.sunset.getTime() + (night.fajr - night.sunset) / 2), night.fajr]]);
+    }
+    return day.concat([
       ['awwabin', today.maghrib, today.isha],
       ['tahajjud', new Date(night.fajr.getTime() - (night.fajr - night.maghrib) / 3), night.fajr],
-    ];
+    ]);
   }
 
   function renderNafl(loc, ctx, now) {
@@ -715,7 +711,7 @@
       var d = addDays(start.y, start.m, start.d, i), tt = timesFor(loc, ctx, d.y, d.m, d.d, params);
       if (!first) first = { d: d, tt: tt };
       var isToday = today && today.y === d.y && today.m === d.m && today.d === d.d;
-      rows += '<tr' + (isToday ? ' class="is-today"' : '') + '><td>' + num(i + 1, ctx) + '</td><td>' + esc(gregorian(d.y, d.m, d.d, 'short', ctx)) + '</td>' +
+      rows += '<tr' + (isToday ? ' class="is-today"' : '') + '><td>' + esc(num(i + 1, ctx) + ' ' + t.hijriMonths[8]) + '</td><td>' + esc(gregorian(d.y, d.m, d.d, 'full', ctx)) + '</td>' +
         '<td><bdi>' + esc(fmtTime(tt.fajr, loc.tz, ctx)) + '</bdi></td><td><strong><bdi>' + esc(fmtTime(tt.maghrib, loc.tz, ctx)) + '</bdi></strong></td></tr>';
     }
     return {
@@ -786,7 +782,7 @@
       var g = new Date(start.getTime() + (d - 1) * 864e5), gy = g.getUTCFullYear(), gm = g.getUTCMonth() + 1, gd = g.getUTCDate();
       var isToday = today && today.y === hy && today.m === hm && today.d === d;
       cells.push('<td' + (isToday ? ' class="is-today" aria-current="date"' : '') + '><span class="hg-h">' + esc(num(d, ctx)) + '</span>' +
-        '<span class="hg-g">' + esc(num(gd, ctx)) + (gd === 1 || d === 1 ? ' ' + esc(gMonthShort(gy, gm, ctx)) : '') + '</span></td>');
+        '<span class="hg-g">' + esc(num(gd, ctx)) + ' ' + esc(gMonthShort(gy, gm, ctx)) + '</span></td>');
       end = { y: gy, m: gm };
     }
     while (cells.length % 7) cells.push('<td></td>');
@@ -818,7 +814,7 @@
     mosquesCard: mosquesCard, renderNafl: renderNafl, naflRows: naflRows, ltrNums: ltrNums, faqItems: faqItems, renderFaq: renderFaq,
     cityRowTimes: cityRowTimes, METHOD_ANGLES: METHOD_ANGLES, decShort: decShort, gregorian: gregorian,
     PRAYERS: PRAYERS, ARABIC: ARABIC, BISMILLAH: BISMILLAH, SECTS: SECTS, SELECTABLE: SELECTABLE, METHOD_EN: METHOD_EN,
-    esc: esc, tpl: tpl, num: num, numGrouped: numGrouped, partsInTz: partsInTz, fmtTime: fmtTime, countdown: countdown,
+    esc: esc, tpl: tpl, num: num, numGrouped: numGrouped, partsInTz: partsInTz, fmtTime: fmtTime, countdown: countdown, countdownWords: countdownWords,
     methodLabel: methodLabel, paramsFor: paramsFor, timesFor: timesFor, snapshot: snapshot,
     sectPicker: sectPicker, renderToday: renderToday, renderMonth: renderMonth, qiblaCard: qiblaCard,
     distanceKm: distanceKm, renderJumuah: renderJumuah, renderPrayerLive: renderPrayerLive, hijri: hijri, hijriParts: hijriParts,

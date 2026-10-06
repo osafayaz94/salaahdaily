@@ -141,7 +141,7 @@
     var c = ctx(), cd = $('countdown'), ck = $('clock');
     // Nafl windows (e.g. Ishraq) change between the five prayers, so refresh them each minute.
     if (now % 60000 < 1000 && $('nafl')) $('nafl').innerHTML = C.renderNafl(loc, c, new Date(now));
-    if (cd) cd.textContent = C.countdown(nextAt - now, c);
+    if (cd) cd.textContent = C.countdownWords(nextAt - now, c);
     if (ck) ck.textContent = C.fmtTime(new Date(now), loc.tz, c, true);
   }
   function start() {
@@ -348,12 +348,13 @@
   // Hijri calendar: month grid (any month and year), the year's months table, and the two converters.
   // The visitor's country: chosen on the Hijri page, else the country of the last city opened, else the page's.
   var HCOUNTRY = 'namaz.hcountry';
-  function visitorCountry() {
+  function knownCountry() {
     var saved = load(HCOUNTRY, null);
     if (saved && P.cn && P.cn[saved]) return saved;
     var last = lastLoc(), m = last && /^\/(?:[a-z]{2}\/)?([a-z0-9-]+)\//.exec(last.url);
-    return m && P.cn && P.cn[m[1]] ? m[1] : P.defCountry;
+    return m && P.cn && P.cn[m[1]] ? m[1] : null;
   }
+  function visitorCountry() { return knownCountry() || P.defCountry; }
   function authFor(slug) {
     var a = P.auth[slug] || ['generic', ''];
     return P.authT[a[0]].replace('{country}', P.cn[slug]).replace('{authority}', a[1]);
@@ -367,21 +368,16 @@
     function setCountry(slug) {
       country = slug;
       C.useCalendar(P.natCal[slug] || null);
-      $('hcCountry').value = slug; $('hcAuth').textContent = authFor(slug);
+      $('hcCountry').value = slug;
     }
     function refresh(keepMonth) {
       cx = ctx(); th = C.hijriParts(tp.y, tp.m, tp.d, cx.hijriAdj);
       if (!keepMonth) { gy = th.y; gm = th.m; }
       $('hijriToday').textContent = C.tpl(P.g.hToday, { hijri: C.hijriText(th.y, th.m, th.d, cx), date: C.gregorian(tp.y, tp.m, tp.d, 'full', cx) });
-      $('hcAdjNote').textContent = adjText();
-      document.querySelectorAll('[data-hadj]').forEach(function (b) { b.setAttribute('aria-pressed', String(+b.getAttribute('data-hadj') === (S.hijriAdj || 0))); });
       drawGrid(); drawYear();
     }
     setCountry(visitorCountry());
     $('hcCountry').addEventListener('change', function () { save(HCOUNTRY, $('hcCountry').value); setCountry($('hcCountry').value); refresh(); });
-    document.querySelectorAll('[data-hadj]').forEach(function (b) {
-      b.addEventListener('click', function () { S.hijriAdj = +b.getAttribute('data-hadj'); save(KEY, S); refresh(); });
-    });
     cx = ctx(); th = C.hijriParts(tp.y, tp.m, tp.d, cx.hijriAdj); gy = th.y; gm = th.m;
     var clamp = function (y) { return Math.min(P.hMax, Math.max(P.hMin, y)); };
     function drawGrid() {
@@ -463,7 +459,7 @@
   if (P.kind === 'event' && $('evDays') && P.evDate) {
     var ez = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', et = C.partsInTz(new Date(), ez), ed = P.evDate.split('-');
     // A country with its own calendar (announced or published) moves the date before the Settings shift.
-    var evC = P.cn ? visitorCountry() : null, evNat = evC && P.natCal && P.natCal[evC], evMoved = false;
+    var evKnown = P.cn ? knownCountry() : null, evC = P.cn ? evKnown || 'saudi-arabia' : null, evNat = evC && P.natCal && P.natCal[evC], evMoved = false;
     if (evNat && P.evH) {
       C.useCalendar(evNat);
       var ng = C.hijriToGregorian(P.evH[0], P.evH[1], P.evH[2]);
@@ -471,11 +467,21 @@
       if (ng && (ng.y !== +ed[0] || ng.m !== +ed[1] || ng.d !== +ed[2])) { ed = [ng.y, ng.m, ng.d]; evMoved = true; }
     }
     var evAdj = S.hijriAdj || 0, evUtc = Date.UTC(+ed[0], +ed[1] - 1, +ed[2] - evAdj);
-    if ($('evAuth') && P.cn) $('evAuth').textContent = authFor(evC);
     if (evAdj || evMoved) {
       var eg = new Date(evUtc), egs = C.gregorian(eg.getUTCFullYear(), eg.getUTCMonth() + 1, eg.getUTCDate(), 'full', ctx());
       $('evAdj').textContent = evAdj ? adjText() + ' ' + C.tpl(P.authT.evAdj, { date: egs }) : P.cn[evC] + ': ' + egs;
       $('evAdj').hidden = false;
+    }
+    // The Ramadan calendar follows the visitor's country calendar and their Settings shift.
+    // Its heading names the country, or the Kingdom of Saudi Arabia when the country is not known.
+    if ($('evMonth')) {
+      if (evNat) C.useCalendar(evNat);
+      var em = C.renderHijriGrid(P.evH[0], P.evH[1], ctx(), null, P.firstDay, evAdj);
+      C.useCalendar(null);
+      if (em) {
+        $('evMonthT').textContent = em.title + ' (' + (evKnown ? P.cn[evKnown] : P.ksa) + ')';
+        $('evMonthSub').textContent = em.sub; $('evMonth').innerHTML = em.table;
+      }
     }
     var left = Math.round((evUtc - Date.UTC(et.y, et.m - 1, et.d)) / 864e5);
     if (left >= 0) $('evDays').textContent = left === 0 ? P.evToday : C.tpl(P.evDays, { n: C.num(left, ctx()) });
