@@ -707,8 +707,14 @@
   function renderRamadan(loc, ctx, ram, now) {
     var g = ctx.g, t = ctx.t, params = paramsFor(loc, ctx), start = addDays(ram.y, ram.m, ram.d, -(ctx.hijriAdj || 0));
     var today = now ? partsInTz(now, loc.tz) : null, rows = '', first = null;
+    // Jafria: sehri (imsak) ends 10 minutes before true dawn, taken as the earlier of the Jafari and the Sunni Fajr.
+    var jafria = ctx.sect === 'jafria', sctx = jafria ? Object.assign({}, ctx, { sect: 'hanafi' }) : null, sparams = jafria ? paramsFor(loc, sctx) : null;
     for (var i = 0; i < ram.n; i++) {
       var d = addDays(start.y, start.m, start.d, i), tt = timesFor(loc, ctx, d.y, d.m, d.d, params);
+      if (jafria) {
+        var sf = timesFor(loc, sctx, d.y, d.m, d.d, sparams).fajr;
+        tt = Object.assign({}, tt, { fajr: new Date(Math.min(tt.fajr, sf) - 10 * 60000) });
+      }
       if (!first) first = { d: d, tt: tt };
       var isToday = today && today.y === d.y && today.m === d.m && today.d === d.d;
       rows += '<tr' + (isToday ? ' class="is-today"' : '') + '><td>' + esc(num(i + 1, ctx) + ' ' + t.hijriMonths[8]) + '</td><td>' + esc(gregorian(d.y, d.m, d.d, 'full', ctx)) + '</td>' +

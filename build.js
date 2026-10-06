@@ -1245,8 +1245,11 @@ function refPage(lang, key) {
   const list = (items) => arRuns(refList(items)).replace(/(dhikr-line"[^>]*>[^<]*<\/bdi>)\s*[.。]\s*/g, '$1');
   const cols = (sec) => '<div class="ref-cols">' +
     `<section><h3>${esc(R.sunniH)}</h3>${list(sec.s)}</section><section><h3>${esc(R.shiaH)}</h3>${list(sec.j)}</section></div>`;
+  // Benefits and adhkar are one list for everyone: each source once, without the unsourced notes on a school's view.
+  const merged = (sec) => { const seen = new Set(); return list(sec.s.concat(sec.j).filter(([r]) => r && !seen.has(r) && seen.add(r))); };
+  const section = (k) => (k === 'virtue' || k === 'azkar' ? merged : cols)(it[k]);
   const body = `<p class="answer">${esc(R.lede)}</p>` +
-    [['time', R.timeH], ['virtue', R.virtueH], ['prayer', R.prayerH]].concat(it.azkar ? [['azkar', R.azkarH]] : []).map(([k, h]) => `<h2 id="${k}">${esc(tpl(h, { prayer: name }))}</h2>${cols(it[k])}`).join('') +
+    [['time', R.timeH], ['virtue', R.virtueH], ['prayer', R.prayerH]].concat(it.azkar ? [['azkar', R.azkarH]] : []).map(([k, h]) => `<h2 id="${k}">${esc(tpl(h, { prayer: name }))}</h2>${section(k)}`).join('') +
     `<p class="muted small">${esc(R.note)}</p><h2>${esc(R.otherH)}</h2>` +
     linkList(REF_KEYS.filter((k) => k !== key).map((k) => ({ name: t.prayers[k] || t.nafl[k], href: fn(lang).replace(`/${key}/`, `/${k}/`) })));
   learnAdd(lang, { path: fn(lang), fn, title: tpl(R.title, { prayer: name }), h1: tpl(R.h1, { prayer: name }), desc: tpl(R.desc, { prayer: name }), body,
@@ -1654,7 +1657,6 @@ const LIVE_EN = ['saudi-arabia/makkah', 'saudi-arabia/madinah', 'uk/london', 'us
   'bangladesh/chattogram', 'afghanistan/kabul', 'uzbekistan/tashkent', 'uk/birmingham', 'france/paris', 'germany/berlin',
   'russia/moscow', 'usa/chicago', 'usa/houston', 'canada/toronto', 'australia/sydney', 'south-africa/johannesburg'];
 // Cards shown before "See all cities" (the rest stay in the page, hidden until asked for).
-const LIVE_SHOWN = 16;
 LIVE_EN.forEach((p) => { if (!cityByPath(p)) problems.push(`live cards: unknown city ${p}`); });
 function liveCities(lang) {
   if (lang === 'en') return LIVE_EN.map(cityByPath).filter(Boolean);
@@ -1668,14 +1670,13 @@ function liveSection(lang, cities) {
   const cards = cities.map((ci, i) => {
     const ctx = ctxFor(lang, ci.defaultSect), loc = locOf(ci, lang), s = Core.snapshot(loc, ctx, NOW);
     const name = s.next.tomorrow ? `${t.prayers.fajr} ${t.tomorrow}` : t.prayers[s.next.key];
-    return `<li${i >= LIVE_SHOWN ? ' class="lc-more"' : ''}><a class="country-card live-card" href="${url.city(lang, ci)}" data-live="${i}">` +
+    return `<li><a class="country-card live-card" href="${url.city(lang, ci)}" data-live="${i}">` +
       `<span class="cc-name">${esc(loc.name)}</span><span class="muted">${esc(nameIn(ci.country.name, lang))}</span>` +
       `<span class="lc-row"><span class="muted">${esc(t.localTime)}</span> <bdi class="lc-clock">${esc(Core.fmtTime(NOW, ci.tz, ctx))}</bdi></span>` +
       `<span class="lc-row"><span class="muted">${esc(t.next)}</span> <b class="lc-next">${esc(name)}</b> <bdi class="lc-at">${esc(Core.fmtTime(s.next.at, ci.tz, ctx))}</bdi></span>` +
       `<span class="lc-in" hidden><span class="lc-label"></span> <bdi class="lc-cd"></bdi></span></a></li>`;
   }).join('');
-  return `<section class="continent live" aria-labelledby="liveH"><h2 class="section-title" id="liveH">${esc(g.liveH)}</h2><ul class="country-grid live-grid" id="liveCards">${cards}</ul>` +
-    (cities.length > 8 ? `<p class="lc-all${cities.length <= LIVE_SHOWN ? ' few' : ''}"><button type="button" class="btn-small" id="liveAll">${esc(t.seeAll)}</button></p>` : '') + '</section>';
+  return `<section class="continent live" aria-labelledby="liveH"><h2 class="section-title" id="liveH">${esc(g.liveH)}</h2><ul class="country-grid live-grid" id="liveCards">${cards}</ul></section>`;
 }
 function ramadanHome(lang, ctx) {
   const w = ramadanWindow();
