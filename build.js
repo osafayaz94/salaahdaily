@@ -210,7 +210,7 @@ function nameIn(names, lang, country) {
 /* ---------- Data ---------- */
 // Merge src/towns.js: towns join an existing region with the same English name, or form a new one.
 const TOWNS2 = require('./src/towns-2');
-[require('./src/towns'), TOWNS2, require('./src/towns-3')].forEach((TOWNS) => Object.keys(TOWNS).filter((k) => k === k.toLowerCase()).forEach((slug) => {
+[require('./src/towns'), TOWNS2, require('./src/towns-3'), require('./src/towns-4')].forEach((TOWNS) => Object.keys(TOWNS).filter((k) => k === k.toLowerCase()).forEach((slug) => {
   const country = RAW.find((c) => c.slug === slug);
   if (!country) { problems.push(`towns.js: unknown country ${slug}`); return; }
   TOWNS[slug].forEach((r) => {
@@ -1031,9 +1031,11 @@ const FA_PP = {
   otherH: 'اوقات دیگر در {city}', nearH: 'اذان {prayer} در شهرهای نزدیک', nearHSunrise: 'طلوع آفتاب در شهرهای نزدیک',
 };
 const FA_PP_COUNTRIES = new Set(['iran', 'iraq', 'afghanistan']);
-const ppStr = (lang, ci) => (lang === 'fa' ? FA_PP : ci.country.slug === 'egypt' ? EG : MSA);
-const hasPrayerPages = (lang, ci) => built(lang, ci.country) &&
-  ((lang === 'ar' && PP_COUNTRIES.has(ci.country.slug)) || (lang === 'fa' && FA_PP_COUNTRIES.has(ci.country.slug)));
+// Indonesian, Malay, Spanish and UK English (src/prayer-pages.js).
+const PP_MORE = require('./src/prayer-pages');
+const ppStr = (lang, ci) => (lang === 'fa' ? FA_PP : lang === 'ar' ? (ci.country.slug === 'egypt' ? EG : MSA) : PP_MORE[lang]);
+const hasPrayerPages = (lang, ci) => built(lang, ci.country) && ((lang === 'ar' && PP_COUNTRIES.has(ci.country.slug)) ||
+  (lang === 'fa' && FA_PP_COUNTRIES.has(ci.country.slug)) || (!!PP_MORE[lang] && PP_MORE[lang].countries.includes(ci.country.slug)));
 function cityPrayerPage(lang, ci, key) {
   const t = STRINGS[lang], ctx = ctxFor(lang, ci.defaultSect), loc = locOf(ci, lang), city = loc.name;
   const base = url.city(lang, ci), pagePath = `${base}${key}/`, sun = key === 'sunrise';
@@ -1041,7 +1043,9 @@ function cityPrayerPage(lang, ci, key) {
   const day = (i) => { const d = Core.addDays(p.y, p.m, p.d, i); return { d, tt: Core.timesFor(loc, ctx, d.y, d.m, d.d, params) }; };
   const f = (x) => Core.fmtTime(x, ci.tz, ctx), g = (d) => Core.gregorian(d.y, d.m, d.d, 'full', ctx);
   const t0 = day(0), t1 = day(1), name = t.prayers[key], EG = ppStr(lang, ci);
-  const v = { prayer: name, city, date: g(t0.d), time: f(t0.tt[key]), tomorrow: f(t1.tt[key]) };
+  const ends = Core.prayerEnds(t0.tt, t1.tt.fajr, ctx);
+  const v = { prayer: name, city, date: g(t0.d), time: f(t0.tt[key]), tomorrow: f(t1.tt[key]), end: ends[key] ? f(ends[key]) : '',
+    ishraq: f(new Date(t0.tt.sunrise.getTime() + 15 * 60000)) };
   const all = Object.fromEntries(['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map((k) => [k, f(t0.tt[k])]));
   const faq = [
     { q: tpl(sun ? EG.q1s : EG.q1, v), a: tpl(sun ? EG.a1s : EG.a1, v) },
@@ -1049,6 +1053,7 @@ function cityPrayerPage(lang, ci, key) {
     { q: tpl(sun ? EG.q4s : EG.q4, v), a: tpl(sun ? EG.a4s : EG.a4, v) },
     { q: tpl(EG.q3, v), a: tpl(EG.a3, Object.assign({ city }, all)) },
   ];
+  if (EG.qEnd && !sun) faq.splice(2, 0, { q: tpl(EG.qEnd, v), a: tpl(EG.aEnd, v) });
   const rows = Array.from({ length: 30 }, (_, i) => day(i)).map(({ d, tt }, i) =>
     `<tr${i === 0 ? ' class="is-today"' : ''}><td>${esc(Core.gregorian(d.y, d.m, d.d, 'short', ctx))}</td><td class="c-hijri">${esc(Core.hijri(d.y, d.m, d.d, ctx, 'short'))}</td><td><bdi>${esc(f(tt[key]))}</bdi></td></tr>`).join('');
   const near = ALL_CITIES.filter((o) => o !== ci && o.country === ci.country)
@@ -1057,7 +1062,7 @@ function cityPrayerPage(lang, ci, key) {
     { name: city, href: base }, { name: tpl(EG.h1[key], { city }), href: pagePath }];
   const body = breadcrumbs(crumbs) + '<article class="card about guide">' +
     `<h1>${esc(tpl(EG.h1[key], { city }))}</h1><p class="answer">${esc(tpl(sun ? EG.answerSunrise : EG.answer, v))}</p>` +
-    `<p class="muted small">${esc(EG.method(Core.methodLabel(ci.defaultSect === 'jafria' ? (loc.jafariMethod || 'Jafari') : (loc.method || 'MuslimWorldLeague'), ctx)))}</p>` +
+    `<p class="muted small">${esc(((m) => (typeof EG.method === 'function' ? EG.method(m) : tpl(EG.method, { method: m })))(Core.methodLabel(ci.defaultSect === 'jafria' ? (loc.jafariMethod || 'Jafari') : (loc.method || 'MuslimWorldLeague'), ctx)))}</p>` +
     `<h2>${esc(tpl(sun ? EG.tableHSunrise : EG.tableH, v))}</h2><div class="table-scroll"><table class="city-table">` +
     `<thead><tr><th scope="col">${EG.colDate}</th><th scope="col">${EG.colHijri}</th><th scope="col">${EG.colTime}</th></tr></thead><tbody>${rows}</tbody></table></div>` +
     `<h2>${esc(tpl(EG.faqH, v))}</h2>` + faq.map((it) => `<h3>${esc(it.q)}</h3><p>${esc(it.a)}</p>`).join('') +
@@ -1068,7 +1073,7 @@ function cityPrayerPage(lang, ci, key) {
     linkList(near.map((n) => ({ name: nameIn(n.o.names, lang, n.o.country), href: `${url.city(lang, n.o)}${key}/` }))) +
     `<p class="muted small">${esc(tpl(t.updated, { date: g(t0.d) }))}</p></article>`;
   // Two cities with one Arabic name (Tripoli, صور) are told apart by their country.
-  const tCity = nameCount[lang][city] > 1 ? `${city}، ${nameIn(ci.country.name, lang)}` : city;
+  const tCity = nameCount[lang][city] > 1 ? `${city}${LANGS[lang].dir === 'rtl' ? '، ' : ', '}${nameIn(ci.country.name, lang)}` : city;
   const title = fitTitle(tpl(EG.title[key], { city: tCity }) + ' | SalaahDaily', lang);
   const desc = tpl(sun ? EG.descSunrise : EG.desc, v);
   addPage({
@@ -1313,13 +1318,14 @@ function refPage(lang, key) {
   learnAdd(lang, { path: fn(lang), fn, title: tpl(R.title, { prayer: name }), h1: tpl(R.h1, { prayer: name }), desc: tpl(R.desc, { prayer: name }), body,
     crumbs: prayersCrumb(lang).concat(parent ? [parent] : []), cluster: (f) => cluster(f).filter((a) => REFS[a.lang]) });
 }
+const kwFaq = (items) => (items || []).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');
 // Names of the Prophet ﷺ: the same table as the Names of Allah.
 function prophetNamesPage(lang) {
   const p = PN[lang], m = LEARN[lang].names, ctx = ctxFor(lang, 'hanafi');
   const body = `<p class="answer">${esc(p.lede)}</p>${refList(p.refs)}<div class="table-scroll"><table class="city-table names-table">` +
     `<thead><tr><th scope="col">${esc(m.colNo)}</th><th scope="col">${esc(m.colAr)}</th><th scope="col">${esc(m.colTr)}</th><th scope="col">${esc(m.colMean)}</th></tr></thead><tbody>` +
     PROPHET_NAMES.map(([ar, tr], i) => `<tr><td>${esc(Core.num(i + 1, ctx))}</td><td class="name-ar" lang="ar" dir="rtl">${esc(ar)}</td><td>${esc(tr)}</td><td>${esc(p.meanings[i])}</td></tr>`).join('') +
-    `</tbody></table></div><p class="muted small">${esc(p.listNote)}</p>`;
+    `</tbody></table></div><p class="muted small">${esc(p.listNote)}</p>` + kwFaq(KW.PROPHET[lang]);
   learnAdd(lang, { path: learnUrl.prophet(lang), fn: learnUrl.prophet, title: p.title, h1: p.h1, desc: p.desc, body,
     cluster: (f) => cluster(f).filter((a) => PN[a.lang] && LEARN[a.lang]) });
 }
@@ -1329,7 +1335,7 @@ function namesPage(lang) {
     '<div class="table-scroll"><table class="city-table names-table">' +
     `<thead><tr><th scope="col">${esc(m.colNo)}</th><th scope="col">${esc(m.colAr)}</th><th scope="col">${esc(m.colTr)}</th><th scope="col">${esc(m.colMean)}</th></tr></thead><tbody>` +
     ALLAH_NAMES.map(([ar, tr], i) => `<tr><td>${esc(Core.num(i + 1, ctx))}</td><td class="name-ar" lang="ar" dir="rtl">${esc(ar)}</td><td>${esc(tr)}</td><td>${esc(m.meanings[i])}${wz ? `<span class="wazifa">${esc(wz.items[i])}</span>` : ''}</td></tr>`).join('') +
-    `</tbody></table></div><p class="muted small">${esc(m.listNote)}</p>`;
+    `</tbody></table></div><p class="muted small">${esc(m.listNote)}</p>` + kwFaq(KW.NAMES[lang]);
   learnAdd(lang, { path: learnUrl.names(lang), fn: learnUrl.names, title: m.title, h1: m.h1, desc: m.desc, body });
 }
 
@@ -1540,23 +1546,9 @@ function crescentFor(loc, now, ctx, lang) {
 }
 
 /* ---------- Islamic dates: one page per event ---------- */
-// Search Console (Oct 2026): how India and Iran search for these dates.
-const EV_ALIASES = {
-  en: {
-    shabBarat: ['When is Shab e Barat in 2027 (Shubh Raat, Sobrat)?', '2027 mein Shab-e-Barat (Shubh Raat) kab hai?'],
-    ramadan: ['When does Ramzan 2027 start?', 'Ramadan 2027 kab hai?'],
-  },
-  hi: {
-    shabBarat: ['शबे बारात 2027 में कब है?', 'शब ए बारात (सबे बारात, सुबरात) 2027 की तारीख़ क्या है?'],
-    adha: ['ईद उल अजहा 2027 कब है?'],
-  },
-  bn: { shabBarat: ['শবে বরাত ২০২৭ কবে?'] },
-  fa: {
-    adha: ['عید قربان ۲۰۲۷ چه روزی است؟'],
-    fitr: ['عید فطر ۲۰۲۷ چه روزی است؟'],
-    ramadan: ['ماه رمضان ۲۰۲۷ از چه روزی شروع می‌شود؟'],
-  },
-};
+// Questions in the words people search with (src/keyword-faq.js).
+const KW = require('./src/keyword-faq');
+const EV_ALIASES = KW.EVENTS;
 function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
   const t = STRINGS[lang], g = GUIDES[lang], e = EV[lang], pagePath = url.event(lang, slug);
   const { ci } = guideLoc(lang);
@@ -1585,7 +1577,7 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
   const monthHtml = month ? `<section class="hgrid ev-month" aria-labelledby="evMonthT"><h2 id="evMonthT">${esc(month.title + ' (' + TABS_MORE[lang].ksa + ')')}</h2>` +
     `<p class="muted" id="evMonthSub">${esc(month.sub)}</p><div class="table-scroll"><table class="hijri-grid" id="evMonth">${month.table}</table></div></section>` : '';
   const others = EVENTS.filter((x) => x[0] !== k).map((x) => ({ name: evName(lang, x[0]), href: url.event(lang, x[3]) }));
-  const aliasQs = (EV_ALIASES[lang] && EV_ALIASES[lang][k]) || [];
+  const aliasQs = ((EV_ALIASES[lang] && EV_ALIASES[lang][k]) || []).map((q) => tpl(q, { year, hijriYear: Core.num(next.hy, ctx) }));
   const body = breadcrumbs(crumbs) + '<article class="card about guide event">' +
     `<h1>${esc(tpl(e.h1, { event: name, year }))}</h1><p class="answer" id="evAnswer">${esc(answer)}</p>` +
     (nightLine ? `<p>${esc(nightLine)}</p>` : '') +
@@ -1786,6 +1778,14 @@ function ramadanPage(lang, ci) {
     { q: tpl(g.qSehri, { city: cityName }), a: tpl(g.aSehri, { sehri: Core.fmtTime(r.first.tt.fajr, loc.tz, ctx), date: firstDate, sect }) },
     { q: tpl(g.qIftar, { city: cityName }), a: tpl(g.aIftar, { iftar: Core.fmtTime(r.first.tt.maghrib, loc.tz, ctx), date: firstDate, sect }) },
   ];
+  if (KW.RAMADAN[lang]) {
+    const fd = (x) => Core.gregorian(x.d.y, x.d.m, x.d.d, 'full', ctx), ft = (x) => Core.fmtTime(x, loc.tz, ctx);
+    const last = r.days[r.days.length - 1], d27 = r.days[Math.min(26, r.days.length - 1)], eid = Core.addDays(last.d.y, last.d.m, last.d.d, 1);
+    const v = { city: cityName, year, date: firstDate, sehri: ft(r.first.tt.fajr), iftar: ft(r.first.tt.maghrib),
+      lastDate: fd(last), lastSehri: ft(last.tt.fajr), lastIftar: ft(last.tt.maghrib), date27: fd(d27), sehri27: ft(d27.tt.fajr), iftar27: ft(d27.tt.maghrib),
+      eidDate: Core.gregorian(eid.y, eid.m, eid.d, 'full', ctx) };
+    KW.RAMADAN[lang].forEach(([q, a]) => faq.push({ q: tpl(q, v), a: tpl(a, v) }));
+  }
   const crumbs = [
     { name: t.home, href: url.home(lang) }, { name: countryName, href: url.country(lang, c) },
     { name: cityName, href: url.city(lang, ci) }, { name: tpl(g.ramLink, { year, city: cityName }), href: pagePath },

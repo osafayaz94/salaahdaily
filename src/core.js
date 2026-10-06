@@ -710,7 +710,7 @@
 
   function renderRamadan(loc, ctx, ram, now) {
     var g = ctx.g, t = ctx.t, params = paramsFor(loc, ctx), start = addDays(ram.y, ram.m, ram.d, -(ctx.hijriAdj || 0));
-    var today = now ? partsInTz(now, loc.tz) : null, rows = '', first = null;
+    var today = now ? partsInTz(now, loc.tz) : null, rows = '', first = null, days = [];
     // Jafria: sehri (imsak) ends 10 minutes before true dawn, taken as the earlier of the Jafari and the Sunni Fajr.
     var jafria = ctx.sect === 'jafria', sctx = jafria ? Object.assign({}, ctx, { sect: 'hanafi' }) : null, sparams = jafria ? paramsFor(loc, sctx) : null;
     for (var i = 0; i < ram.n; i++) {
@@ -720,6 +720,7 @@
         tt = Object.assign({}, tt, { fajr: new Date(Math.min(tt.fajr, sf) - 10 * 60000) });
       }
       if (!first) first = { d: d, tt: tt };
+      days.push({ d: d, tt: tt });
       var isToday = today && today.y === d.y && today.m === d.m && today.d === d.d;
       rows += '<tr' + (isToday ? ' class="is-today"' : '') + '><td>' + esc(num(i + 1, ctx) + ' ' + t.hijriMonths[8]) + '</td><td>' + esc(gregorian(d.y, d.m, d.d, 'full', ctx)) + '</td>' +
         '<td><bdi>' + esc(fmtTime(tt.fajr, loc.tz, ctx)) + '</bdi></td><td><strong><bdi>' + esc(fmtTime(tt.maghrib, loc.tz, ctx)) + '</bdi></strong></td></tr>';
@@ -731,7 +732,7 @@
       })),
       table: '<thead><tr><th scope="col">' + esc(g.colDay) + '</th><th scope="col">' + esc(t.colDate) + '</th><th scope="col">' + esc(g.colSehri) +
         '</th><th scope="col">' + esc(g.colIftar) + '</th></tr></thead><tbody>' + rows + '</tbody>',
-      first: first,
+      first: first, days: days,
     };
   }
 
@@ -824,7 +825,7 @@
     mosquesCard: mosquesCard, renderNafl: renderNafl, naflRows: naflRows, ltrNums: ltrNums, faqItems: faqItems, renderFaq: renderFaq,
     cityRowTimes: cityRowTimes, METHOD_ANGLES: METHOD_ANGLES, decShort: decShort, gregorian: gregorian,
     PRAYERS: PRAYERS, ARABIC: ARABIC, BISMILLAH: BISMILLAH, SECTS: SECTS, SELECTABLE: SELECTABLE, METHOD_EN: METHOD_EN,
-    esc: esc, tpl: tpl, num: num, numGrouped: numGrouped, partsInTz: partsInTz, fmtTime: fmtTime, countdown: countdown, countdownWords: countdownWords,
+    esc: esc, tpl: tpl, num: num, numGrouped: numGrouped, partsInTz: partsInTz, fmtTime: fmtTime, countdown: countdown, countdownWords: countdownWords, prayerEnds: prayerEnds,
     methodLabel: methodLabel, paramsFor: paramsFor, timesFor: timesFor, snapshot: snapshot,
     sectPicker: sectPicker, renderToday: renderToday, renderMonth: renderMonth, qiblaCard: qiblaCard,
     distanceKm: distanceKm, renderJumuah: renderJumuah, renderPrayerLive: renderPrayerLive, hijri: hijri, hijriParts: hijriParts,

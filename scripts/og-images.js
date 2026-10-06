@@ -17,6 +17,7 @@ const RAW = require('../src/data').concat(require('../src/data-mea')).concat(req
 const TOWNS = require('../src/towns');
 const TOWNS2 = require('../src/towns-2');
 const TOWNS3 = require('../src/towns-3');
+const TOWNS4 = require('../src/towns-4');
 
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'src', 'og');
@@ -38,7 +39,7 @@ const host = new URL(CONFIG.siteUrl).host;
 const counts = {};
 RAW.forEach((c) => {
   counts[c.slug] = c.regions.reduce((n, r) => n + r.cities.length, 0) +
-    [TOWNS, TOWNS2, TOWNS3].reduce((m, T) => m + (T[c.slug] || []).reduce((n, r) => n + r.cities.length, 0), 0);
+    [TOWNS, TOWNS2, TOWNS3, TOWNS4].reduce((m, T) => m + (T[c.slug] || []).reduce((n, r) => n + r.cities.length, 0), 0);
 });
 const totalCities = Object.values(counts).reduce((a, b) => a + b, 0);
 

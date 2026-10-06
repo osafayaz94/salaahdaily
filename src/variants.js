@@ -58,6 +58,17 @@ var VARIANTS = {
       ],
     },
   },
+  es: {
+    spain: {
+      // Spain's Moroccan community searches in Darija transliteration: awkat / mawakit / taw9it salat, adan fajr.
+      countries: ['spain'],
+      faq: [
+        ['¿Cuáles son los awkat salat (mawakit salat, taw9it salat) en {city} hoy?', 'Awkat salat en {city} hoy ({date}): Fajr {fajr}, Dhuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha}.'],
+        ['¿A qué hora es el adan del Fajr y del Maghrib en {city} hoy?', 'Adan del Fajr en {city} hoy a las {fajr}, y del Maghrib a las {maghrib}.'],
+        ['¿A qué hora es el Fajr mañana en {city}?', 'Mañana ({dateTomorrow}) el Fajr en {city} es a las {fajrTomorrow} y el sol sale a las {sunriseTomorrow}.'],
+      ],
+    },
+  },
   fr: {
     africa: {
       // North and West Africa search "heure de prière"; France keeps "horaires de prière".
