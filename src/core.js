@@ -438,16 +438,24 @@
   function ltrNums(s) {
     return esc(s).replace(/[0-9۰-۹০-৯][0-9۰-۹০-৯:.\-–]*[0-9۰-۹০-৯]/g, function (m) { return '<bdi dir="ltr">' + m + '</bdi>'; });
   }
-  // "Reference" under a prayer, with bullets that open sections of its Quran and hadith page:
-  // timing, benefits, and the adhkar where the page has them.
+  // Bullets under a prayer that open sections of its Quran and hadith page:
+  // the signs of its time, its benefits, and the adhkar where the page has them.
   function refToggle(ctx, key) {
     var R = ctx.t.refLinks;
     if (!ctx.t.refLabel || !R) return '';
-    var href = pre(ctx) + 'prayers/' + key + '/reference/#';
-    return '<div class="p-ref"><span class="p-ref-h">' + esc(ctx.t.refLabel) + '</span><ul>' +
+    var href = pre(ctx) + 'prayers/' + key + '/reference/#', name = { prayer: ctx.t.prayers[key] || ctx.t.nafl[key] };
+    return '<ul class="p-ref">' +
       ['time', 'virtue'].concat(R.az.indexOf(key) !== -1 ? ['azkar'] : []).map(function (k) {
-        return '<li><a href="' + href + k + '">' + esc(R[k]) + '</a></li>';
-      }).join('') + '</ul></div>';
+        return '<li><a href="' + href + k + '">' + esc(tpl(R[k], name)) + '</a></li>';
+      }).join('') + '</ul>';
+  }
+  // When each prayer's time ends. Sunni: at the next prayer (Asr at sunset, Isha at the next Fajr).
+  // Jafria: Dhuhr and Asr share the time until sunset, Maghrib and Isha until midnight (halfway from sunset to Fajr).
+  function prayerEnds(times, nextFajr, ctx) {
+    var midnight = new Date(times.sunset.getTime() + (nextFajr - times.sunset) / 2);
+    var j = ctx.sect === 'jafria';
+    return { fajr: times.sunrise, dhuhr: j ? times.sunset : times.asr, asr: times.sunset,
+      maghrib: j ? midnight : times.isha, isha: j ? midnight : nextFajr };
   }
   // Inner HTML of the #today section. Returns { html, nextAt }.
   function renderToday(loc, ctx, now, h1) {
@@ -455,6 +463,13 @@
     var fri = isFriday(d.y, d.m, d.d);
     function label(k) { return k === 'dhuhr' && fri ? t.prayers.jumuah : t.prayers[k]; }
     function arabic(k) { return k === 'dhuhr' && fri ? ARABIC.jumuah : ARABIC[k]; }
+    var tm = addDays(d.y, d.m, d.d, 1);
+    var ends = prayerEnds(s.times, timesFor(loc, ctx, tm.y, tm.m, tm.d, s.params).fajr, ctx), RL = t.refLinks;
+    function range(k) {
+      if (!RL || !ends[k]) return '';
+      return '<span class="p-range"><span>' + esc(RL.start) + ' <bdi>' + esc(fmtTime(s.times[k], loc.tz, ctx)) + '</bdi></span>' +
+        '<span>' + esc(RL.end) + ' <bdi>' + esc(fmtTime(ends[k], loc.tz, ctx)) + '</bdi></span></span>';
+    }
 
     var cards = PRAYERS.map(function (k) {
       var at = s.times[k];
@@ -465,7 +480,7 @@
           : '<a href="' + (loc.pp && !(k === 'dhuhr' && fri) ? loc.pp + k : pre(ctx) + 'prayers/' + (k === 'dhuhr' && fri ? 'jumuah' : k)) + '/">' + esc(label(k)) + '</a>') + '</span>' +
         '<span class="p-time"><bdi>' + esc(fmtTime(at, loc.tz, ctx)) + '</bdi></span>' +
         (state === 'is-next' ? '<span class="p-badge">' + esc(t.next) + '</span>' : state === 'is-current' ? '<span class="p-badge">' + esc(t.now) + '</span>' : '') +
-        (k === 'sunrise' ? '' : refToggle(ctx, k)) +
+        range(k) + (k === 'sunrise' ? '' : refToggle(ctx, k)) +
         '</li>';
     }).join('');
 

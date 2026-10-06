@@ -631,10 +631,10 @@ body.bare { background: var(--surface); margin: 0; }
 .basis { color: var(--hero-muted); }
 .basis a { color: inherit; text-decoration: underline; text-decoration-color: var(--gold-bright); text-underline-offset: 3px; }
 .n-name a { color: inherit; text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 3px; }
-/* Reference link under each prayer, and the reference pages (Sunni and Shia side by side) */
-.p-ref { margin-top: 8px; font-size: 0.8rem; }
-.p-ref-h { font-weight: 700; opacity: 0.85; }
-.p-ref ul { margin: 2px 0 0; padding-inline-start: 1.1em; }
+/* Start and end of each prayer, its reference links, and the reference pages (Sunni and Shia side by side) */
+.p-range { display: flex; flex-direction: column; margin-top: 4px; font-size: 0.8rem; opacity: 0.9; font-variant-numeric: tabular-nums; }
+.p-ref { margin: 8px 0 0; padding-inline-start: 1.1em; font-size: 0.8rem; }
+.p-ref li + li { margin-top: 2px; }
 .p-ref a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .nafl-item .p-ref a { color: var(--emerald-2); }
 .learn h2[id] { scroll-margin-top: 80px; }
