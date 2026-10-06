@@ -171,7 +171,7 @@ module.exports = {
       ['Corán 59:22-24', 'Él es Alá, no hay más dios que Él, Conocedor de lo oculto y lo manifiesto, el Compasivo, el Misericordioso, el Rey, el Santo, la Paz. Suyos son los nombres más bellos.'],
       ['Sahih al-Bujari 7392, Sahih Muslim 2677', 'Alá tiene noventa y nueve nombres, cien menos uno. Quien los cuente entrará en el Paraíso.'],
     ],
-    listNote: 'La lista sigue Tirmidhi 3507. Tirmidhi calificó este relato de gharib, y muchos sabios sostienen que la lista la añadió un narrador, por lo que otras listas difieren un poco. Alá tiene más nombres que estos noventa y nueve.',
+    listNote: 'La lista sigue Tirmidhi 3507. Tirmidhi calificó este relato de gharib, y muchos sabios sostienen que la lista la añadió un narrador, por lo que otras listas difieren un poco. Alá tiene más nombres que estos noventa y nueve. Al-Ahad se añade después de al-Wahid, como en muchas listas.',
     colNo: 'N.º', colAr: 'Árabe', colTr: 'Nombre', colMean: 'Significado',
     meanings: [
       'Alá, el Dios único', 'El Compasivo', 'El Misericordioso', 'El Rey', 'El Santísimo', 'La Paz, Fuente de paz', 'El que da seguridad',
@@ -182,7 +182,7 @@ module.exports = {
       'El Grandísimo', 'El Preservador', 'El que sustenta', 'El que pide cuentas', 'El Majestuoso', 'El Generoso', 'El Vigilante', 'El que responde',
       'El Vasto', 'El Sabio', 'El Amoroso', 'El Glorioso', 'El que resucita', 'El Testigo', 'La Verdad', 'El Garante',
       'El Fuerte', 'El Firme', 'El Aliado protector', 'El Digno de alabanza', 'El que todo lo cuenta', 'El que inicia la creación', 'El que la repite', 'El que da la vida',
-      'El que da la muerte', 'El Viviente', 'El que subsiste por sí mismo', 'El que encuentra', 'El Noble', 'El Único', 'El Sostén de todo', 'El Capaz',
+      'El que da la muerte', 'El Viviente', 'El que subsiste por sí mismo', 'El que encuentra', 'El Noble', 'El Único', 'El Uno, Indivisible', 'El Sostén de todo', 'El Capaz',
       'El Todopoderoso', 'El que adelanta', 'El que retrasa', 'El Primero', 'El Último', 'El Manifiesto', 'El Oculto', 'El que gobierna', 'El Sumamente Elevado',
       'El Bondadoso', 'El que acepta el arrepentimiento', 'El que castiga', 'El que borra las faltas', 'El Compasivo', 'El Dueño del reino',
       'El Señor de la majestad y la generosidad', 'El Equitativo', 'El que reúne', 'El Autosuficiente', 'El que enriquece', 'El que impide', 'El que decreta el daño',

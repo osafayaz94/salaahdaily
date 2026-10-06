@@ -171,7 +171,7 @@ module.exports = {
       ['Coran 59:22-24', 'C’est Lui Allah, nulle divinité à part Lui, Connaisseur de l’invisible et du visible, le Tout Miséricordieux, le Très Miséricordieux, le Souverain, le Pur, la Paix. À Lui les plus beaux noms.'],
       ['Sahih al-Boukhari 7392, Sahih Muslim 2677', 'Allah a quatre-vingt-dix-neuf noms, cent moins un. Celui qui les dénombre entrera au Paradis.'],
     ],
-    listNote: 'La liste suit Tirmidhi 3507. Tirmidhi a qualifié ce récit de gharib, et beaucoup de savants estiment que la liste a été ajoutée par un rapporteur ; d’autres listes diffèrent donc un peu. Allah a plus de noms que ces quatre-vingt-dix-neuf.',
+    listNote: 'La liste suit Tirmidhi 3507. Tirmidhi a qualifié ce récit de gharib, et beaucoup de savants estiment que la liste a été ajoutée par un rapporteur ; d’autres listes diffèrent donc un peu. Allah a plus de noms que ces quatre-vingt-dix-neuf. Al-Ahad est ajouté après al-Wahid, comme dans de nombreuses listes.',
     colNo: 'N°', colAr: 'Arabe', colTr: 'Nom', colMean: 'Sens',
     meanings: [
       'Allah, le Dieu unique', 'Le Tout Miséricordieux', 'Le Très Miséricordieux', 'Le Roi', 'Le Très Saint', 'La Paix, Source de paix', 'Celui qui donne la sécurité',
@@ -182,7 +182,7 @@ module.exports = {
       'Le Très Grand', 'Le Préservateur', 'Celui qui nourrit', 'Celui qui tient compte', 'Le Majestueux', 'Le Très Généreux', 'L’Observateur', 'Celui qui exauce',
       'Le Vaste', 'Le Sage', 'L’Aimant', 'Le Très Glorieux', 'Celui qui ressuscite', 'Le Témoin', 'La Vérité', 'Le Garant',
       'Le Fort', 'L’Inébranlable', 'L’Allié protecteur', 'Le Digne de louange', 'Celui qui dénombre', 'Celui qui commence la création', 'Celui qui la recommence', 'Celui qui donne la vie',
-      'Celui qui donne la mort', 'Le Vivant', 'Celui qui subsiste par Lui-même', 'Celui qui trouve', 'Le Noble', 'L’Unique', 'Le Soutien universel', 'Le Capable',
+      'Celui qui donne la mort', 'Le Vivant', 'Celui qui subsiste par Lui-même', 'Celui qui trouve', 'Le Noble', 'L’Unique', 'L’Un, l’Indivisible', 'Le Soutien universel', 'Le Capable',
       'Le Tout-Puissant', 'Celui qui avance', 'Celui qui retarde', 'Le Premier', 'Le Dernier', 'L’Apparent', 'Le Caché', 'Le Gouverneur', 'Le Très Élevé',
       'Le Bienfaisant', 'Celui qui accepte le repentir', 'Celui qui punit', 'Celui qui efface les fautes', 'Le Très Compatissant', 'Le Maître de la royauté',
       'Le Détenteur de la majesté et de la générosité', 'L’Équitable', 'Celui qui rassemble', 'Celui qui se suffit à Lui-même', 'Celui qui enrichit', 'Celui qui empêche', 'Celui qui décrète le mal',

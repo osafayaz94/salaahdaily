@@ -171,7 +171,7 @@ module.exports = {
       ['Alcorão 59:22-24', 'Ele é Allah, não há deus senão Ele, Conhecedor do oculto e do manifesto, o Clemente, o Misericordioso, o Rei, o Santo, a Paz. A Ele pertencem os nomes mais belos.'],
       ['Sahih al-Bukhari 7392, Sahih Muslim 2677', 'Allah tem noventa e nove nomes, cem menos um. Quem os contar entrará no Paraíso.'],
     ],
-    listNote: 'A lista segue Tirmidhi 3507. Tirmidhi classificou este relato como gharib, e muitos sábios consideram que a lista foi acrescentada por um narrador, por isso outras listas diferem um pouco. Allah tem mais nomes do que estes noventa e nove.',
+    listNote: 'A lista segue Tirmidhi 3507. Tirmidhi classificou este relato como gharib, e muitos sábios consideram que a lista foi acrescentada por um narrador, por isso outras listas diferem um pouco. Allah tem mais nomes do que estes noventa e nove. Al-Ahad foi acrescentado depois de al-Wahid, como em muitas listas.',
     colNo: 'N.º', colAr: 'Árabe', colTr: 'Nome', colMean: 'Significado',
     meanings: [
       'Allah, o Deus único', 'O Clemente', 'O Misericordioso', 'O Rei', 'O Santíssimo', 'A Paz, Fonte de paz', 'O que dá segurança',
@@ -182,7 +182,7 @@ module.exports = {
       'O Grandíssimo', 'O Preservador', 'O que sustenta', 'O que pede contas', 'O Majestoso', 'O Generoso', 'O Vigilante', 'O que responde',
       'O Vasto', 'O Sábio', 'O Amoroso', 'O Glorioso', 'O que ressuscita', 'A Testemunha', 'A Verdade', 'O Garante',
       'O Forte', 'O Firme', 'O Aliado protetor', 'O Digno de louvor', 'O que tudo conta', 'O que inicia a criação', 'O que a repete', 'O que dá a vida',
-      'O que dá a morte', 'O Vivente', 'O que subsiste por si mesmo', 'O que encontra', 'O Nobre', 'O Único', 'O Amparo de tudo', 'O Capaz',
+      'O que dá a morte', 'O Vivente', 'O que subsiste por si mesmo', 'O que encontra', 'O Nobre', 'O Único', 'O Uno, Indivisível', 'O Amparo de tudo', 'O Capaz',
       'O Onipotente', 'O que adianta', 'O que atrasa', 'O Primeiro', 'O Último', 'O Manifesto', 'O Oculto', 'O que governa', 'O Sumamente Elevado',
       'O Benfeitor', 'O que aceita o arrependimento', 'O que castiga', 'O que apaga as faltas', 'O Compassivo', 'O Dono do reino',
       'O Senhor da majestade e da generosidade', 'O Equitativo', 'O que reúne', 'O Autossuficiente', 'O que enriquece', 'O que impede', 'O que decreta o dano',

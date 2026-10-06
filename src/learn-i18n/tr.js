@@ -171,7 +171,7 @@ module.exports = {
       ['Kur’an 59:22-24', 'O, kendisinden başka ilah olmayan Allah’tır; görüleni ve görülmeyeni bilir, Rahmân’dır, Rahîm’dir, Melik’tir, Kuddûs’tür, Selâm’dır. En güzel isimler O’nundur.'],
       ['Sahih Buhârî 7392, Sahih Müslim 2677', 'Allah’ın doksan dokuz, yüzden bir eksik ismi vardır. Onları sayan cennete girer.'],
     ],
-    listNote: 'Liste Tirmizî 3507’ye göredir. Tirmizî bu rivayete garîb demiştir; birçok âlim isimlerin sayımının bir râvi tarafından eklendiğini düşünür, bu yüzden diğer listeler biraz farklıdır. Allah’ın isimleri bu doksan dokuzdan fazladır.',
+    listNote: 'Liste Tirmizî 3507’ye göredir. Tirmizî bu rivayete garîb demiştir; birçok âlim isimlerin sayımının bir râvi tarafından eklendiğini düşünür, bu yüzden diğer listeler biraz farklıdır. Allah’ın isimleri bu doksan dokuzdan fazladır. Birçok listede olduğu gibi el-Vâhid’den sonra el-Ehad eklenmiştir.',
     colNo: 'No', colAr: 'Arapça', colTr: 'İsim', colMean: 'Anlamı',
     meanings: [
       'Allah, tek ilah', 'Rahmeti bütün varlıkları kuşatan', 'Merhametli', 'Mülkün sahibi', 'Her eksiklikten uzak', 'Esenlik veren', 'Güven veren',
@@ -182,7 +182,7 @@ module.exports = {
       'Pek büyük', 'Koruyan', 'Rızıkları yaratan ve veren', 'Hesaba çeken', 'Celâl sahibi', 'Cömert', 'Gözeten', 'Duaları kabul eden',
       'Geniş', 'Hikmet sahibi', 'Seven ve sevilen', 'Şanı yüce', 'Ölüleri dirilten', 'Şahit', 'Hak', 'Vekil',
       'Kuvvetli', 'Sağlam', 'Dost ve yardımcı', 'Övülmeye layık', 'Sayan', 'İlk defa yaratan', 'Yeniden yaratan', 'Hayat veren',
-      'Öldüren', 'Diri', 'Her şeyi ayakta tutan', 'Dilediğini bulan', 'Şerefli', 'Bir', 'Her şeyin kendisine muhtaç olduğu', 'Gücü yeten',
+      'Öldüren', 'Diri', 'Her şeyi ayakta tutan', 'Dilediğini bulan', 'Şerefli', 'Bir', 'Tek ve eşsiz', 'Her şeyin kendisine muhtaç olduğu', 'Gücü yeten',
       'Her şeye gücü yeten', 'Öne alan', 'Geri bırakan', 'İlk', 'Son', 'Apaçık', 'Gizli', 'Yöneten', 'Pek yüce',
       'İyilik eden', 'Tövbeleri kabul eden', 'Cezalandıran', 'Affeden', 'Çok şefkatli', 'Mülkün sahibi',
       'Celâl ve ikram sahibi', 'Adaletle hükmeden', 'Toplayan', 'Zengin, hiçbir şeye muhtaç olmayan', 'Zengin kılan', 'Engelleyen', 'Zarar veren',

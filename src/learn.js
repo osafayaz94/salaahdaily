@@ -14,7 +14,7 @@
  */
 'use strict';
 
-// The 99 Names in the order of Tirmidhi 3507: [Arabic, transliteration]. Meanings are per language.
+// The 99 Names in the order of Tirmidhi 3507, with al-Ahad after al-Wahid: [Arabic, transliteration]. Meanings are per language.
 var NAMES = [
   ['الله', 'Allah'], ['الرَّحْمَٰن', 'Ar-Rahman'], ['الرَّحِيم', 'Ar-Rahim'], ['المَلِك', 'Al-Malik'], ['القُدُّوس', 'Al-Quddus'],
   ['السَّلَام', 'As-Salam'], ['المُؤْمِن', 'Al-Mu’min'], ['المُهَيْمِن', 'Al-Muhaymin'], ['العَزِيز', 'Al-‘Aziz'], ['الجَبَّار', 'Al-Jabbar'],
@@ -29,7 +29,7 @@ var NAMES = [
   ['الشَّهِيد', 'Ash-Shahid'], ['الحَقّ', 'Al-Haqq'], ['الوَكِيل', 'Al-Wakil'], ['القَوِيّ', 'Al-Qawiyy'], ['المَتِين', 'Al-Matin'],
   ['الوَلِيّ', 'Al-Waliyy'], ['الحَمِيد', 'Al-Hamid'], ['المُحْصِي', 'Al-Muhsi'], ['المُبْدِئ', 'Al-Mubdi’'], ['المُعِيد', 'Al-Mu‘id'],
   ['المُحْيِي', 'Al-Muhyi'], ['المُمِيت', 'Al-Mumit'], ['الحَيّ', 'Al-Hayy'], ['القَيُّوم', 'Al-Qayyum'], ['الوَاجِد', 'Al-Wajid'],
-  ['المَاجِد', 'Al-Majid'], ['الوَاحِد', 'Al-Wahid'], ['الصَّمَد', 'As-Samad'], ['القَادِر', 'Al-Qadir'], ['المُقْتَدِر', 'Al-Muqtadir'],
+  ['المَاجِد', 'Al-Majid'], ['الوَاحِد', 'Al-Wahid'], ['الأَحَد', 'Al-Ahad'], ['الصَّمَد', 'As-Samad'], ['القَادِر', 'Al-Qadir'], ['المُقْتَدِر', 'Al-Muqtadir'],
   ['المُقَدِّم', 'Al-Muqaddim'], ['المُؤَخِّر', 'Al-Mu’akhkhir'], ['الأَوَّل', 'Al-Awwal'], ['الآخِر', 'Al-Akhir'], ['الظَّاهِر', 'Az-Zahir'],
   ['البَاطِن', 'Al-Batin'], ['الوَالِي', 'Al-Wali'], ['المُتَعَالِي', 'Al-Muta‘ali'], ['البَرّ', 'Al-Barr'], ['التَّوَّاب', 'At-Tawwab'],
   ['المُنْتَقِم', 'Al-Muntaqim'], ['العَفُوّ', 'Al-‘Afuww'], ['الرَّءُوف', 'Ar-Ra’uf'], ['مَالِكُ المُلْك', 'Malik al-Mulk'], ['ذُو الجَلَالِ وَالإِكْرَام', 'Dhul-Jalali wal-Ikram'],
@@ -222,7 +222,7 @@ var EN = {
       ['Quran 59:22-24', 'He is Allah, the Knower of the unseen and the seen, the Most Merciful, the Sovereign, the Holy, the Source of Peace. To Him belong the most beautiful names.'],
       ['Sahih al-Bukhari 7392, Sahih Muslim 2677', 'Allah has ninety-nine names, one hundred less one. Whoever counts them (learns and lives by them) will enter Paradise.'],
     ],
-    listNote: 'The list follows Tirmidhi 3507. Al-Tirmidhi called this narration gharib, and many scholars hold that the list itself was added by a narrator, so other lists differ slightly. Allah has more names than these ninety-nine.',
+    listNote: 'The list follows Tirmidhi 3507. Al-Tirmidhi called this narration gharib, and many scholars hold that the list itself was added by a narrator, so other lists differ slightly. Allah has more names than these ninety-nine. Al-Ahad is added after al-Wahid, as in many lists.',
     colNo: 'No.', colAr: 'Arabic', colTr: 'Name', colMean: 'Meaning',
     meanings: [
       'Allah, the One God', 'The Most Gracious', 'The Most Merciful', 'The King', 'The Most Holy', 'The Source of Peace', 'The Giver of Faith and Security',
@@ -233,7 +233,7 @@ var EN = {
       'The Most Great', 'The Preserver', 'The Sustainer', 'The Reckoner', 'The Majestic', 'The Most Generous', 'The Watchful', 'The Responsive',
       'The All-Encompassing', 'The All-Wise', 'The Loving', 'The Most Glorious', 'The Resurrector', 'The Witness', 'The Truth', 'The Trustee',
       'The All-Strong', 'The Firm', 'The Protecting Friend', 'The Praiseworthy', 'The Accounter', 'The Originator', 'The Restorer', 'The Giver of Life',
-      'The Bringer of Death', 'The Ever-Living', 'The Self-Subsisting', 'The Finder', 'The Noble', 'The One', 'The Eternal Refuge', 'The All-Capable',
+      'The Bringer of Death', 'The Ever-Living', 'The Self-Subsisting', 'The Finder', 'The Noble', 'The One', 'The Unique, the Indivisible', 'The Eternal Refuge', 'The All-Capable',
       'The All-Powerful', 'The Expediter', 'The Delayer', 'The First', 'The Last', 'The Manifest', 'The Hidden', 'The Governor', 'The Most Exalted',
       'The Source of All Goodness', 'The Accepter of Repentance', 'The Avenger', 'The Pardoner', 'The Most Kind', 'Owner of All Sovereignty',
       'Lord of Majesty and Generosity', 'The Equitable', 'The Gatherer', 'The Self-Sufficient', 'The Enricher', 'The Preventer', 'The Distresser',

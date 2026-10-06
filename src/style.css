@@ -623,6 +623,8 @@ body.bare { background: var(--surface); margin: 0; }
 .refs .ref { display: block; font-weight: 700; font-size: 0.85rem; color: var(--emerald-2); }
 .steps li + li { margin-top: 6px; }
 .names-table .name-ar { font-size: 1.25rem; white-space: nowrap; }
+.names-table td:last-child { white-space: normal; min-width: 220px; }
+.names-table .wazifa { display: block; margin-top: 4px; font-size: 0.85rem; color: var(--muted); }
 .basis { color: var(--hero-muted); }
 .basis a { color: inherit; text-decoration: underline; text-decoration-color: var(--gold-bright); text-underline-offset: 3px; }
 .n-name a { color: inherit; text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 3px; }

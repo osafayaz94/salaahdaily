@@ -171,7 +171,7 @@ module.exports = {
       ['QS 59:22-24', 'Dialah Allah, tiada tuhan selain Dia, Yang Mengetahui yang gaib dan yang nyata, Maha Pengasih, Maha Penyayang, Maha Raja, Maha Suci, Maha Sejahtera. Dia memiliki nama-nama yang indah.'],
       ['Shahih al-Bukhari 7392, Shahih Muslim 2677', 'Allah memiliki sembilan puluh sembilan nama, seratus kurang satu. Siapa yang menghitungnya akan masuk surga.'],
     ],
-    listNote: 'Daftar ini mengikuti Tirmidzi 3507. Tirmidzi menyebut riwayat ini gharib, dan banyak ulama berpendapat daftar namanya ditambahkan oleh perawi, sehingga daftar lain sedikit berbeda. Nama Allah lebih banyak dari sembilan puluh sembilan ini.',
+    listNote: 'Daftar ini mengikuti Tirmidzi 3507. Tirmidzi menyebut riwayat ini gharib, dan banyak ulama berpendapat daftar namanya ditambahkan oleh perawi, sehingga daftar lain sedikit berbeda. Nama Allah lebih banyak dari sembilan puluh sembilan ini. Al-Ahad ditambahkan setelah al-Wahid, seperti dalam banyak daftar.',
     colNo: 'No.', colAr: 'Arab', colTr: 'Nama', colMean: 'Arti',
     meanings: [
       'Allah, Tuhan Yang Esa', 'Yang Maha Pengasih', 'Yang Maha Penyayang', 'Yang Maha Merajai', 'Yang Maha Suci', 'Yang Maha Sejahtera', 'Yang Maha Memberi Keamanan',
@@ -182,7 +182,7 @@ module.exports = {
       'Yang Maha Besar', 'Yang Maha Memelihara', 'Yang Maha Pemberi Kecukupan', 'Yang Maha Membuat Perhitungan', 'Yang Maha Luhur', 'Yang Maha Mulia', 'Yang Maha Mengawasi', 'Yang Maha Mengabulkan',
       'Yang Maha Luas', 'Yang Maha Bijaksana', 'Yang Maha Mengasihi', 'Yang Maha Mulia', 'Yang Maha Membangkitkan', 'Yang Maha Menyaksikan', 'Yang Maha Benar', 'Yang Maha Memelihara Urusan',
       'Yang Maha Kuat', 'Yang Maha Kokoh', 'Yang Maha Melindungi', 'Yang Maha Terpuji', 'Yang Maha Menghitung', 'Yang Maha Memulai', 'Yang Maha Mengembalikan', 'Yang Maha Menghidupkan',
-      'Yang Maha Mematikan', 'Yang Maha Hidup', 'Yang Maha Berdiri Sendiri', 'Yang Maha Menemukan', 'Yang Maha Mulia', 'Yang Maha Esa', 'Yang Maha Dibutuhkan', 'Yang Maha Kuasa',
+      'Yang Maha Mematikan', 'Yang Maha Hidup', 'Yang Maha Berdiri Sendiri', 'Yang Maha Menemukan', 'Yang Maha Mulia', 'Yang Maha Esa', 'Yang Tunggal', 'Yang Maha Dibutuhkan', 'Yang Maha Kuasa',
       'Yang Maha Berkuasa', 'Yang Maha Mendahulukan', 'Yang Maha Mengakhirkan', 'Yang Maha Awal', 'Yang Maha Akhir', 'Yang Maha Nyata', 'Yang Maha Tersembunyi', 'Yang Maha Memerintah', 'Yang Maha Tinggi',
       'Yang Maha Dermawan', 'Yang Maha Penerima Tobat', 'Yang Maha Pemberi Balasan', 'Yang Maha Pemaaf', 'Yang Maha Pengasih', 'Pemilik Kerajaan',
       'Pemilik Kebesaran dan Kemuliaan', 'Yang Maha Adil', 'Yang Maha Mengumpulkan', 'Yang Maha Kaya', 'Yang Maha Mencukupi', 'Yang Maha Mencegah', 'Yang Maha Memberi Mudarat',

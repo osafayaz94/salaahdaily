@@ -254,12 +254,14 @@
     if ($('emptySearch')) $('emptySearch').hidden = any;
   }
   // The home page searches every city, loading the index on first use: [name, country, url, search text].
-  var index = null, loading = false;
+  // Typing while the index is still loading is answered as soon as it arrives.
+  var index = null, loading = false, pending = null;
   function loadIndex(then) {
     if (index) { then(); return; }
+    pending = then;
     if (loading) return;
     loading = true;
-    fetch(P.searchUrl).then(function (r) { return r.json(); }).then(function (d) { index = d; then(); })
+    fetch(P.searchUrl).then(function (r) { return r.json(); }).then(function (d) { index = d; if (pending) pending(); })
       .catch(function () { loading = false; });
   }
   function showResults(q) {
@@ -288,12 +290,13 @@
 
   // Header search on every page: searches all cities, loading the index on first use.
   document.querySelectorAll('[data-search]').forEach(function (box) {
-    var inp = box.querySelector('input'), list = box.querySelector('ul'), idx = null, busy = false;
+    var inp = box.querySelector('input'), list = box.querySelector('ul'), idx = null, busy = false, wait = null;
     function load(then) {
       if (idx) { then(); return; }
+      wait = then;
       if (busy) return;
       busy = true;
-      fetch(box.getAttribute('data-search')).then(function (r) { return r.json(); }).then(function (d) { idx = d; then(); })
+      fetch(box.getAttribute('data-search')).then(function (r) { return r.json(); }).then(function (d) { idx = d; if (wait) wait(); })
         .catch(function () { busy = false; });
     }
     function show() {

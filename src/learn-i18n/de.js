@@ -171,7 +171,7 @@ module.exports = {
       ['Koran 59:22-24', 'Er ist Allah, außer dem es keinen Gott gibt, Kenner des Verborgenen und des Offenbaren, der Allerbarmer, der Barmherzige, der König, der Heilige, der Friede. Ihm gehören die schönsten Namen.'],
       ['Sahih al-Buchari 7392, Sahih Muslim 2677', 'Allah hat neunundneunzig Namen, hundert weniger einen. Wer sie aufzählt, kommt ins Paradies.'],
     ],
-    listNote: 'Die Liste folgt Tirmidhi 3507. Tirmidhi nannte diese Überlieferung gharib, und viele Gelehrte meinen, die Liste wurde von einem Überlieferer hinzugefügt; andere Listen weichen daher etwas ab. Allah hat mehr Namen als diese neunundneunzig.',
+    listNote: 'Die Liste folgt Tirmidhi 3507. Tirmidhi nannte diese Überlieferung gharib, und viele Gelehrte meinen, die Liste wurde von einem Überlieferer hinzugefügt; andere Listen weichen daher etwas ab. Allah hat mehr Namen als diese neunundneunzig. Al-Ahad steht wie in vielen Listen nach al-Wahid.',
     colNo: 'Nr.', colAr: 'Arabisch', colTr: 'Name', colMean: 'Bedeutung',
     meanings: [
       'Allah, der eine Gott', 'Der Allerbarmer', 'Der Barmherzige', 'Der König', 'Der Heilige', 'Der Friede, Quelle des Friedens', 'Der Sicherheit Gebende',
@@ -182,7 +182,7 @@ module.exports = {
       'Der Große', 'Der Bewahrer', 'Der Ernährer', 'Der Abrechnende', 'Der Erhabene', 'Der Großzügige', 'Der Wachsame', 'Der Erhörende',
       'Der Allumfassende', 'Der Weise', 'Der Liebevolle', 'Der Ruhmreiche', 'Der Auferweckende', 'Der Zeuge', 'Die Wahrheit', 'Der Sachwalter',
       'Der Starke', 'Der Feste', 'Der schützende Freund', 'Der Lobenswürdige', 'Der Zählende', 'Der Urheber', 'Der Wiederbringende', 'Der Lebensspender',
-      'Der den Tod Gebende', 'Der Lebendige', 'Der Beständige', 'Der Findende', 'Der Edle', 'Der Einzige', 'Der Unabhängige, auf den alle angewiesen sind', 'Der Mächtige',
+      'Der den Tod Gebende', 'Der Lebendige', 'Der Beständige', 'Der Findende', 'Der Edle', 'Der Einzige', 'Der Eine, Unteilbare', 'Der Unabhängige, auf den alle angewiesen sind', 'Der Mächtige',
       'Der Allmächtige', 'Der Voranstellende', 'Der Zurückstellende', 'Der Erste', 'Der Letzte', 'Der Offenbare', 'Der Verborgene', 'Der Herrschende', 'Der Hocherhabene',
       'Der Gütige', 'Der die Reue Annehmende', 'Der Vergeltende', 'Der Verzeihende', 'Der Mitleidvolle', 'Der Besitzer der Herrschaft',
       'Der Herr der Majestät und Großzügigkeit', 'Der Gerechte', 'Der Versammelnde', 'Der Reiche, Unabhängige', 'Der reich Machende', 'Der Verhindernde', 'Der Schaden Bestimmende',

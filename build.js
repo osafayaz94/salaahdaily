@@ -96,6 +96,8 @@ const GUIDE_PRAYERS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'jumuah'];
 const { NAMES: ALLAH_NAMES, LEARN } = require('./src/learn');
 fs.readdirSync(path.join(__dirname, 'src/learn-i18n')).forEach((f) => { LEARN[f.replace(/\.js$/, '')] = require('./src/learn-i18n/' + f); });
 const NAFL_PAGES = ['tahajjud', 'ishraq', 'chasht'];
+// Traditional recitation under each of the 99 Names (src/learn-wazifa.js), where a language has it.
+const WAZIFA = require('./src/learn-wazifa');
 // Names of the Prophet ﷺ (src/prophet-names.js, translations in src/prophet-names-i18n/).
 const { NAMES: PROPHET_NAMES, PN } = require('./src/prophet-names');
 if (fs.existsSync(path.join(__dirname, 'src/prophet-names-i18n'))) fs.readdirSync(path.join(__dirname, 'src/prophet-names-i18n')).forEach((f) => { PN[f.replace(/.js$/, '')] = require('./src/prophet-names-i18n/' + f); });
@@ -1261,10 +1263,11 @@ function prophetNamesPage(lang) {
     cluster: (f) => cluster(f).filter((a) => PN[a.lang] && LEARN[a.lang]) });
 }
 function namesPage(lang) {
-  const m = LEARN[lang].names, ctx = ctxFor(lang, 'hanafi');
-  const body = `<p class="answer">${esc(m.lede)}</p>${refList(m.refs)}<div class="table-scroll"><table class="city-table names-table">` +
+  const m = LEARN[lang].names, ctx = ctxFor(lang, 'hanafi'), wz = WAZIFA[lang];
+  const body = `<p class="answer">${esc(m.lede)}</p>${refList(m.refs)}` + (wz ? `<p class="muted small"><strong>${esc(wz.h)}:</strong> ${esc(wz.note)}</p>` : '') +
+    '<div class="table-scroll"><table class="city-table names-table">' +
     `<thead><tr><th scope="col">${esc(m.colNo)}</th><th scope="col">${esc(m.colAr)}</th><th scope="col">${esc(m.colTr)}</th><th scope="col">${esc(m.colMean)}</th></tr></thead><tbody>` +
-    ALLAH_NAMES.map(([ar, tr], i) => `<tr><td>${esc(Core.num(i + 1, ctx))}</td><td class="name-ar" lang="ar" dir="rtl">${esc(ar)}</td><td>${esc(tr)}</td><td>${esc(m.meanings[i])}</td></tr>`).join('') +
+    ALLAH_NAMES.map(([ar, tr], i) => `<tr><td>${esc(Core.num(i + 1, ctx))}</td><td class="name-ar" lang="ar" dir="rtl">${esc(ar)}</td><td>${esc(tr)}</td><td>${esc(m.meanings[i])}${wz ? `<span class="wazifa">${esc(wz.items[i])}</span>` : ''}</td></tr>`).join('') +
     `</tbody></table></div><p class="muted small">${esc(m.listNote)}</p>`;
   learnAdd(lang, { path: learnUrl.names(lang), fn: learnUrl.names, title: m.title, h1: m.h1, desc: m.desc, body });
 }

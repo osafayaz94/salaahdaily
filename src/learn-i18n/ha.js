@@ -171,7 +171,7 @@ module.exports = {
       ['Alƙur’ani 59:22-24', 'Shi ne Allah wanda babu abin bauta sai Shi, Masanin gaibi da bayyane, Mai rahama, Mai jinƙai, Sarki, Mai tsarki, Mai aminci. Yana da sunaye mafi kyau.'],
       ['Sahih al-Bukhari 7392, Sahih Muslim 2677', 'Allah yana da sunaye casa’in da tara, ɗari ban da ɗaya. Duk wanda ya ƙididdige su zai shiga Aljanna.'],
     ],
-    listNote: 'Jerin ya bi Tirmidhi 3507. Tirmidhi ya ce wannan ruwaya gharib ce, kuma malamai da yawa suna ganin wani mai ruwaya ne ya ƙara jerin sunayen, don haka wasu jerin sun ɗan bambanta. Allah yana da sunaye fiye da waɗannan casa’in da tara.',
+    listNote: 'Jerin ya bi Tirmidhi 3507. Tirmidhi ya ce wannan ruwaya gharib ce, kuma malamai da yawa suna ganin wani mai ruwaya ne ya ƙara jerin sunayen, don haka wasu jerin sun ɗan bambanta. Allah yana da sunaye fiye da waɗannan casa’in da tara. An ƙara al-Ahad bayan al-Wahid, kamar yadda yake a jeri da yawa.',
     colNo: 'Lamba', colAr: 'Larabci', colTr: 'Suna', colMean: 'Ma’ana',
     meanings: [
       'Allah, Ubangiji ɗaya', 'Mai rahama', 'Mai jinƙai', 'Sarki', 'Mai tsarki', 'Mai aminci', 'Mai ba da aminci',
@@ -182,7 +182,7 @@ module.exports = {
       'Mai girma', 'Mai kiyayewa', 'Mai ciyarwa', 'Mai hisabi', 'Mai girma da ɗaukaka', 'Mai karimci', 'Mai lura', 'Mai amsa addu’a',
       'Mai yalwa', 'Mai hikima', 'Mai ƙauna', 'Mai daraja', 'Mai tayar da matattu', 'Mai shaida', 'Gaskiya', 'Wakili',
       'Mai ƙarfi', 'Mai ƙwari', 'Majiɓinci', 'Abin godiya', 'Mai ƙididdigewa', 'Mai fara halitta', 'Mai mayarwa', 'Mai rayarwa',
-      'Mai kashewa', 'Rayayye', 'Tsayayye mai tsayar da komai', 'Mai samu', 'Mai daraja', 'Ɗaya', 'Wanda ake nufa da bukatu', 'Mai iko',
+      'Mai kashewa', 'Rayayye', 'Tsayayye mai tsayar da komai', 'Mai samu', 'Mai daraja', 'Ɗaya', 'Makaɗaici', 'Wanda ake nufa da bukatu', 'Mai iko',
       'Mai cikakken iko', 'Mai gabatarwa', 'Mai jinkirtawa', 'Na farko', 'Na ƙarshe', 'Bayyananne', 'Ɓoyayye', 'Mai mulki', 'Maɗaukaki sosai',
       'Mai kyautatawa', 'Mai karɓar tuba', 'Mai ramuwa', 'Mai afuwa', 'Mai tausayi', 'Mamallakin mulki',
       'Mai girma da karimci', 'Mai adalci', 'Mai tarawa', 'Mawadaci', 'Mai wadatarwa', 'Mai hanawa', 'Mai cutarwa',

@@ -171,7 +171,7 @@ module.exports = {
       ['Corano 59:22-24', 'Egli è Allah, non c’è dio all’infuori di Lui, Conoscitore dell’invisibile e del visibile, il Compassionevole, il Misericordioso, il Re, il Santo, la Pace. A Lui appartengono i nomi più belli.'],
       ['Sahih al-Bukhari 7392, Sahih Muslim 2677', 'Allah ha novantanove nomi, cento meno uno. Chi li conta entrerà in Paradiso.'],
     ],
-    listNote: 'L’elenco segue Tirmidhi 3507. Tirmidhi definì questo racconto gharib, e molti sapienti ritengono che l’elenco sia stato aggiunto da un narratore; per questo altri elenchi differiscono un po’. Allah ha più nomi di questi novantanove.',
+    listNote: 'L’elenco segue Tirmidhi 3507. Tirmidhi definì questo racconto gharib, e molti sapienti ritengono che l’elenco sia stato aggiunto da un narratore; per questo altri elenchi differiscono un po’. Allah ha più nomi di questi novantanove. Al-Ahad è aggiunto dopo al-Wahid, come in molti elenchi.',
     colNo: 'N.', colAr: 'Arabo', colTr: 'Nome', colMean: 'Significato',
     meanings: [
       'Allah, il Dio unico', 'Il Compassionevole', 'Il Misericordioso', 'Il Re', 'Il Santissimo', 'La Pace, Fonte di pace', 'Colui che dà sicurezza',
@@ -182,7 +182,7 @@ module.exports = {
       'Il Grandissimo', 'Il Preservatore', 'Colui che nutre', 'Colui che chiede conto', 'Il Maestoso', 'Il Generoso', 'Il Vigilante', 'Colui che risponde',
       'Il Vasto', 'Il Saggio', 'L’Amorevole', 'Il Glorioso', 'Colui che resuscita', 'Il Testimone', 'La Verità', 'Il Garante',
       'Il Forte', 'Il Saldo', 'L’Alleato protettore', 'Il Degno di lode', 'Colui che tutto conta', 'Colui che inizia la creazione', 'Colui che la ripete', 'Colui che dà la vita',
-      'Colui che dà la morte', 'Il Vivente', 'Colui che sussiste per Sé', 'Colui che trova', 'Il Nobile', 'L’Unico', 'Il Sostegno di tutto', 'Il Capace',
+      'Colui che dà la morte', 'Il Vivente', 'Colui che sussiste per Sé', 'Colui che trova', 'Il Nobile', 'L’Unico', 'L’Uno, Indivisibile', 'Il Sostegno di tutto', 'Il Capace',
       'L’Onnipotente', 'Colui che anticipa', 'Colui che rinvia', 'Il Primo', 'L’Ultimo', 'Il Manifesto', 'Il Nascosto', 'Colui che governa', 'L’Eccelso',
       'Il Benefattore', 'Colui che accetta il pentimento', 'Colui che punisce', 'Colui che cancella le colpe', 'Il Compassionevole', 'Il Padrone del regno',
       'Il Signore della maestà e della generosità', 'L’Equo', 'Colui che riunisce', 'L’Autosufficiente', 'Colui che arricchisce', 'Colui che impedisce', 'Colui che decreta il danno',
