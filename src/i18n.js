@@ -65,7 +65,7 @@ STRINGS.en = {
   homeTitle: 'Prayer Times Today for {n} Cities | SalaahDaily',
   countryTitle: 'Prayer Times Today in {country} | SalaahDaily',
   cityTitle: '{city} Prayer Times Today, {country} | SalaahDaily',
-  nearTitle: 'Prayer Times Near Me | SalaahDaily',
+  nearTitle: 'Prayer Times & Namaz Timing Near Me (My Location) | SalaahDaily',
   homeDesc: 'Today’s prayer times for {n} cities in {place}, including {top}. Hanafi, Shafi‘i, Maliki and Jafria timings.',
   countryDesc: 'Today’s prayer times for {n} cities in {country}. Fajr to Isha for Hanafi, Shafi‘i, Maliki and Jafria, with monthly timetables.',
   cityDesc: 'Today’s Fajr, Dhuhr, Asr, Maghrib and Isha times in {city}, {country}. Hanafi, Shafi‘i, Maliki and Jafria timings, monthly timetable and Qibla.',
@@ -1259,7 +1259,17 @@ var EN_VARIANTS = {
     countryTitle: '{country} Namaz Timings & Prayer Times Today | SalaahDaily',
     cityDesc: 'Today’s namaz timings in {city}, {country}: Fajr, Zuhr, Asr, Maghrib and Isha, plus Tahajjud and Ishraq. Hanafi and Shafi‘i times, monthly timetable and Qibla.',
     summary: 'Namaz timing in {city} today: Fajr is at {fajr} and Maghrib is at {maghrib}.',
-    faq: [['What is the namaz timing in {city} today?', 'Namaz timing in {city} on {date}: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
+    faq: [
+      ['What is the namaz timing in {city} today?', 'Namaz timing in {city} on {date}: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).'],
+      // Search Console (October 2026): "namaz timing {city} shia / fiqa jafria / ahle hadees / hanafi / with rakat / tomorrow / zawal / 30 days".
+      ['What is the Shia (Fiqa Jafria) namaz timing in {city} today?', 'Fiqa Jafria namaz timing in {city} today: Fajr {jFajr}, Zuhr {jDhuhr}, Asr {jAsr}, Maghrib {jMaghrib}, Isha {jIsha}.'],
+      ['What is the Hanafi (Sunni) namaz timing in {city} today?', 'Hanafi namaz timing in {city} today: Fajr {hFajr}, Zuhr {hDhuhr}, Asr {hAsr}, Maghrib {hMaghrib}, Isha {hIsha}.'],
+      ['What is the Ahle Hadees namaz timing in {city} today?', 'Ahle Hadees pray Asr when a shadow equals its object: in {city} today Fajr {hFajr}, Zuhr {hDhuhr}, Asr {asrShafi}, Maghrib {hMaghrib}, Isha {hIsha}.'],
+      ['What is the namaz timing with rakat in {city} today?', 'In {city} today (Hanafi): Fajr {hFajr}, 2 sunnah and 2 fard; Zuhr {hDhuhr}, 4 sunnah, 4 fard, 2 sunnah, 2 nafl; Asr {hAsr}, 4 sunnah and 4 fard; Maghrib {hMaghrib}, 3 fard, 2 sunnah, 2 nafl; Isha {hIsha}, 4 sunnah, 4 fard, 2 sunnah, 2 nafl, 3 witr, 2 nafl.'],
+      ['What is the namaz timing in {city} tomorrow?', 'Namaz timing in {city} tomorrow ({dateTomorrow}): Fajr {fajrTomorrow}, Zuhr {dhuhrTomorrow}, Asr {asrTomorrow}, Maghrib {maghribTomorrow}, Isha {ishaTomorrow} ({sect}).'],
+      ['What is the zawal time in {city} today?', 'Zawal, when the sun is at its highest and prayer is makruh, falls in the minutes just before Zuhr, which begins at {dhuhr} in {city} today.'],
+      ['Where is the 30-day namaz timing table for {city}?', 'The monthly namaz timing table for {city} is on this page, with Fajr, sunrise, Zuhr, Asr, Maghrib and Isha for every day.'],
+    ],
     faqByCountry: {
       // Search Console, India (Oct 2026): nafl times by name, and when each prayer ends.
       india: [
@@ -1279,13 +1289,32 @@ var EN_VARIANTS = {
       ],
     },
   },
+  gulf: {
+    countries: ['saudi-arabia', 'uae', 'qatar', 'kuwait', 'bahrain', 'oman'],
+    cityTitle: '{city} Namaz Timing & Prayer Times Today, {country} | SalaahDaily',
+    faq: [
+      ['What is the namaz timing in {city} today?', 'Namaz timing in {city} on {date}: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).'],
+      ['What is the namaz timing in {city} tomorrow?', 'Namaz timing in {city} tomorrow ({dateTomorrow}): Fajr {fajrTomorrow}, Zuhr {dhuhrTomorrow}, Asr {asrTomorrow}, Maghrib {maghribTomorrow}, Isha {ishaTomorrow} ({sect}).'],
+      ['What is the Hanafi Asr namaz timing in {city} today?', 'Hanafi Asr in {city} today is at {hAsr}; the earlier Asr of the other schools is at {asrShafi}.'],
+    ],
+    faqByCity: {
+      'saudi-arabia/makkah': [['What is the namaz timing at Masjid al-Haram (Makkah Haram) today?', 'Namaz timing in Makkah today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} by the Umm al-Qura calendar; the Haram follows these adhan times.']],
+      'saudi-arabia/madinah': [['What is the namaz timing at Masjid an-Nabawi (Masjid-e-Nabvi) today?', 'Namaz timing in Madinah today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} by the Umm al-Qura calendar; the mosque follows these adhan times.']],
+    },
+  },
   west: {
     countries: ['uk', 'usa', 'canada', 'australia'],
     summary: 'Salah times in {city} today: Fajr is at {fajr} and Maghrib is at {maghrib}.',
     faq: [
+      ['What is the namaz timing in {city} today?', 'Namaz timing in {city} on {date}: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).'],
+      ['What is the namaz timing in {city} tomorrow?', 'Namaz timing in {city} tomorrow ({dateTomorrow}): Fajr {fajrTomorrow}, Zuhr {dhuhrTomorrow}, Asr {asrTomorrow}, Maghrib {maghribTomorrow}, Isha {ishaTomorrow} ({sect}).'],
       ['What time is Azan in {city} today?', 'On {date}, Azan in {city} is at the start of each Salah: Fajr {fajr}, Dhuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}). Your masjid may call it a few minutes later.'],
       ['What is the namaz time in {city} today?', 'Namaz times in {city} today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).'],
     ],
+  },
+  all: {
+    countries: '*',
+    faq: [['What is the namaz timing in {city} today?', 'Namaz timing in {city} on {date}: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
   },
 };
 

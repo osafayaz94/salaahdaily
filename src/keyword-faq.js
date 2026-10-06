@@ -4,7 +4,7 @@
  * each answered with the page's own dates and times. {year} and {hijriYear} follow the next date,
  * so the questions stay right after the year turns.
  *
- * EVENTS[lang][event]: asked on the Islamic date pages, answered with that date.
+ * EVENTS[lang][event]: asked on the Islamic date pages, answered with that date; a [question, answer] pair has its own answer ({date} {year}).
  * RAMADAN[lang]: asked on each city's Ramadan timetable. Placeholders: {city} {year} {date} {sehri} {iftar}
  *   (first day), {lastDate} {lastSehri} {lastIftar} (last day), {date27} {sehri27} {iftar27} (27th), {eidDate}.
  * NAMES / PROPHET[lang]: asked on the 99 Names of Allah and the Names of the Prophet ﷺ pages.
@@ -14,8 +14,10 @@ module.exports = {
     en: {
       shabBarat: ['When is Shab e Barat in {year} (Shubh Raat, Sobrat)?', '{year} mein Shab-e-Barat (Shubh Raat) kab hai?'],
       ramadan: ['When does Ramzan {year} start?', 'Ramadan {year} kab hai?', 'When is the first roza of Ramadan {year}?', 'How many days are left until Ramadan {year}?'],
-      fitr: ['When is Eid ul Fitr {year}?', 'When is Meethi Eid {year} (Chand Raat)?', 'Eid ul Fitr {year} kab hai?'],
-      adha: ['When is Eid ul Adha {year} (Bakrid, Bakra Eid)?', 'When is Qurbani Eid {year}?', 'Bakrid {year} kab hai?'],
+      fitr: ['When is Eid ul Fitr {year}?', 'When is Meethi Eid {year} (Chand Raat)?', 'Eid ul Fitr {year} kab hai?',
+        ['What is the Eid ul Fitr namaz timing?', 'Eid namaz is prayed after sunrise, once the sun has risen a little, usually 15 to 30 minutes after sunrise; each mosque announces its own time. Eid ul Fitr {year} is expected on {date}.']],
+      adha: ['When is Eid ul Adha {year} (Bakrid, Bakra Eid)?', 'When is Qurbani Eid {year}?', 'Bakrid {year} kab hai?',
+        ['What is the Eid ul Adha namaz timing?', 'Eid namaz is prayed after sunrise, once the sun has risen a little, usually 15 to 30 minutes after sunrise; each mosque announces its own time. Eid ul Adha {year} is expected on {date}.']],
       arafah: ['When is the Day of Arafah {year} (the Arafah fast)?'],
       laylatQadr: ['When is Laylat al-Qadr {year} (Shab-e-Qadr)?'],
       newYear: ['When is the Islamic New Year {year} (1 Muharram {hijriYear})?'],
@@ -94,6 +96,7 @@ module.exports = {
       ['What are the last sehri and iftar times of Ramadan {year} in {city}?', 'On the last day ({lastDate}) sehri ends at {lastSehri} and iftar is at {lastIftar}.'],
       ['What are the sehri and iftar times on the 27th of Ramadan in {city}?', 'On the 27th ({date27}) sehri ends at {sehri27} and iftar is at {iftar27}.'],
       ['When is Eid al-Fitr {year} in {city}?', 'Eid al-Fitr is expected on {eidDate}, the day after the last fast. Moon sighting can move it by a day.'],
+      ['What is the namaz timing during Ramadan in {city}?', 'The five prayers keep their usual times in Ramadan: sehri ends at Fajr ({sehri} on the first day) and iftar is at Maghrib ({iftar}); Taraweeh follows Isha.'],
     ],
     ur: [
       ['{city} میں رمضان {year} کی سحری و افطار کا ٹائم ٹیبل؟', 'پہلے دن ({date}) سحری {sehri} پر ختم اور افطار {iftar} پر ہے؛ ہر دن کے اوقات اوپر جدول میں ہیں۔'],

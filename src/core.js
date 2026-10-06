@@ -621,6 +621,13 @@
     if (loc.v) {
       var tm = addDays(d.y, d.m, d.d, 1), t2 = timesFor(loc, ctx, tm.y, tm.m, tm.d, s.params);
       vars.dateTomorrow = gregorian(tm.y, tm.m, tm.d, 'full', ctx); vars.fajrTomorrow = f(t2.fajr); vars.sunriseTomorrow = f(t2.sunrise);
+      ['dhuhr', 'asr', 'maghrib', 'isha'].forEach(function (k) { vars[k + 'Tomorrow'] = f(t2[k]); });
+      var bySect = function (sect) { var c = Object.assign({}, ctx, { sect: sect }); return timesFor(loc, c, d.y, d.m, d.d, paramsFor(loc, c)); };
+      var tj = bySect('jafria'), th = bySect('hanafi'), tsh = bySect('shafi');
+      ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(function (k) {
+        var K = k.charAt(0).toUpperCase() + k.slice(1); vars['j' + K] = f(tj[k]); vars['h' + K] = f(th[k]);
+      });
+      vars.asrShafi = f(tsh.asr);
       var en = prayerEnds(tt, nafl[nafl.length - 1][2], ctx);
       ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(function (k) { vars[k + 'End'] = f(en[k]); });
       nafl.forEach(function (r) { var k = r[0] === 'layl' ? 'tahajjud' : r[0]; vars[k] = f(r[1]); vars[k + 'End'] = f(r[2]); });

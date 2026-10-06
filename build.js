@@ -871,7 +871,8 @@ function cityPage(lang, ci) {
   const titleName = lang === 'en' && ci.shownEn ? `${cityName} (${ci.shownEn})` : cityName;
   const variant = variantOf(lang, c), local = lang === 'en' ? localFor(ci) : null;
   if (variant || local) {
-    loc.v = { summary: variant && variant.summary, faq: [].concat((variant && variant.faq) || [], (variant && variant.faqByCountry && variant.faqByCountry[c.slug]) || [], local ? [[local.q, local.a]] : []) };
+    loc.v = { summary: variant && variant.summary, faq: [].concat((variant && variant.faq) || [], (variant && variant.faqByCountry && variant.faqByCountry[c.slug]) || [],
+      (variant && variant.faqByCity && variant.faqByCity[`${c.slug}/${ci.slug}`]) || [], local ? [[local.q, local.a]] : []) };
   }
   // Title: a regional wording, else (English) the local search term when it is in Latin letters.
   const localTitle = local && local.latin && !(variant && variant.cityTitle) ? `{city} Prayer Times & ${local.term} Today, {country} | SalaahDaily` : null;
@@ -1577,13 +1578,14 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
   const monthHtml = month ? `<section class="hgrid ev-month" aria-labelledby="evMonthT"><h2 id="evMonthT">${esc(month.title + ' (' + TABS_MORE[lang].ksa + ')')}</h2>` +
     `<p class="muted" id="evMonthSub">${esc(month.sub)}</p><div class="table-scroll"><table class="hijri-grid" id="evMonth">${month.table}</table></div></section>` : '';
   const others = EVENTS.filter((x) => x[0] !== k).map((x) => ({ name: evName(lang, x[0]), href: url.event(lang, x[3]) }));
-  const aliasQs = ((EV_ALIASES[lang] && EV_ALIASES[lang][k]) || []).map((q) => tpl(q, { year, hijriYear: Core.num(next.hy, ctx) }));
+  const evVars = { year, hijriYear: Core.num(next.hy, ctx), date: gFull(next.gd) };
+  const aliasQs = ((EV_ALIASES[lang] && EV_ALIASES[lang][k]) || []).map((x) => (Array.isArray(x) ? [tpl(x[0], evVars), tpl(x[1], evVars)] : [tpl(x, evVars), `${answer} ${nightLine}`.trim()]));
   const body = breadcrumbs(crumbs) + '<article class="card about guide event">' +
     `<h1>${esc(tpl(e.h1, { event: name, year }))}</h1><p class="answer" id="evAnswer">${esc(answer)}</p>` +
     (nightLine ? `<p>${esc(nightLine)}</p>` : '') +
     '<p id="evAdj" class="small" hidden></p>' +
     `<p class="ev-days" id="evDays">${esc(daysTo === 0 ? e.today : tpl(e.days, { n: Core.num(daysTo, ctx) }))}</p>` +
-    `<p>${esc(e.desc[k])}</p>` + aliasQs.map((q) => `<h3>${esc(q)}</h3><p>${esc(`${answer} ${nightLine}`.trim())}</p>`).join('') + monthHtml +
+    `<p>${esc(e.desc[k])}</p>` + aliasQs.map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('') + monthHtml +
     `<h2>${esc(tpl(e.years, { event: name }))}</h2><div class="table-scroll"><table class="city-table"><tbody>` +
     dates.map((x) => `<tr><th scope="row">${esc(hijriText(x.hy))}</th><td>${esc(gFull(x.gd))}</td></tr>`).join('') +
     '</tbody></table></div>' +
@@ -1599,7 +1601,7 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
         dateModified: TODAY_ISO, isPartOf: { '@id': `${SITE}/#website` }, about: aboutThing(name, `https://en.wikipedia.org/wiki/${wiki}`),
         speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.guide h1', '#evAnswer'] } },
       { '@type': 'FAQPage', '@id': `${abs(pagePath)}#faq`, inLanguage: langTag(lang),
-        mainEntity: [tpl(e.q, { event: name, year })].concat(aliasQs).map((q) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: `${answer} ${nightLine}`.trim() } })) },
+        mainEntity: [[tpl(e.q, { event: name, year }), `${answer} ${nightLine}`.trim()]].concat(aliasQs).map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
       breadcrumbLd(crumbs),
     ] },
     data: clientData(lang, Object.assign({ kind: 'event', defaultSect: ci.defaultSect, evDate: `${next.gd.y}-${next.gd.m}-${next.gd.d}`, evH: [next.hy, hm, hd], firstDay: FIRST_DAY[lang] || 0, ksa: TABS_MORE[lang].ksa, evDays: e.days, evToday: e.today, defCountry: ci.country.slug }, hijriCountryData(lang))),

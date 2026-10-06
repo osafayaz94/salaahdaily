@@ -411,14 +411,20 @@ module.exports = {
 module.exports.ALIASES = {
   'india/Bengaluru': 'Bangalore', 'india/Kozhikode': 'Calicut', 'india/Thiruvananthapuram': 'Trivandrum',
   'india/Mysuru': 'Mysore', 'india/Gurugram': 'Gurgaon', 'india/Tiruchirappalli': 'Trichy',
-  'usa/New York': 'NYC', 'pakistan/Faisalabad': 'FSD', 'pakistan/Rawalpindi': 'RWP', 'pakistan/Islamabad': 'ISB',
+  'usa/New York': 'NYC', 'pakistan/Faisalabad': 'FSD', 'pakistan/Rawalpindi': 'RWP Pindi', 'pakistan/Islamabad': 'ISB',
   'pakistan/Rahim Yar Khan': 'RYK', 'pakistan/Mirpur Khas': 'Mirpurkhas', 'bangladesh/Cumilla': 'Comilla', 'bangladesh/Bogura': 'Bogra', 'bangladesh/Jashore': 'Jessore',
   'saudi-arabia/Madinah': 'Madina Medina', 'saudi-arabia/Buraidah': 'Buraydah', 'saudi-arabia/Jazan': 'Jizan جيزان',
   'saudi-arabia/Al-Ahsa': 'Hofuf Al-Hofuf الهفوف',
+  // "namaz timing ..." searches (October 2026): short forms and old names.
+  'pakistan/Karachi': 'KHI', 'pakistan/Dera Ghazi Khan': 'DG Khan DGK', 'pakistan/Dera Ismail Khan': 'DI Khan DIKhan',
+  'pakistan/Bahawalpur': 'BWP', 'pakistan/Mingora': 'Swat', 'india/Belagavi': 'Belgaum', 'india/Kalaburagi': 'Gulbarga',
+  'india/Kochi': 'Ernakulam Cochin', 'india/Panaji': 'Goa', 'bangladesh/Chattogram': 'Chittagong',
 };
 // English pages show the older spelling next to the official one where people still search with it most.
 module.exports.EN_SHOWN = {
   'india/Bengaluru': 'Bangalore', 'india/Kozhikode': 'Calicut', 'india/Thiruvananthapuram': 'Trivandrum',
   'india/Gurugram': 'Gurgaon', 'india/Tiruchirappalli': 'Trichy', 'bangladesh/Cumilla': 'Comilla',
   'bangladesh/Bogura': 'Bogra', 'bangladesh/Jashore': 'Jessore', 'saudi-arabia/Al-Ahsa': 'Hofuf',
+  'india/Mysuru': 'Mysore', 'india/Belagavi': 'Belgaum', 'india/Kalaburagi': 'Gulbarga', 'bangladesh/Chattogram': 'Chittagong',
+  'pakistan/Mingora': 'Swat', 'india/Panaji': 'Goa',
 };
