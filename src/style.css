@@ -612,8 +612,7 @@ body.bare { background: var(--surface); margin: 0; }
 .header-search { flex: none; max-width: 460px; width: 100%; }
 .header-search svg { inset-inline-start: 12px; }
 .header-search input { height: 40px; border-radius: 999px; border: 1px solid var(--line); padding-inline: 38px 12px; font-size: 0.95rem; }
-.learn-tabs ul { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; overflow-x: auto; scrollbar-width: none; }
-.learn-tabs ul::-webkit-scrollbar { display: none; }
+.learn-tabs ul { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
 .learn-tabs a { display: block; white-space: nowrap; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 0.9rem; font-weight: 600; }
 .learn-tabs a:hover { border-color: var(--gold); text-decoration: none; }
 .learn-tabs a[aria-current="page"] { background: var(--emerald); border-color: var(--emerald); color: var(--bg); }

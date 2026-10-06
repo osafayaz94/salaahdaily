@@ -98,6 +98,7 @@ fs.readdirSync(path.join(__dirname, 'src/learn-i18n')).forEach((f) => { LEARN[f.
 const NAFL_PAGES = ['tahajjud', 'ishraq', 'chasht'];
 // Learn pages (src/learn.js, translations in src/learn-i18n/): only languages that have them get the pages and tabs.
 // Quran and hadith under each prayer time (src/prayer-refs.js, translations in src/prayer-refs-i18n/), fetched when opened.
+const TABS_MORE = require('./src/tabs-more');
 const { REFS, REF_KEYS } = require('./src/prayer-refs');
 if (fs.existsSync(path.join(__dirname, 'src/prayer-refs-i18n'))) fs.readdirSync(path.join(__dirname, 'src/prayer-refs-i18n')).forEach((f) => { REFS[f.replace(/\.js$/, '')] = require('./src/prayer-refs-i18n/' + f); });
 // More Fajr hadith and the adhkar after Fajr (src/prayer-refs-more/), one file per language.
@@ -131,6 +132,7 @@ const problems = [];
     : o && typeof o === 'object' ? `{${Object.keys(o).sort().map((k) => k + ':' + shape(o[k])).join(',')}}` : typeof o;
   const en = shape(LEARN.en);
   Object.keys(LANGS).forEach((l) => { if (!LEARN[l]) problems.push(`learn: no strings for ${l}`); else if (shape(LEARN[l]) !== en) problems.push(`learn-i18n/${l}.js: keys or list lengths differ from English`); });
+  Object.keys(LANGS).forEach((l) => { if (!TABS_MORE[l] || ['hijri', 'ramadan', 'sehri'].some((k) => !TABS_MORE[l][k])) problems.push(`tabs-more.js: missing tabs for ${l}`); });
   if (LEARN.en.names.meanings.length !== ALLAH_NAMES.length) problems.push('learn.js: meanings and names differ in length');
   const refEn = shape(REFS.en);
   Object.keys(REFS).forEach((l) => { if (shape(REFS[l]) !== refEn) problems.push(`prayer-refs-i18n/${l}.js: keys or list lengths differ from English`); });
@@ -1120,10 +1122,16 @@ const learnCluster = (fn) => cluster(fn).filter((a) => LEARN[a.lang]);
 function learnTabs(lang, current) {
   const L = LEARN[lang];
   if (!L) return '';
-  const items = ['names', 'rakahs', 'wudu'].map((k) => [k, learnUrl[k](lang)]);
-  return `<nav class="learn-tabs" aria-label="${esc(L.tabs.evidence)}"><ul>` + items.map(([k, href]) => {
+  const M = TABS_MORE[lang];
+  // Sehri and iftar: the Ramadan timetable of the city this page is about, else the language's default city.
+  const seg = current.replace(/^\/+/, '').split('/');
+  if (LANGS[seg[0]]) seg.shift();
+  const ci = cityByPath(`${seg[0]}/${seg[1]}`) || cityByPath(DEFAULT_CITY[lang]);
+  const items = ['names', 'rakahs', 'wudu'].map((k) => [L.tabs[k], learnUrl[k](lang)])
+    .concat([[M.hijri, url.hijri(lang)], [M.ramadan, url.event(lang, 'ramadan')], [M.sehri, url.ramadan(lang, ci)]]);
+  return `<nav class="learn-tabs" aria-label="${esc(L.tabs.evidence)}"><ul>` + items.map(([name, href]) => {
     const on = current === href;
-    return `<li><a href="${href}"${on ? ' aria-current="page"' : ''}>${esc(L.tabs[k])}</a></li>`;
+    return `<li><a href="${href}"${on ? ' aria-current="page"' : ''}>${esc(name)}</a></li>`;
   }).join('') + '</ul></nav>';
 }
 // The row under the header: the learn tabs, and a city search on every page except the home page (which has its own).
