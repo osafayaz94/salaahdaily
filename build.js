@@ -210,7 +210,7 @@ function nameIn(names, lang, country) {
 /* ---------- Data ---------- */
 // Merge src/towns.js: towns join an existing region with the same English name, or form a new one.
 const TOWNS2 = require('./src/towns-2');
-[require('./src/towns'), TOWNS2].forEach((TOWNS) => Object.keys(TOWNS).filter((k) => k === k.toLowerCase()).forEach((slug) => {
+[require('./src/towns'), TOWNS2, require('./src/towns-3')].forEach((TOWNS) => Object.keys(TOWNS).filter((k) => k === k.toLowerCase()).forEach((slug) => {
   const country = RAW.find((c) => c.slug === slug);
   if (!country) { problems.push(`towns.js: unknown country ${slug}`); return; }
   TOWNS[slug].forEach((r) => {
@@ -906,7 +906,7 @@ function cityPage(lang, ci) {
   const body = breadcrumbs(crumbItems) +
     `<section class="today pattern" id="today">${today.html}</section>` +
     `<section class="card nafl" id="nafl" aria-labelledby="naflTitle">${Core.renderNafl(loc, ctx, NOW)}</section>` +
-    (loc.pp ? `<section class="card"><h2>${esc(tpl(EG.chipsH, { city: cityName }))}</h2>${linkList(EG_KEYS.map((k) => ({ name: tpl(EG.h1[k], { city: cityName }), href: `${pagePath}${k}/` })))}</section>` : '') +
+    (loc.pp ? `<section class="card"><h2>${esc(tpl(PP_COMMON.chipsH, { city: cityName }))}</h2>${linkList(EG_KEYS.map((k) => ({ name: tpl(PP_H1[k], { city: cityName }), href: `${pagePath}${k}/` })))}</section>` : '') +
     '<div class="layout">' +
       monthCard(lang, month, `${p.y}-${p.m}-${p.d}|${ctx.sect}|${ctx.method}|${ctx.hour12}|${ctx.hijriAdj}`) +
       '<aside class="side">' +
@@ -948,49 +948,77 @@ function cityPage(lang, ci) {
   });
 }
 
-/* ---------- Egypt: one Arabic page per prayer per city ("موعد اذان المغرب في كفر الشيخ") ---------- */
-// Search Console (Oct 2026): Egyptian searches ask for one adhan at a time, in the spoken "الساعة كام".
+/* ---------- Arab countries: one Arabic page per prayer per city ("موعد اذان المغرب في كفر الشيخ") ---------- */
+// Search Console (Oct 2026): Arabic searches ask for one adhan at a time ("اذان الفجر", "متى يؤذن المغرب"),
+// in Egypt in the spoken "الساعة كام". Egypt gets Egyptian wording, the other Arab countries standard Arabic.
 const AR_DESC = 'مواعيد الصلاة في {city} اليوم: الفجر {fajr}، الظهر {dhuhr}، العصر {asr}، المغرب {maghrib}، العشاء {isha}. موعد الأذان الساعة كام، والجدول الشهري والقبلة.';
 const EG_KEYS = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
-const EG = {
-  chipsH: 'موعد أذان كل صلاة في {city}',
+const PP_H1 = {
+  fajr: 'موعد أذان الفجر في {city}', sunrise: 'موعد الشروق في {city}', dhuhr: 'موعد أذان الظهر في {city}',
+  asr: 'موعد أذان العصر في {city}', maghrib: 'موعد أذان المغرب في {city}', isha: 'موعد أذان العشاء في {city}',
+};
+const PP_COMMON = {
+  chipsH: 'موعد أذان كل صلاة في {city}', h1: PP_H1,
+  tableH: 'موعد أذان {prayer} في {city} لمدة 30 يومًا', tableHSunrise: 'موعد الشروق في {city} لمدة 30 يومًا',
+  colDate: 'التاريخ', colHijri: 'الهجري', colTime: 'الوقت',
+  faqH: 'أسئلة عن موعد أذان {prayer} في {city}',
+  q3: 'ما هي مواعيد الصلاة في {city} اليوم؟', a3: 'مواعيد الصلاة في {city} اليوم: الفجر {fajr}، الشروق {sunrise}، الظهر {dhuhr}، العصر {asr}، المغرب {maghrib}، العشاء {isha}.',
+  otherH: 'مواعيد أخرى في {city}', nearH: 'موعد أذان {prayer} في مدن قريبة', nearHSunrise: 'موعد الشروق في مدن قريبة',
+};
+const EG = Object.assign({}, PP_COMMON, {
   title: {
     fajr: 'موعد أذان الفجر في {city} اليوم: الفجر بيأذن الساعة كام؟', sunrise: 'موعد الشروق في {city} اليوم وبكرة: الشروق الساعة كام؟',
     dhuhr: 'موعد أذان الظهر في {city} اليوم: الظهر بيأذن الساعة كام؟', asr: 'موعد أذان العصر في {city} اليوم: العصر بيأذن الساعة كام؟',
     maghrib: 'موعد أذان المغرب في {city} اليوم: المغرب بيأذن الساعة كام؟', isha: 'موعد أذان العشاء في {city} اليوم: العشاء بيأذن الساعة كام؟',
   },
-  h1: {
-    fajr: 'موعد أذان الفجر في {city}', sunrise: 'موعد الشروق في {city}', dhuhr: 'موعد أذان الظهر في {city}',
-    asr: 'موعد أذان العصر في {city}', maghrib: 'موعد أذان المغرب في {city}', isha: 'موعد أذان العشاء في {city}',
-  },
   answer: '{prayer} بيأذن في {city} النهارده ({date}) الساعة {time}، وبكرة الساعة {tomorrow}.',
   answerSunrise: 'الشروق في {city} النهارده ({date}) الساعة {time}، وبكرة الساعة {tomorrow}.',
   desc: 'أذان {prayer} في {city} اليوم الساعة {time}، وبكرة الساعة {tomorrow}. موعد أذان {prayer} لكل أيام الشهر، ومواقيت الصلاة كاملة في {city}.',
   descSunrise: 'الشروق في {city} اليوم الساعة {time}، وبكرة الساعة {tomorrow}. موعد الشروق لكل أيام الشهر، ومواقيت الصلاة كاملة في {city}.',
-  tableH: 'موعد أذان {prayer} في {city} لمدة 30 يومًا', tableHSunrise: 'موعد الشروق في {city} لمدة 30 يومًا',
-  colDate: 'التاريخ', colHijri: 'الهجري', colTime: 'الوقت',
-  faqH: 'أسئلة عن موعد أذان {prayer} في {city}',
   q1: '{prayer} بيأذن الساعة كام في {city} النهارده؟', a1: 'أذان {prayer} في {city} النهارده الساعة {time}.',
   q1s: 'الشروق الساعة كام في {city} النهارده؟', a1s: 'الشروق في {city} النهارده الساعة {time}.',
   q2: 'متى يؤذن {prayer} في {city} بكرة؟', a2: 'بكرة ({date}) أذان {prayer} في {city} الساعة {time}.',
   q2s: 'وقت الشروق بكرة في {city}؟', a2s: 'بكرة ({date}) الشروق في {city} الساعة {time}.',
-  q3: 'ما هي مواعيد الصلاة في {city} اليوم؟', a3: 'مواعيد الصلاة في {city} اليوم: الفجر {fajr}، الشروق {sunrise}، الظهر {dhuhr}، العصر {asr}، المغرب {maghrib}، العشاء {isha}.',
-  method: 'المواقيت بطريقة الهيئة المصرية العامة للمساحة (الفجر 19.5°، العشاء 17.5°)، وقد تختلف دقيقة أو دقيقتين عن مسجدك.',
-  otherH: 'مواعيد أخرى في {city}', nearH: 'موعد أذان {prayer} في مدن قريبة', nearHSunrise: 'موعد الشروق في مدن قريبة',
-};
-const hasPrayerPages = (lang, ci) => lang === 'ar' && ci.country.slug === 'egypt';
+  q4: 'ميعاد صلاة {prayer} النهارده في {city} على الساعة كام؟', a4: 'صلاة {prayer} في {city} النهارده الساعة {time}، وبكرة الساعة {tomorrow}.',
+  q4s: 'الشروق على الساعة كام في {city}؟', a4s: 'الشروق في {city} النهارده الساعة {time}، وبكرة الساعة {tomorrow}.',
+  method: () => 'المواقيت بطريقة الهيئة المصرية العامة للمساحة (الفجر 19.5°، العشاء 17.5°)، وقد تختلف دقيقة أو دقيقتين عن مسجدك.',
+});
+const MSA = Object.assign({}, PP_COMMON, {
+  title: {
+    fajr: 'موعد أذان الفجر في {city} اليوم: متى يؤذن الفجر؟', sunrise: 'موعد الشروق في {city} اليوم وغدًا: متى الشروق؟',
+    dhuhr: 'موعد أذان الظهر في {city} اليوم: متى يؤذن الظهر؟', asr: 'موعد أذان العصر في {city} اليوم: متى يؤذن العصر؟',
+    maghrib: 'موعد أذان المغرب في {city} اليوم: متى يؤذن المغرب؟', isha: 'موعد أذان العشاء في {city} اليوم: متى يؤذن العشاء؟',
+  },
+  answer: 'يؤذن {prayer} في {city} اليوم ({date}) الساعة {time}، وغدًا الساعة {tomorrow}.',
+  answerSunrise: 'الشروق في {city} اليوم ({date}) الساعة {time}، وغدًا الساعة {tomorrow}.',
+  desc: 'أذان {prayer} في {city} اليوم الساعة {time}، وغدًا الساعة {tomorrow}. موعد أذان {prayer} لكل أيام الشهر، ومواقيت الصلاة كاملة في {city}.',
+  descSunrise: 'الشروق في {city} اليوم الساعة {time}، وغدًا الساعة {tomorrow}. موعد الشروق لكل أيام الشهر، ومواقيت الصلاة كاملة في {city}.',
+  q1: 'متى يؤذن {prayer} في {city} اليوم؟', a1: 'أذان {prayer} في {city} اليوم الساعة {time}.',
+  q1s: 'متى الشروق في {city} اليوم؟', a1s: 'الشروق في {city} اليوم الساعة {time}.',
+  q2: 'كم الساعة أذان {prayer} غدًا في {city}؟', a2: 'غدًا ({date}) أذان {prayer} في {city} الساعة {time}.',
+  q2s: 'وقت الشروق غدًا في {city}؟', a2s: 'غدًا ({date}) الشروق في {city} الساعة {time}.',
+  q4: 'ما موعد صلاة {prayer} اليوم في {city}؟', a4: 'صلاة {prayer} في {city} اليوم الساعة {time}، وغدًا الساعة {tomorrow}.',
+  q4s: 'الشروق الساعة كم في {city}؟', a4s: 'الشروق في {city} اليوم الساعة {time}، وغدًا الساعة {tomorrow}.',
+  method: (m) => `المواقيت محسوبة بطريقة ${m}، وقد تختلف دقيقة أو دقيقتين عن مسجدك.`,
+});
+// Countries where Arabic is spoken and the Arabic site is built get the pages.
+const PP_COUNTRIES = new Set(['egypt', 'saudi-arabia', 'uae', 'kuwait', 'qatar', 'bahrain', 'oman', 'yemen', 'iraq', 'syria', 'jordan', 'lebanon',
+  'palestine', 'sudan', 'libya', 'tunisia', 'algeria', 'morocco', 'mauritania', 'somalia', 'djibouti', 'comoros']);
+const ppStr = (ci) => (ci.country.slug === 'egypt' ? EG : MSA);
+const hasPrayerPages = (lang, ci) => lang === 'ar' && PP_COUNTRIES.has(ci.country.slug) && built('ar', ci.country);
 function cityPrayerPage(ci, key) {
   const lang = 'ar', t = STRINGS[lang], ctx = ctxFor(lang, ci.defaultSect), loc = locOf(ci, lang), city = loc.name;
   const base = url.city(lang, ci), pagePath = `${base}${key}/`, sun = key === 'sunrise';
   const params = Core.paramsFor(loc, ctx), p = Core.partsInTz(NOW, ci.tz);
   const day = (i) => { const d = Core.addDays(p.y, p.m, p.d, i); return { d, tt: Core.timesFor(loc, ctx, d.y, d.m, d.d, params) }; };
   const f = (x) => Core.fmtTime(x, ci.tz, ctx), g = (d) => Core.gregorian(d.y, d.m, d.d, 'full', ctx);
-  const t0 = day(0), t1 = day(1), name = t.prayers[key];
+  const t0 = day(0), t1 = day(1), name = t.prayers[key], EG = ppStr(ci);
   const v = { prayer: name, city, date: g(t0.d), time: f(t0.tt[key]), tomorrow: f(t1.tt[key]) };
   const all = Object.fromEntries(['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map((k) => [k, f(t0.tt[k])]));
   const faq = [
     { q: tpl(sun ? EG.q1s : EG.q1, v), a: tpl(sun ? EG.a1s : EG.a1, v) },
     { q: tpl(sun ? EG.q2s : EG.q2, v), a: tpl(sun ? EG.a2s : EG.a2, Object.assign({}, v, { date: g(t1.d), time: v.tomorrow })) },
+    { q: tpl(sun ? EG.q4s : EG.q4, v), a: tpl(sun ? EG.a4s : EG.a4, v) },
     { q: tpl(EG.q3, v), a: tpl(EG.a3, Object.assign({ city }, all)) },
   ];
   const rows = Array.from({ length: 30 }, (_, i) => day(i)).map(({ d, tt }, i) =>
@@ -1001,7 +1029,7 @@ function cityPrayerPage(ci, key) {
     { name: city, href: base }, { name: tpl(EG.h1[key], { city }), href: pagePath }];
   const body = breadcrumbs(crumbs) + '<article class="card about guide">' +
     `<h1>${esc(tpl(EG.h1[key], { city }))}</h1><p class="answer">${esc(tpl(sun ? EG.answerSunrise : EG.answer, v))}</p>` +
-    `<p class="muted small">${esc(EG.method)}</p>` +
+    `<p class="muted small">${esc(EG.method(Core.methodLabel(ci.defaultSect === 'jafria' ? (loc.jafariMethod || 'Jafari') : (loc.method || 'MuslimWorldLeague'), ctx)))}</p>` +
     `<h2>${esc(tpl(sun ? EG.tableHSunrise : EG.tableH, v))}</h2><div class="table-scroll"><table class="city-table">` +
     `<thead><tr><th scope="col">${EG.colDate}</th><th scope="col">${EG.colHijri}</th><th scope="col">${EG.colTime}</th></tr></thead><tbody>${rows}</tbody></table></div>` +
     `<h2>${esc(tpl(EG.faqH, v))}</h2>` + faq.map((it) => `<h3>${esc(it.q)}</h3><p>${esc(it.a)}</p>`).join('') +
@@ -1011,7 +1039,9 @@ function cityPrayerPage(ci, key) {
     `<h2>${esc(tpl(sun ? EG.nearHSunrise : EG.nearH, v))}</h2>` +
     linkList(near.map((n) => ({ name: nameIn(n.o.names, lang, n.o.country), href: `${url.city(lang, n.o)}${key}/` }))) +
     `<p class="muted small">${esc(tpl(t.updated, { date: g(t0.d) }))}</p></article>`;
-  const title = fitTitle(tpl(EG.title[key], { city }) + ' | SalaahDaily', lang);
+  // Two cities with one Arabic name (Tripoli, صور) are told apart by their country.
+  const tCity = nameCount[lang][city] > 1 ? `${city}، ${nameIn(ci.country.name, lang)}` : city;
+  const title = fitTitle(tpl(EG.title[key], { city: tCity }) + ' | SalaahDaily', lang);
   const desc = tpl(sun ? EG.descSunrise : EG.desc, v);
   addPage({
     lang, tag: langTag(lang, ci.country), title, desc, path: pagePath, alternates: [{ lang, tag: langTag(lang, ci.country), href: pagePath }], indexable: true, body, og: ci.country.slug,
@@ -1906,7 +1936,7 @@ function embedPage(lang) {
 /* ---------- Build ---------- */
 function stopIfProblems() {
   if (!problems.length) return;
-  console.error('Build stopped:\n  ' + problems.slice(0, 80).join('\n  ') + (problems.length > 80 ? `\n  ...and ${problems.length - 80} more` : ''));
+  console.error('Build stopped:\n  ' + problems.slice(0, +(process.env.SHOW_PROBLEMS || 80)).join('\n  ') + (problems.length > 80 ? `\n  ...and ${problems.length - 80} more` : ''));
   process.exit(1);
 }
 function write(rel, content) {
