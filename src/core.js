@@ -438,9 +438,16 @@
   function ltrNums(s) {
     return esc(s).replace(/[0-9۰-۹০-৯][0-9۰-۹০-৯:.\-–]*[0-9۰-۹০-৯]/g, function (m) { return '<bdi dir="ltr">' + m + '</bdi>'; });
   }
-  // "Reference" under a prayer: a link to its page of Quran and hadith (Sunni and Shia side by side).
+  // "Reference" under a prayer, with bullets that open sections of its Quran and hadith page:
+  // timing, benefits, and the adhkar where the page has them.
   function refToggle(ctx, key) {
-    return ctx.t.refLabel ? '<a class="p-ref" href="' + pre(ctx) + 'prayers/' + key + '/reference/">' + esc(ctx.t.refLabel) + '</a>' : '';
+    var R = ctx.t.refLinks;
+    if (!ctx.t.refLabel || !R) return '';
+    var href = pre(ctx) + 'prayers/' + key + '/reference/#';
+    return '<div class="p-ref"><span class="p-ref-h">' + esc(ctx.t.refLabel) + '</span><ul>' +
+      ['time', 'virtue'].concat(R.az.indexOf(key) !== -1 ? ['azkar'] : []).map(function (k) {
+        return '<li><a href="' + href + k + '">' + esc(R[k]) + '</a></li>';
+      }).join('') + '</ul></div>';
   }
   // Inner HTML of the #today section. Returns { html, nextAt }.
   function renderToday(loc, ctx, now, h1) {

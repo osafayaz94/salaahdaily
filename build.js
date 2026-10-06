@@ -111,6 +111,9 @@ Object.keys(REFS).forEach((l) => {
   fj.azkar = m.azkar;
 });
 Object.keys(LANGS).forEach((l) => { STRINGS[l].refLabel = REFS[l] ? REFS[l].label : ''; });
+const REF_LINKS = require('./src/ref-links');
+const AZKAR_KEYS = REF_KEYS.filter((k) => REFS.en.items[k].azkar);
+Object.keys(LANGS).forEach((l) => { STRINGS[l].refLinks = REF_LINKS[l] && { ...REF_LINKS[l], az: AZKAR_KEYS }; });
 
 const ROOT = __dirname;
 const DIST = path.join(ROOT, 'dist');
@@ -132,6 +135,7 @@ const problems = [];
     : o && typeof o === 'object' ? `{${Object.keys(o).sort().map((k) => k + ':' + shape(o[k])).join(',')}}` : typeof o;
   const en = shape(LEARN.en);
   Object.keys(LANGS).forEach((l) => { if (!LEARN[l]) problems.push(`learn: no strings for ${l}`); else if (shape(LEARN[l]) !== en) problems.push(`learn-i18n/${l}.js: keys or list lengths differ from English`); });
+  Object.keys(LANGS).forEach((l) => { if (!REF_LINKS[l]) problems.push(`ref-links.js: no labels for ${l}`); });
   Object.keys(LANGS).forEach((l) => { if (!TABS_MORE[l] || ['hijri', 'ramadan', 'sehri'].some((k) => !TABS_MORE[l][k])) problems.push(`tabs-more.js: missing tabs for ${l}`); });
   if (LEARN.en.names.meanings.length !== ALLAH_NAMES.length) problems.push('learn.js: meanings and names differ in length');
   const refEn = shape(REFS.en);
@@ -409,7 +413,7 @@ function locOf(ci, lang) {
   return { name: nameIn(ci.names, lang, c), lat: ci.lat, lng: ci.lng, tz: ci.tz, method: ci.method, jafariMethod: c.jafariMethod, extraCalendar: c.extraCalendar };
 }
 // Only the strings the browser script renders; titles, descriptions and static copy stay out of the page data.
-const CLIENT_KEYS = ['refLabel', 'qAt', 'aAt', 'qLeft', 'aLeft', 'sects', 'prayers', 'sectLabel', 'nextIn', 'tomorrow', 'localTime', 'next', 'now', 'methodLine',
+const CLIENT_KEYS = ['refLabel', 'refLinks', 'qAt', 'aAt', 'qLeft', 'aLeft', 'sects', 'prayers', 'sectLabel', 'nextIn', 'tomorrow', 'localTime', 'next', 'now', 'methodLine',
   'asrTwice', 'asrOnce', 'sameTimes', 'maghribAngle', 'changeMethod', 'summary', 'monthTitle', 'range', 'colDate', 'colHijri',
   'qibla', 'qiblaFrom', 'kaaba', 'hijriMonths', 'hijriEra', 'openLast', 'noGeo', 'geoBlocked', 'locating', 'yourLocation',
   'methods', 'months', 'weekdays', 'solarMonths', 'solarEra', 'mapsHl', 'mosquesNearYou', 'mosquesLede', 'openInMaps',
@@ -1211,11 +1215,12 @@ function refPage(lang, key) {
   // In left-to-right languages the voweled Arabic of an adhkar gets its own direction so its words keep their order.
   const arRuns = LANGS[lang].dir === 'rtl' ? (h) => h : (h) => h.replace(/[\u0600-\u06FF][\u0600-\u06FF\s]*[\u0600-\u06FF]/g,
     (m) => /[\u064B-\u0652]/.test(m) ? `<bdi class="dhikr${m.split(/\s+/).length > 3 ? ' dhikr-line' : ''}" lang="ar" dir="rtl">${m}</bdi>` : m);
-  const list = (items) => arRuns(refList(items));
+  // A full stop after an adhkar on its own line would sit alone on the next line, so it goes.
+  const list = (items) => arRuns(refList(items)).replace(/(dhikr-line"[^>]*>[^<]*<\/bdi>)\s*[.。]\s*/g, '$1');
   const cols = (sec) => '<div class="ref-cols">' +
     `<section><h3>${esc(R.sunniH)}</h3>${list(sec.s)}</section><section><h3>${esc(R.shiaH)}</h3>${list(sec.j)}</section></div>`;
   const body = `<p class="answer">${esc(R.lede)}</p>` +
-    [['time', R.timeH], ['virtue', R.virtueH], ['prayer', R.prayerH]].concat(it.azkar ? [['azkar', R.azkarH]] : []).map(([k, h]) => `<h2>${esc(tpl(h, { prayer: name }))}</h2>${cols(it[k])}`).join('') +
+    [['time', R.timeH], ['virtue', R.virtueH], ['prayer', R.prayerH]].concat(it.azkar ? [['azkar', R.azkarH]] : []).map(([k, h]) => `<h2 id="${k}">${esc(tpl(h, { prayer: name }))}</h2>${cols(it[k])}`).join('') +
     `<p class="muted small">${esc(R.note)}</p><h2>${esc(R.otherH)}</h2>` +
     linkList(REF_KEYS.filter((k) => k !== key).map((k) => ({ name: t.prayers[k] || t.nafl[k], href: fn(lang).replace(`/${key}/`, `/${k}/`) })));
   learnAdd(lang, { path: fn(lang), fn, title: tpl(R.title, { prayer: name }), h1: tpl(R.h1, { prayer: name }), desc: tpl(R.desc, { prayer: name }), body,
