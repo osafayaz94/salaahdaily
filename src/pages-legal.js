@@ -3,7 +3,7 @@
  * Each page is a list of [heading, paragraph, ...] sections. {contact} becomes a link to the Contact page
  * (or "the suggestion form below" when there is none), {google} and {web3forms} link to those policies.
  * Only describe what the site really does: no accounts, no adverts, settings in localStorage, and analytics only
- * when site.config.js has a Cloudflare token (PRIVACY_ANALYTICS).
+ * when site.config.js turns it on (PRIVACY_ANALYTICS).
  * Change POLICY_DATE whenever the wording of the privacy policy or the terms changes.
  */
 'use strict';
@@ -76,10 +76,19 @@ var PRIVACY = {
   ],
 };
 
-// Used instead of the matching PRIVACY parts once site.config.js has a Cloudflare Web Analytics token.
-// When it is switched on, set ANALYTICS_DATE to that day: it becomes the policy's "Last updated" date.
+// Used instead of the matching PRIVACY parts when site.config.js turns analytics on: ga = Google Analytics 4 (ga4Id),
+// cf = Cloudflare Web Analytics (cfAnalyticsToken). "cookies" replaces the Cookies section; "section" goes after it.
+// When analytics is switched on or changed, set ANALYTICS_DATE to that day: it becomes the policy's "Last updated" date.
 var ANALYTICS_DATE = '2026-10-08';
-var PRIVACY_ANALYTICS = {
+var PRIVACY_ANALYTICS = {};
+PRIVACY_ANALYTICS.ga = {
+  desc: 'SalaahDaily has no accounts and no adverts. It counts visits with Google Analytics. Your settings stay in your browser and your location never leaves your device.',
+  lede: 'SalaahDaily shows prayer times. It has no accounts and no adverts, and it counts visits with Google Analytics. This page explains the little data that is involved when you use it.',
+  cookies: 'SalaahDaily sets no cookies for its own features. Outside Europe, Google Analytics sets two cookies (_ga and _ga_ followed by an id) to tell a new visit from a returning one; they last up to two years. Our hosting provider’s security service may set a short-lived cookie to check that a visitor is a real browser and not an automated attack.',
+  section: ['Visitor statistics',
+    'We use Google Analytics 4 to see which pages are read, which websites and searches send visitors to us, and the approximate country and city and type of device of our visitors. Google Analytics 4 does not log or store IP addresses. Advertising features are switched off. If your device is set to a time zone in the European Economic Area, the United Kingdom or Switzerland, the Google Analytics script is not loaded at all. You can also block it with {gaoptout} or any content blocker. See {google}.'],
+};
+PRIVACY_ANALYTICS.cf = {
   desc: 'SalaahDaily has no accounts, no adverts and no tracking cookies. Your settings stay in your browser and your location never leaves your device.',
   lede: 'SalaahDaily shows prayer times. It has no accounts and no adverts, and its visitor statistics set no cookies. This page explains the little data that is involved when you use it.',
   section: ['Visitor statistics',

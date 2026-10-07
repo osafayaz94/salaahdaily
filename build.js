@@ -393,6 +393,8 @@ const JS = [read('src/vendor/adhan.umd.min.js'), minifyJs(read('src/core.js')), 
 const JS_LITE = [minifyJs(read('src/core.js')), minifyJs(read('src/client.js'))].join('\n;\n');
 // The crescent prediction, only on the Hijri calendar page.
 const JS_MOON = minifyJs(read('src/moon.js'));
+// Google Analytics 4 loader, only when site.config.js has ga4Id.
+const JS_GA = CONFIG.ga4Id ? minifyJs(read('src/ga.js')).replace('__GA_ID__', CONFIG.ga4Id) : '';
 const CITIES_JSON = JSON.stringify({
   countries: Object.fromEntries(COUNTRIES.map((c) => [c.slug, {
     tz: c.tz, method: c.method, jafariMethod: c.jafariMethod, defaultSect: c.defaultSect, extraCalendar: c.extraCalendar,
@@ -422,6 +424,7 @@ const ASSET = {
   js: `/assets/app.${shortHash(JS)}.js`,
   jsLite: `/assets/lite.${shortHash(JS_LITE)}.js`,
   moon: `/assets/moon.${shortHash(JS_MOON)}.js`,
+  ga: JS_GA ? `/assets/ga.${shortHash(JS_GA)}.js` : '',
   cities: `/assets/cities.${shortHash(CITIES_JSON)}.json`,
 };
 const HAYYA_AR = 'حَيَّ عَلَى الصَّلَاةِ، حَيَّ عَلَى الْفَلَاحِ';
@@ -739,7 +742,7 @@ function addPage(o) {
     footer(lang, o.data.kind) +
     `<script id="page-data" type="application/json">${jsonForHtml(o.data)}</script>` +
     (o.data.kind === 'hijri' ? `<script src="${ASSET.moon}" defer></script>` : '') +
-    `<script src="${script}" defer></script>` + CF_BEACON +
+    `<script src="${script}" defer></script>` + CF_BEACON + (ASSET.ga ? `<script src="${ASSET.ga}" defer></script>` : '') +
     '</body></html>\n';
 
   // Written straight to disk: holding every page's HTML in memory runs out of heap at this size.
@@ -1161,18 +1164,20 @@ function aboutPage(lang) {
 }
 
 /* ---------- Contact, privacy, terms (English) ---------- */
-// With Cloudflare Web Analytics on, the privacy policy says so (a "Visitor statistics" section after "Cookies") and takes its date.
-const PRIVACY = !CONFIG.cfAnalyticsToken ? LEGAL.PRIVACY : Object.assign({}, LEGAL.PRIVACY, {
-  desc: LEGAL.PRIVACY_ANALYTICS.desc, lede: LEGAL.PRIVACY_ANALYTICS.lede,
-  sections: LEGAL.PRIVACY.sections.flatMap((x) => (x[0] === 'Cookies' ? [x, LEGAL.PRIVACY_ANALYTICS.section] : [x])),
+// With analytics on, the privacy policy says so (Cookies rewritten if needed, "Visitor statistics" after it) and takes its date.
+const PA = CONFIG.ga4Id ? LEGAL.PRIVACY_ANALYTICS.ga : CONFIG.cfAnalyticsToken ? LEGAL.PRIVACY_ANALYTICS.cf : null;
+const PRIVACY = !PA ? LEGAL.PRIVACY : Object.assign({}, LEGAL.PRIVACY, {
+  desc: PA.desc, lede: PA.lede,
+  sections: LEGAL.PRIVACY.sections.flatMap((x) => (x[0] === 'Cookies' ? [PA.cookies ? [x[0], PA.cookies] : x, PA.section] : [x])),
 });
-const POLICY_DATE = CONFIG.cfAnalyticsToken && LEGAL.ANALYTICS_DATE > LEGAL.POLICY_DATE ? LEGAL.ANALYTICS_DATE : LEGAL.POLICY_DATE;
+const POLICY_DATE = PA && LEGAL.ANALYTICS_DATE > LEGAL.POLICY_DATE ? LEGAL.ANALYTICS_DATE : LEGAL.POLICY_DATE;
 function legalText(text) {
   const link = (href, name) => `<a href="${href}">${esc(name)}</a>`;
   return esc(text)
     .replace('{contact}', HAS_CONTACT ? link(url.contact(), 'the Contact page') : 'the suggestion form at the foot of any page')
     .replace('{google}', link('https://policies.google.com/privacy', 'Google’s privacy policy'))
     .replace('{web3forms}', link('https://web3forms.com/privacy', 'the Web3Forms privacy policy'))
+    .replace('{gaoptout}', link('https://tools.google.com/dlpage/gaoptout', 'Google’s opt-out browser add-on'))
     .replace('{cloudflare}', link('https://www.cloudflare.com/web-analytics/', 'Cloudflare Web Analytics'));
 }
 function infoPage(kind, P, pagePath, schemaType, inner) {
@@ -2066,6 +2071,7 @@ write('logo.png', fs.readFileSync(path.join(ROOT, 'src', 'logo.png')));
 LANDMARKS.forEach((lm) => write(`sites/${lm.id}.jpg`, fs.readFileSync(path.join(ROOT, 'src', 'sites', `${lm.id}.jpg`))));
 write(ASSET.jsLite.slice(1), JS_LITE);
 write(ASSET.moon.slice(1), JS_MOON);
+if (JS_GA) write(ASSET.ga.slice(1), JS_GA);
 write(ASSET.cities.slice(1), CITIES_JSON);
 ALL_LANGS.forEach((lang) => write(SEARCH[lang].path.slice(1), SEARCH[lang].json));
 write('favicon.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#0c3a2d"/><path d="M20 7a10 10 0 1 0 5 17A8 8 0 1 1 20 7z" fill="#d9ad5b"/></svg>\n');
@@ -2139,11 +2145,11 @@ const OTHER_HOST = HOST.startsWith('www.') ? HOST.slice(4) : `www.${HOST}`;
 // Google Maps mosque embed; nothing may frame this site.
 const CSP = [
   "default-src 'self'",
-  "script-src 'self'" + (CONFIG.cfAnalyticsToken ? ' https://static.cloudflareinsights.com' : ''),
+  "script-src 'self'" + (CONFIG.cfAnalyticsToken ? ' https://static.cloudflareinsights.com' : '') + (CONFIG.ga4Id ? ' https://www.googletagmanager.com' : ''),
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self'",
-  "img-src 'self' data:",
-  "connect-src 'self' https://api.web3forms.com" + (CONFIG.cfAnalyticsToken ? ' https://cloudflareinsights.com' : ''),
+  "img-src 'self' data:" + (CONFIG.ga4Id ? ' https://*.google-analytics.com https://*.googletagmanager.com' : ''),
+  "connect-src 'self' https://api.web3forms.com" + (CONFIG.cfAnalyticsToken ? ' https://cloudflareinsights.com' : '') + (CONFIG.ga4Id ? ' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com' : ''),
   "frame-src 'self' https://maps.google.com https://www.google.com",
   "object-src 'none'",
   "base-uri 'self'",

@@ -13,6 +13,9 @@ module.exports = {
   web3formsKey: '1961dd7e-68b7-499e-85a7-ddf1d90d59aa',
   // Public contact address shown on the Contact page (optional). Leave empty to show the form only.
   contactEmail: 'team@salaahdaily.com',
+  // Google Analytics 4 Measurement ID (G-...). Public by design. Leave empty for no Google Analytics.
+  // Loaded from src/ga.js after the page loads; not loaded for time zones in the EEA, UK or Switzerland.
+  ga4Id: 'G-1B7T4ZN88N',
   // Cloudflare Web Analytics token (dash.cloudflare.com > Web Analytics > manual JS snippet, the "token" value).
   // Public by design. Leave empty for no analytics. Cookieless, so no consent banner is needed.
   cfAnalyticsToken: '',
