@@ -224,8 +224,9 @@ const COUNTRIES = RAW.map((raw) => {
   const c = Object.assign({}, raw, { regions: [], cities: [] });
   c.name = Object.assign({}, NAMES.countries[raw.name.en] || {}, raw.name);
   raw.regions.forEach((r) => {
-    // A region can override the country's method and default school (e.g. Dagestan in Russia).
-    const region = { names: placeNames(r.name.en, r.name), cities: [], method: r.method || raw.method, defaultSect: r.defaultSect || raw.defaultSect };
+    // A region can override the country's method (e.g. Dagestan in Russia). The default school is always the country's
+    // majority school (owner's rule, 8 Oct 2026): a region's own defaultSect in the data is kept for reference but not used.
+    const region = { names: placeNames(r.name.en, r.name), cities: [], method: r.method || raw.method, defaultSect: raw.defaultSect };
     r.cities.forEach((row) => {
       const city = {
         names: placeNames(row[0], row[3]),
@@ -400,7 +401,7 @@ const CITIES_JSON = JSON.stringify({
   // 6th value only when the city's method or default school differs from its country's: [method, sect].
   cities: ALL_CITIES.map((ci) => {
     const row = [ci.country.slug, ci.slug, ci.lat, ci.lng];
-    const own = ci.method !== ci.country.method || ci.defaultSect !== ci.defaultSect;
+    const own = ci.method !== ci.country.method || ci.defaultSect !== ci.country.defaultSect;
     if (ci.tz !== ci.country.tz || own) row.push(ci.tz === ci.country.tz ? 0 : ci.tz);
     if (own) row.push([ci.method, ci.defaultSect]);
     return row;
@@ -1315,12 +1316,17 @@ function refPage(lang, key) {
     `<section><h3>${esc(R.sunniH)}</h3>${list(sec.s)}</section><section><h3>${esc(R.shiaH)}</h3>${list(sec.j)}</section></div>`;
   // Benefits and adhkar are one list for everyone: each source once, without the unsourced notes on a school's view.
   const merged = (sec) => { const seen = new Set(); return list(sec.s.concat(sec.j).filter(([r]) => r && !seen.has(r) && seen.add(r))); };
-  const section = (k) => (k === 'virtue' || k === 'azkar' ? merged : cols)(it[k]);
-  const body = `<p class="answer">${esc(R.lede)}</p>` +
+  // Ishraq and Chasht are shown to every school on city pages, so their pages are one list too: the general notes stay, the school-only notes go.
+  const common = (sec) => { const seen = new Set(); return list(sec.s.concat(sec.j.filter(([r]) => r)).filter(([r, x]) => !seen.has(r || x) && seen.add(r || x))); };
+  const one = key === 'ishraq' || key === 'chasht';
+  const section = (k) => (one ? common : k === 'virtue' || k === 'azkar' ? merged : cols)(it[k]);
+  // Their intro and description name the sections instead of the two schools "side by side".
+  const desc = one ? [R.timeH, R.virtueH, R.prayerH].map((h) => tpl(h, { prayer: name })).join(' · ') : tpl(R.desc, { prayer: name });
+  const body = (one ? '' : `<p class="answer">${esc(R.lede)}</p>`) +
     [['time', R.timeH], ['virtue', R.virtueH], ['prayer', R.prayerH]].concat(it.azkar ? [['azkar', R.azkarH]] : []).map(([k, h]) => `<h2 id="${k}">${esc(tpl(h, { prayer: name }))}</h2>${section(k)}`).join('') +
     `<p class="muted small">${esc(R.note)}</p><h2>${esc(R.otherH)}</h2>` +
     linkList(REF_KEYS.filter((k) => k !== key).map((k) => ({ name: t.prayers[k] || t.nafl[k], href: fn(lang).replace(`/${key}/`, `/${k}/`) })));
-  learnAdd(lang, { path: fn(lang), fn, title: tpl(R.title, { prayer: name }), h1: tpl(R.h1, { prayer: name }), desc: tpl(R.desc, { prayer: name }), body,
+  learnAdd(lang, { path: fn(lang), fn, title: tpl(R.title, { prayer: name }), h1: tpl(R.h1, { prayer: name }), desc, body,
     crumbs: prayersCrumb(lang).concat(parent ? [parent] : []), cluster: (f) => cluster(f).filter((a) => REFS[a.lang]) });
 }
 const kwFaq = (items) => (items || []).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('');

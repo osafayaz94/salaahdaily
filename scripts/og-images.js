@@ -69,12 +69,12 @@ function shoot(html, file, w, h) {
   const src = path.join(tmp, 'card.html');
   fs.writeFileSync(src, html);
   execFileSync(BROWSER, ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--no-first-run', '--default-background-color=00000000',
-    `--window-size=${w},${h}`, `--screenshot=${file}`, 'file:///' + src.replace(/\\/g, '/')], { stdio: 'ignore' });
+    `--window-size=${w},${h}`, `--screenshot=${file}`, 'file:///' + src.replace(/\\/g, '/')], { stdio: 'ignore', timeout: 60000 }); // a hung Chrome once stalled the run
   if (!fs.existsSync(file)) throw new Error('Screenshot failed: ' + file);
 }
 
 fs.mkdirSync(OUT, { recursive: true });
-shoot(card('Prayer Times Today', `${totalCities} cities in ${RAW.length} countries · 15 languages`), path.join(OUT, 'home.jpg'), 1200, 630);
+shoot(card('Prayer Times Today', `${totalCities.toLocaleString('en')} cities in ${RAW.length} countries · ${Object.keys(require('../src/i18n').LANGS).length} languages`), path.join(OUT, 'home.jpg'), 1200, 630);
 RAW.forEach((c) => {
   shoot(card(`${c.name.en} Prayer Times`, `Today's Fajr to Isha for ${counts[c.slug]} cities · Qibla · Hijri date`), path.join(OUT, `${c.slug}.jpg`), 1200, 630);
 });
