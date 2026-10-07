@@ -329,7 +329,9 @@ const cluster = (fn, country) => ALL_LANGS.map((l) => ({ lang: l, tag: langTag(l
 // Arabic in Western Europe (Maghreb and Syrian communities), Turkish in France, Persian in Iraq (pilgrims to
 // Karbala, Najaf and Samarra), Bengali and Urdu in the Gulf (workers from Bangladesh and Pakistan).
 const GULF_LANGS = ['bn', 'ur'];
-const INDEX_ALSO = { france: ['ar', 'tr'], spain: ['ar'], italy: ['ar'], germany: ['ar'], netherlands: ['ar'], belgium: ['ar'], iraq: ['fa'],
+const INDEX_ALSO = { france: ['ar', 'tr'], spain: ['ar'], italy: ['ar'], germany: ['ar', 'tr'], netherlands: ['ar', 'tr'], belgium: ['ar', 'tr'], iraq: ['fa'],
+  // Diaspora languages searched in these countries (Search Console, October 2026).
+  uk: ['ur', 'bn', 'ar'], usa: ['ar', 'ur', 'es'], canada: ['fr', 'ar', 'ur'], austria: ['tr', 'ar'], switzerland: ['tr', 'ar'],
   'saudi-arabia': GULF_LANGS, uae: GULF_LANGS, qatar: GULF_LANGS, kuwait: GULF_LANGS, bahrain: GULF_LANGS, oman: GULF_LANGS };
 // Languages per country (Oct 2026): outside Europe, the USA, Canada and Russia, a country's city and country pages
 // are built only in up to five of the site's languages that people there use. Links to any other language
@@ -359,7 +361,9 @@ const TOP_LANGS = {
   brazil: ['pt', 'en', 'es', 'ar'], 'trinidad-and-tobago': ['en', 'hi', 'ur'], guyana: ['en', 'hi', 'ur'], suriname: ['en', 'id', 'hi'],
 };
 const DEFAULT_EXTRA = { africa: ['ar', 'fr'], asia: ['ar', 'ur'], middleEast: ['ar'], northAmerica: ['es', 'ar'], southAmerica: LATAM.concat('ar'), oceania: ['ar', 'ur', 'id'] };
-const LANGS_OF = new Map(COUNTRIES.map((c) => [c.slug, KEEP_ALL(c) ? null
+// Europe, the USA, Canada and Russia: English, the country's own languages and its diaspora languages (INDEX_ALSO).
+// Since 7 Oct 2026 the other languages are no longer built there: they were noindex and used up Google's crawling.
+const LANGS_OF = new Map(COUNTRIES.map((c) => [c.slug, KEEP_ALL(c) ? Array.from(new Set(['en'].concat(c.langs, INDEX_ALSO[c.slug] || []))).filter((l) => LANGS[l])
   : Array.from(new Set(TOP_LANGS[c.slug] || ['en'].concat(c.langs, DEFAULT_EXTRA[c.continent] || []))).filter((l) => LANGS[l]).slice(0, 5)]));
 Object.keys(TOP_LANGS).forEach((s) => { if (!LANGS_OF.has(s)) throw new Error(`TOP_LANGS: no country ${s}`); });
 LANGS_OF.forEach((ls, s) => { if (ls && !ls.includes('en')) ls.push('en'); });
@@ -2146,7 +2150,7 @@ write('.htaccess', [
   // Dari and Dhivehi pages were retired on 1 Oct 2026: Dari to the same page in Persian, Dhivehi to English.
   `  RewriteRule ^prs/(.*)$ ${SITE}/fa/$1 [L,R=301]`,
   `  RewriteRule ^dv/(.*)$ ${SITE}/$1 [L,R=301]`,
-  // Since 6 Oct 2026 a country's pages exist only in its own languages (outside Europe, the USA, Canada and Russia);
+  // Since 6 Oct 2026 (7 Oct for Europe, the USA, Canada and Russia) a country's pages exist only in its own languages;
   // the other language copies go to the English page.
   ...[...LANGS_OF].filter(([, ls]) => ls).map(([slug, ls]) => {
     const gone = ALL_LANGS.filter((l) => l !== 'en' && !ls.includes(l));
