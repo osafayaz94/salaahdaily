@@ -1270,6 +1270,18 @@ var EN_VARIANTS = {
       ['What is the zawal time in {city} today?', 'Zawal, when the sun is at its highest and prayer is makruh, falls in the minutes just before Zuhr, which begins at {dhuhr} in {city} today.'],
       ['Where is the 30-day namaz timing table for {city}?', 'The monthly namaz timing table for {city} is on this page, with Fajr, sunrise, Zuhr, Asr, Maghrib and Isha for every day.'],
     ],
+    // Searches by area (October 2026): "namaz timing DHA Lahore", "Peshawar Hayatabad", "Qasimabad Hyderabad".
+    faqByCity: {
+      'pakistan/lahore': [[`What is the namaz timing in DHA (Phase 5, 6, 8), Gulberg 3, Johar Town, Model Town and Lahore Cantt, Lahore today?`, 'These areas share {city}’s times to within a minute. Today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
+      'pakistan/karachi': [[`What is the namaz timing in DHA, Clifton, Gulshan-e-Iqbal, North Nazimabad and Saddar, Karachi today?`, 'These areas share {city}’s times to within a minute. Today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
+      'pakistan/islamabad': [[`What is the namaz timing in the F, G, E and I sectors, Bahria Town and around Faisal Masjid, Islamabad today?`, 'These areas share {city}’s times to within a minute. Today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
+      'pakistan/rawalpindi': [[`What is the namaz timing in Saddar, Satellite Town, Bahria Town and Rawalpindi Cantt, Rawalpindi today?`, 'These areas share {city}’s times to within a minute. Today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
+      'pakistan/peshawar': [[`What is the namaz timing in Hayatabad, University Town and Peshawar Cantt, Peshawar today?`, 'These areas share {city}’s times to within a minute. Today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
+      'pakistan/hyderabad': [[`What is the namaz timing in Qasimabad, Latifabad and Hyderabad Cantt, Hyderabad today?`, 'These areas share {city}’s times to within a minute. Today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
+      'pakistan/quetta': [[`What is the namaz timing in Quetta Cantonment, Satellite Town and Jinnah Town, Quetta today?`, 'These areas share {city}’s times to within a minute. Today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
+      'pakistan/faisalabad': [[`What is the namaz timing in Madina Town, People’s Colony and Gulberg, Faisalabad today?`, 'These areas share {city}’s times to within a minute. Today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
+      'pakistan/multan': [[`What is the namaz timing in Multan Cantt, Gulgasht and Shah Rukn-e-Alam Colony, Multan today?`, 'These areas share {city}’s times to within a minute. Today: Fajr {fajr}, Zuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha} ({sect}).']],
+    },
     faqByCountry: {
       // Search Console, India (Oct 2026): nafl times by name, and when each prayer ends.
       india: [

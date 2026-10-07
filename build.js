@@ -1075,7 +1075,7 @@ function cityPrayerPage(lang, ci, key) {
     `<p class="muted small">${esc(tpl(t.updated, { date: g(t0.d) }))}</p></article>`;
   // Two cities with one Arabic name (Tripoli, صور) are told apart by their country.
   const tCity = nameCount[lang][city] > 1 ? `${city}${LANGS[lang].dir === 'rtl' ? '، ' : ', '}${nameIn(ci.country.name, lang)}` : city;
-  const title = fitTitle(tpl(EG.title[key], { city: tCity }) + ' | SalaahDaily', lang);
+  const title = fitTitle(tpl(((EG.titleByCountry && EG.titleByCountry[ci.country.slug]) || EG.title)[key], { city: tCity }) + ' | SalaahDaily', lang);
   const desc = tpl(sun ? EG.descSunrise : EG.desc, v);
   addPage({
     lang, tag: langTag(lang, ci.country), title, desc, path: pagePath, alternates: [{ lang, tag: langTag(lang, ci.country), href: pagePath }], indexable: true, body, og: ci.country.slug,

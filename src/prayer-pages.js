@@ -90,9 +90,16 @@ module.exports = {
     method: 'Horarios calculados con el método {method}; pueden variar uno o dos minutos respecto a tu mezquita.',
     otherH: 'Otros horarios en {city}', nearH: 'Hora del {prayer} en ciudades cercanas', nearHSunrise: 'Amanecer en ciudades cercanas',
   },
-  // UK: "what time does asr start", "when does fajr end", "maghrib time today", "zuhr namaz time".
+  // UK: "what time does asr start", "when does fajr end", "maghrib time today", "zuhr namaz time";
+  // Pakistan and India: "fajr time karachi", "maghrib time lahore"; the Gulf and North America likewise.
   en: {
-    countries: ['uk'],
+    countries: ['uk', 'pakistan', 'india', 'bangladesh', 'usa', 'canada', 'saudi-arabia', 'uae', 'qatar', 'kuwait', 'bahrain', 'oman'],
+    // South Asia searches "namaz" with the prayer's name.
+    titleByCountry: Object.fromEntries(['pakistan', 'india', 'bangladesh'].map((c) => [c, {
+      fajr: 'Fajr Time in {city} Today: Fajr Namaz Timing, Start and End', sunrise: 'Sunrise and Ishraq Time in {city} Today',
+      dhuhr: 'Zuhr Time in {city} Today: Zohar Namaz Timing, Start and End', asr: 'Asr Time in {city} Today: Asar Namaz Timing, Start and End',
+      maghrib: 'Maghrib Time in {city} Today: Maghrib Namaz Timing', isha: 'Isha Time in {city} Today: Isha Namaz Timing, Start and End',
+    }])),
     chipsH: 'Each prayer time in {city}',
     h1: { fajr: 'Fajr Time in {city}', sunrise: 'Sunrise Time in {city}', dhuhr: 'Zuhr (Dhuhr) Time in {city}', asr: 'Asr Time in {city}', maghrib: 'Maghrib Time in {city}', isha: 'Isha Time in {city}' },
     title: {
