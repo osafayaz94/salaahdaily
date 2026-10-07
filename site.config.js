@@ -13,4 +13,12 @@ module.exports = {
   web3formsKey: '1961dd7e-68b7-499e-85a7-ddf1d90d59aa',
   // Public contact address shown on the Contact page (optional). Leave empty to show the form only.
   contactEmail: 'team@salaahdaily.com',
+  // Cloudflare Web Analytics token (dash.cloudflare.com > Web Analytics > manual JS snippet, the "token" value).
+  // Public by design. Leave empty for no analytics. Cookieless, so no consent banner is needed.
+  cfAnalyticsToken: '',
+  // Site verification codes: only the content="..." value of the meta tag each service gives you. Leave empty if unused.
+  pinterestVerification: '', // Pinterest > Settings > Claim > Websites > "Add HTML tag" (p:domain_verify)
+  bingVerification: '', // Bing Webmaster Tools > Add site > HTML Meta Tag (msvalidate.01)
+  // Official profile URLs (Facebook, X, Pinterest, YouTube, LinkedIn...). They go in the Organization schema as sameAs.
+  sameAs: [],
 };

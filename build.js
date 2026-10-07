@@ -25,6 +25,7 @@ const RAW = require('./src/data').concat(require('./src/data-mea')).concat(requi
 const NAMES = require('./src/names');
 const { GUIDES, WIKI } = require('./src/guides');
 const LEGAL = require('./src/pages-legal');
+const ABOUT_WHO = require('./src/about-who');
 // German, Portuguese, Italian, Japanese, Korean: English first, the translations on top (a gap shows English).
 (function addLanguages() {
   const { MORE } = require('./src/i18n-more');
@@ -579,11 +580,14 @@ function breadcrumbLd(items) {
   };
 }
 // sameAs and contactPoint are left out until the site has real social profiles and a public address.
+// Cloudflare Web Analytics (cookieless), only when site.config.js has a token.
+const CF_BEACON = CONFIG.cfAnalyticsToken ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${JSON.stringify({ token: CONFIG.cfAnalyticsToken })}'></script>` : '';
 const ORG = {
   '@type': 'Organization', '@id': `${SITE}/#org`, name: BRAND, alternateName: BRAND_ALT, url: `${SITE}/`,
   logo: { '@type': 'ImageObject', url: `${SITE}/logo.png`, width: 512, height: 512 },
   image: `${SITE}/og/home.jpg`, foundingDate: '2026-09-28',
   description: `Free daily prayer times for ${ALL_CITIES.length.toLocaleString('en')} cities in ${COUNTRIES.length} countries, in ${ALL_LANGS.length} languages, for the Hanafi, Shafi'i, Maliki, Hanbali and Jafria schools, calculated from each city's coordinates, with official timetables matched for many countries.`,
+  ...((CONFIG.sameAs || []).length ? { sameAs: CONFIG.sameAs } : {}),
   ...(HAS_CONTACT ? { contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', url: `${SITE}/contact/`, ...(CONFIG.contactEmail ? { email: CONFIG.contactEmail } : {}), availableLanguage: 'en' } } : {}),
 };
 const WEBSITE = (lang) => ({ '@type': 'WebSite', '@id': `${SITE}/#website`, name: BRAND, alternateName: BRAND_ALT, url: `${SITE}/`, publisher: { '@id': `${SITE}/#org` }, inLanguage: ALL_LANGS.map((l) => langTag(l)) });
@@ -703,6 +707,9 @@ function addPage(o) {
     fontLinks(lang),
     `<link rel="preload" href="${script}" as="script">`,
     o.jsonld ? withPublisher(o.jsonld) && `<script type="application/ld+json">${jsonForHtml(Object.assign({ '@context': 'https://schema.org' }, o.jsonld))}</script>` : '',
+    // Site verification tags: the services only read the home page.
+    o.path === '/' && CONFIG.pinterestVerification ? `<meta name="p:domain_verify" content="${esc(CONFIG.pinterestVerification)}">` : '',
+    o.path === '/' && CONFIG.bingVerification ? `<meta name="msvalidate.01" content="${esc(CONFIG.bingVerification)}">` : '',
     '</head>',
   ].filter(Boolean).join('\n');
 
@@ -732,7 +739,7 @@ function addPage(o) {
     footer(lang, o.data.kind) +
     `<script id="page-data" type="application/json">${jsonForHtml(o.data)}</script>` +
     (o.data.kind === 'hijri' ? `<script src="${ASSET.moon}" defer></script>` : '') +
-    `<script src="${script}" defer></script>` +
+    `<script src="${script}" defer></script>` + CF_BEACON +
     '</body></html>\n';
 
   // Written straight to disk: holding every page's HTML in memory runs out of heap at this size.
@@ -1134,6 +1141,8 @@ function aboutPage(lang) {
   const body = breadcrumbs([{ name: t.home, href: url.home(lang) }, { name: t.aboutLink, href: pagePath }]) +
     '<article class="card about">' +
       `<h1>${esc(t.aboutH1)}</h1><p>${esc(t.aboutP1)}</p>` +
+      // Who runs the site, with the contact address as a link.
+      (ABOUT_WHO[lang] && CONFIG.contactEmail ? `<h2 id="who">${esc(ABOUT_WHO[lang][0])}</h2><p>${esc(ABOUT_WHO[lang][1]).replace('{email}', `<a href="mailto:${esc(CONFIG.contactEmail)}">${esc(CONFIG.contactEmail)}</a>`)}</p>` : '') +
       `<h2>${esc(t.aboutMethodsH2)}</h2><div class="table-scroll"><table class="city-table">` +
         `<thead><tr><th scope="col">${esc(t.colCountry)}</th><th scope="col">${esc(t.colMethod)}</th><th scope="col">${esc(t.prayers.fajr)}</th><th scope="col">${esc(t.prayers.isha)}</th></tr></thead>` +
         `<tbody>${rows}</tbody></table></div>` +
@@ -1152,12 +1161,19 @@ function aboutPage(lang) {
 }
 
 /* ---------- Contact, privacy, terms (English) ---------- */
+// With Cloudflare Web Analytics on, the privacy policy says so (a "Visitor statistics" section after "Cookies") and takes its date.
+const PRIVACY = !CONFIG.cfAnalyticsToken ? LEGAL.PRIVACY : Object.assign({}, LEGAL.PRIVACY, {
+  desc: LEGAL.PRIVACY_ANALYTICS.desc, lede: LEGAL.PRIVACY_ANALYTICS.lede,
+  sections: LEGAL.PRIVACY.sections.flatMap((x) => (x[0] === 'Cookies' ? [x, LEGAL.PRIVACY_ANALYTICS.section] : [x])),
+});
+const POLICY_DATE = CONFIG.cfAnalyticsToken && LEGAL.ANALYTICS_DATE > LEGAL.POLICY_DATE ? LEGAL.ANALYTICS_DATE : LEGAL.POLICY_DATE;
 function legalText(text) {
   const link = (href, name) => `<a href="${href}">${esc(name)}</a>`;
   return esc(text)
     .replace('{contact}', HAS_CONTACT ? link(url.contact(), 'the Contact page') : 'the suggestion form at the foot of any page')
     .replace('{google}', link('https://policies.google.com/privacy', 'Google’s privacy policy'))
-    .replace('{web3forms}', link('https://web3forms.com/privacy', 'the Web3Forms privacy policy'));
+    .replace('{web3forms}', link('https://web3forms.com/privacy', 'the Web3Forms privacy policy'))
+    .replace('{cloudflare}', link('https://www.cloudflare.com/web-analytics/', 'Cloudflare Web Analytics'));
 }
 function infoPage(kind, P, pagePath, schemaType, inner) {
   const t = STRINGS.en, crumbs = [{ name: t.home, href: url.home('en') }, { name: P.h1, href: pagePath }];
@@ -1166,15 +1182,15 @@ function infoPage(kind, P, pagePath, schemaType, inner) {
     alternates: [{ lang: 'en', tag: 'en', href: pagePath }],
     body: breadcrumbs(crumbs) + `<article class="card about legal"><h1>${esc(P.h1)}</h1><p class="legal-intro">${legalText(P.lede)}</p>${inner}</article>`,
     jsonld: { '@graph': [ORG, { '@type': schemaType, '@id': abs(pagePath), url: abs(pagePath), name: P.title, description: P.desc, inLanguage: 'en',
-      isPartOf: { '@id': `${SITE}/#website` }, publisher: { '@id': `${SITE}/#org` }, ...(kind === 'contact' ? { about: { '@id': `${SITE}/#org` } } : { dateModified: LEGAL.POLICY_DATE }) },
+      isPartOf: { '@id': `${SITE}/#website` }, publisher: { '@id': `${SITE}/#org` }, ...(kind === 'contact' ? { about: { '@id': `${SITE}/#org` } } : { dateModified: POLICY_DATE }) },
       breadcrumbLd(crumbs)] },
     data: clientData('en', { kind, defaultSect: 'hanafi' }),
   });
 }
 function legalPages() {
   const dated = (P) => P.sections.map(([h, p]) => `<h2>${esc(h)}</h2><p>${legalText(p)}</p>`).join('') +
-    `<p class="muted small">Last updated: ${Core.gregorian(...LEGAL.POLICY_DATE.split('-').map(Number), 'full', ctxFor('en', 'hanafi'))}</p>`;
-  infoPage('privacy', LEGAL.PRIVACY, url.privacy(), 'WebPage', dated(LEGAL.PRIVACY));
+    `<p class="muted small">Last updated: ${Core.gregorian(...POLICY_DATE.split('-').map(Number), 'full', ctxFor('en', 'hanafi'))}</p>`;
+  infoPage('privacy', PRIVACY, url.privacy(), 'WebPage', dated(PRIVACY));
   infoPage('terms', LEGAL.TERMS, url.terms(), 'WebPage', dated(LEGAL.TERMS));
   if (!HAS_CONTACT) { console.warn('Contact page skipped: set web3formsKey and/or contactEmail in site.config.js'); return; }
   const C = LEGAL.CONTACT, mail = CONFIG.contactEmail;
@@ -2123,11 +2139,11 @@ const OTHER_HOST = HOST.startsWith('www.') ? HOST.slice(4) : `www.${HOST}`;
 // Google Maps mosque embed; nothing may frame this site.
 const CSP = [
   "default-src 'self'",
-  "script-src 'self'",
+  "script-src 'self'" + (CONFIG.cfAnalyticsToken ? ' https://static.cloudflareinsights.com' : ''),
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self'",
   "img-src 'self' data:",
-  "connect-src 'self' https://api.web3forms.com",
+  "connect-src 'self' https://api.web3forms.com" + (CONFIG.cfAnalyticsToken ? ' https://cloudflareinsights.com' : ''),
   "frame-src 'self' https://maps.google.com https://www.google.com",
   "object-src 'none'",
   "base-uri 'self'",

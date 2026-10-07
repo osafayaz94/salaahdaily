@@ -2,7 +2,8 @@
  * Contact, privacy and terms pages (English only), plus their footer link labels in every language.
  * Each page is a list of [heading, paragraph, ...] sections. {contact} becomes a link to the Contact page
  * (or "the suggestion form below" when there is none), {google} and {web3forms} link to those policies.
- * Only describe what the site really does: no accounts, no adverts, no analytics, settings in localStorage.
+ * Only describe what the site really does: no accounts, no adverts, settings in localStorage, and analytics only
+ * when site.config.js has a Cloudflare token (PRIVACY_ANALYTICS).
  * Change POLICY_DATE whenever the wording of the privacy policy or the terms changes.
  */
 'use strict';
@@ -75,6 +76,16 @@ var PRIVACY = {
   ],
 };
 
+// Used instead of the matching PRIVACY parts once site.config.js has a Cloudflare Web Analytics token.
+// When it is switched on, set ANALYTICS_DATE to that day: it becomes the policy's "Last updated" date.
+var ANALYTICS_DATE = '2026-10-08';
+var PRIVACY_ANALYTICS = {
+  desc: 'SalaahDaily has no accounts, no adverts and no tracking cookies. Your settings stay in your browser and your location never leaves your device.',
+  lede: 'SalaahDaily shows prayer times. It has no accounts and no adverts, and its visitor statistics set no cookies. This page explains the little data that is involved when you use it.',
+  section: ['Visitor statistics',
+    'We count visits with Cloudflare Web Analytics, to see which pages are read and which websites send visitors to us. It sets no cookies and does not read your local storage. With each page view it receives the page address, the website you came from, your browser type and, like any web request, your IP address. Cloudflare says it does not use this to track you across websites. See {cloudflare}.'],
+};
+
 var TERMS = {
   title: 'Terms of Use | SalaahDaily',
   desc: 'The terms for using SalaahDaily: a free service, prayer times that are calculations, and how you may share and embed them.',
@@ -98,4 +109,4 @@ var TERMS = {
   ],
 };
 
-if (typeof module === 'object' && module.exports) module.exports = { POLICY_DATE: POLICY_DATE, LABELS: LABELS, CONTACT: CONTACT, PRIVACY: PRIVACY, TERMS: TERMS };
+if (typeof module === 'object' && module.exports) module.exports = { POLICY_DATE: POLICY_DATE, ANALYTICS_DATE: ANALYTICS_DATE, PRIVACY_ANALYTICS: PRIVACY_ANALYTICS, LABELS: LABELS, CONTACT: CONTACT, PRIVACY: PRIVACY, TERMS: TERMS };
