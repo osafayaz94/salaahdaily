@@ -20,7 +20,7 @@ module.exports = {
   // Public by design. Leave empty for no analytics. Cookieless, so no consent banner is needed.
   cfAnalyticsToken: '',
   // Site verification codes: only the content="..." value of the meta tag each service gives you. Leave empty if unused.
-  pinterestVerification: '', // Pinterest > Settings > Claim > Websites > "Add HTML tag" (p:domain_verify)
+  pinterestVerification: '14b1b43dc48bb9d20347627fa8d205ac', // Pinterest > Settings > Claim > Websites > "Add HTML tag" (p:domain_verify)
   bingVerification: '', // Bing Webmaster Tools > Add site > HTML Meta Tag (msvalidate.01)
   // Official profile URLs (Facebook, X, Pinterest, YouTube, LinkedIn...). They go in the Organization schema as sameAs.
   sameAs: [],
