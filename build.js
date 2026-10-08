@@ -686,6 +686,9 @@ function addPage(o) {
     '<head>',
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
+    // Site verification tags: the services only read the home page, and some only its first few KB.
+    o.path === '/' && CONFIG.pinterestVerification ? `<meta name="p:domain_verify" content="${esc(CONFIG.pinterestVerification)}">` : '',
+    o.path === '/' && CONFIG.bingVerification ? `<meta name="msvalidate.01" content="${esc(CONFIG.bingVerification)}">` : '',
     `<title>${esc(o.title)}</title>`,
     `<meta name="description" content="${esc(o.desc = fitDesc(o.desc))}">`,
     o.indexable ? '<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">' : '<meta name="robots" content="noindex, follow">',
@@ -710,9 +713,6 @@ function addPage(o) {
     fontLinks(lang),
     `<link rel="preload" href="${script}" as="script">`,
     o.jsonld ? withPublisher(o.jsonld) && `<script type="application/ld+json">${jsonForHtml(Object.assign({ '@context': 'https://schema.org' }, o.jsonld))}</script>` : '',
-    // Site verification tags: the services only read the home page.
-    o.path === '/' && CONFIG.pinterestVerification ? `<meta name="p:domain_verify" content="${esc(CONFIG.pinterestVerification)}">` : '',
-    o.path === '/' && CONFIG.bingVerification ? `<meta name="msvalidate.01" content="${esc(CONFIG.bingVerification)}">` : '',
     '</head>',
   ].filter(Boolean).join('\n');
 
