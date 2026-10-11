@@ -130,6 +130,7 @@
     if ($('nafl')) $('nafl').innerHTML = C.renderNafl(loc, c, now);
     if ($('faq')) $('faq').innerHTML = C.renderFaq(loc, c, now);
     if ($('jumuah')) $('jumuah').innerHTML = C.renderJumuah(loc, c, now);
+    if ($('tomorrowBody')) $('tomorrowBody').innerHTML = C.renderTomorrow(loc, c, now);
     nextAt = r.nextAt;
     renderMonth();
   }

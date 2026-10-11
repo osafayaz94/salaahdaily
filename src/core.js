@@ -695,6 +695,15 @@
         return '<li><span>' + esc(gregorian(f.y, f.m, f.d, 'full', ctx)) + '</span><strong><bdi>' + esc(fmtTime(f.at, loc.tz, ctx)) + '</bdi></strong></li>';
       }).join('') + '</ul><p class="muted small">' + esc(g.jNote) + '</p>';
   }
+  // Tomorrow's six times at loc ("Prayer times tomorrow"): the date line and a grid of six.
+  function renderTomorrow(loc, ctx, now) {
+    var p = partsInTz(now, loc.tz), d = addDays(p.y, p.m, p.d, 1), tt = timesFor(loc, ctx, d.y, d.m, d.d, paramsFor(loc, ctx));
+    var keys = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+    return '<p class="muted small"><bdi>' + esc(gregorian(d.y, d.m, d.d, 'full', ctx)) + '</bdi> · <bdi>' + esc(hijri(d.y, d.m, d.d, ctx)) + '</bdi> · <bdi>' + esc(ctx.t.sects[ctx.sect]) + '</bdi></p>' +
+      '<ul class="tmr-grid">' + keys.map(function (k) {
+        return '<li><span>' + esc(ctx.t.prayers[k]) + '</span><strong><bdi>' + esc(fmtTime(tt[k], loc.tz, ctx)) + '</bdi></strong></li>';
+      }).join('') + '</ul>';
+  }
   // Live line on a prayer page: when that prayer starts and ends today at loc (Jumu'ah: next Friday).
   function prayerWindow(loc, ctx, key, now) {
     if (key === 'jumuah') { var f = fridays(loc, ctx, now, 1)[0]; return { a: f.at, day: f }; }
@@ -835,7 +844,7 @@
     esc: esc, tpl: tpl, num: num, numGrouped: numGrouped, partsInTz: partsInTz, fmtTime: fmtTime, countdown: countdown, countdownWords: countdownWords, prayerEnds: prayerEnds,
     methodLabel: methodLabel, paramsFor: paramsFor, timesFor: timesFor, snapshot: snapshot,
     sectPicker: sectPicker, renderToday: renderToday, renderMonth: renderMonth, qiblaCard: qiblaCard,
-    distanceKm: distanceKm, renderJumuah: renderJumuah, renderPrayerLive: renderPrayerLive, hijri: hijri, hijriParts: hijriParts,
+    distanceKm: distanceKm, renderJumuah: renderJumuah, renderTomorrow: renderTomorrow, renderPrayerLive: renderPrayerLive, hijri: hijri, hijriParts: hijriParts,
     renderRamadan: renderRamadan, METHOD_SLUG: METHOD_SLUG, qibla: qibla, KAABA: KAABA, addDays: addDays, pre: pre,
     hijriToGregorian: hijriToGregorian, hijriMonthDays: hijriMonthDays, useCalendar: useCalendar, hijriText: hijriText, renderHijriGrid: renderHijriGrid,
   };

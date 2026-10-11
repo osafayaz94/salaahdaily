@@ -25,6 +25,8 @@ const RAW = require('./src/data').concat(require('./src/data-mea')).concat(requi
 const NAMES = require('./src/names');
 const { GUIDES, WIKI } = require('./src/guides');
 const LEGAL = require('./src/pages-legal');
+const TOMORROW = require('./src/tomorrow');
+const CPP = require('./src/country-prayer-pages');
 const ABOUT_WHO = require('./src/about-who');
 // German, Portuguese, Italian, Japanese, Korean: English first, the translations on top (a gap shows English).
 (function addLanguages() {
@@ -679,7 +681,8 @@ function addPage(o) {
   const showLocal = lang !== 'en' && t.brandLocal !== BRAND_AR;
   const canonical = abs(o.path);
   // x-default: the English page, or the only version when a page exists in one language.
-  const xDefault = alternates.find((a) => a.lang === 'en') || (alternates.length === 1 ? alternates[0] : null);
+  // x-default: the English page, else the first language listed (e.g. Arabic before Persian for Iraq).
+  const xDefault = alternates.find((a) => a.lang === 'en') || alternates[0] || null;
   const head = [
     '<!doctype html>',
     `<html lang="${o.tag}" dir="${L.dir}">`,
@@ -814,6 +817,10 @@ function countryPage(lang, c) {
   const rows = [];
 
   let html = breadcrumbs(crumbItems) + hero(lang, ctx, tpl(t.homeH1, { n: nText, place: country }), tpl(t.searchPlaceholder, { x: example }));
+  if (hasCountryPrayerPages(lang, c)) {
+    const S = cpStr(lang, c), the = (S.theName && S.theName[c.slug]) || country;
+    html += `<section class="card"><h2>${esc(tpl(S.chipsH, { country: the }))}</h2>${linkList(EG_KEYS.map((k) => ({ name: tpl(S.h1, { name: S.names[k], country: the }), href: countryPrayerUrl(lang, c, k) })))}</section>`;
+  }
   html += `<section class="country-block" data-country aria-label="${esc(country)}">`;
   c.regions.forEach((r) => {
     html += `<div class="region" data-region><h2>${esc(nameIn(r.names, lang, c))}</h2><div class="table-scroll"><table class="city-table">` +
@@ -922,6 +929,8 @@ function cityPage(lang, ci) {
   const body = breadcrumbs(crumbItems) +
     `<section class="today pattern" id="today">${today.html}</section>` +
     `<section class="card nafl" id="nafl" aria-labelledby="naflTitle">${Core.renderNafl(loc, ctx, NOW)}</section>` +
+    // Tomorrow's times ("وقت الشروق غدًا", "طلوع فردا"); the browser redraws them with the visitor's settings.
+    `<section class="card tomorrow" aria-labelledby="tomorrowTitle"><h2 id="tomorrowTitle">${esc(tpl(TOMORROW[lang], { city: cityName }))}</h2><div id="tomorrowBody">${Core.renderTomorrow(loc, ctx, NOW)}</div></section>` +
     (loc.pp ? `<section class="card"><h2>${esc(tpl(ppStr(lang, ci).chipsH, { city: cityName }))}</h2>${linkList(EG_KEYS.map((k) => ({ name: tpl(ppStr(lang, ci).h1[k], { city: cityName }), href: `${pagePath}${k}/` })))}</section>` : '') +
     '<div class="layout">' +
       monthCard(lang, month, `${p.y}-${p.m}-${p.d}|${ctx.sect}|${ctx.method}|${ctx.hour12}|${ctx.hijriAdj}`) +
@@ -1084,6 +1093,7 @@ function cityPrayerPage(lang, ci, key) {
     `<h2>${esc(tpl(EG.faqH, v))}</h2>` + faq.map((it) => `<h3>${esc(it.q)}</h3><p>${esc(it.a)}</p>`).join('') +
     `<h2>${esc(tpl(EG.otherH, { city }))}</h2>` +
     linkList([{ name: tpl(t.cityTitle, { city, country: nameIn(ci.country.name, lang) }).split(' | ')[0], href: base }]
+      .concat(hasCountryPrayerPages(lang, ci.country) ? [{ name: tpl(cpStr(lang, ci.country).inCountry, { name: cpStr(lang, ci.country).names[key], country: (cpStr(lang, ci.country).theName || {})[ci.country.slug] || nameIn(ci.country.name, lang) }), href: countryPrayerUrl(lang, ci.country, key) }] : [])
       .concat(EG_KEYS.filter((k) => k !== key).map((k) => ({ name: tpl(EG.h1[k], { city }), href: `${base}${k}/` })))) +
     `<h2>${esc(tpl(sun ? EG.nearHSunrise : EG.nearH, v))}</h2>` +
     linkList(near.map((n) => ({ name: nameIn(n.o.names, lang, n.o.country), href: `${url.city(lang, n.o)}${key}/` }))) +
@@ -1098,6 +1108,67 @@ function cityPrayerPage(lang, ci, key) {
       { '@type': 'WebPage', '@id': abs(pagePath), url: abs(pagePath), name: title, description: desc, inLanguage: langTag(lang, ci.country),
         dateModified: TODAY_ISO, isPartOf: { '@id': `${SITE}/#website` }, speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.guide h1', '.answer'] } },
       { '@type': 'FAQPage', '@id': `${abs(pagePath)}#faq`, inLanguage: langTag(lang, ci.country),
+        mainEntity: faq.map((it) => ({ '@type': 'Question', name: it.q, acceptedAnswer: { '@type': 'Answer', text: it.a } })) },
+      breadcrumbLd(crumbs),
+    ] },
+    data: clientData(lang, { kind: 'learn' }),
+  });
+}
+
+// Country-wide page for one prayer (src/country-prayer-pages.js): today and tomorrow in every city of the country.
+const cpStr = (lang, c) => (lang === 'ar' ? (c.slug === 'egypt' ? CPP.eg : CPP.ar) : CPP[lang]);
+const CPP_LANGS = ['ar', 'fa', 'en'];
+const hasCountryPrayerPages = (lang, c) => !!CPP[lang] && built(lang, c) && c.cities.length >= 3 &&
+  ((lang === 'ar' && PP_COUNTRIES.has(c.slug)) || (lang === 'fa' && FA_PP_COUNTRIES.has(c.slug)) || (lang === 'en' && PP_MORE.en.countries.includes(c.slug)));
+const countryPrayerUrl = (lang, c, key) => `${url.country(lang, c)}${key}/`;
+function countryPrayerPage(lang, c, key) {
+  const t = STRINGS[lang], ctx = ctxFor(lang, c.defaultSect), S = cpStr(lang, c);
+  const country = (S.theName && S.theName[c.slug]) || nameIn(c.name, lang), name = S.names[key], pagePath = countryPrayerUrl(lang, c, key);
+  const rowsData = c.cities.map((ci) => {
+    const loc = locOf(ci, lang), params = Core.paramsFor(loc, ctx), p = Core.partsInTz(NOW, ci.tz), d1 = Core.addDays(p.y, p.m, p.d, 1);
+    const t0 = Core.timesFor(loc, ctx, p.y, p.m, p.d, params)[key], t1 = Core.timesFor(loc, ctx, d1.y, d1.m, d1.d, params)[key];
+    return { ci, city: loc.name, t0, t1, f0: Core.fmtTime(t0, ci.tz, ctx), f1: Core.fmtTime(t1, ci.tz, ctx), p, d1 };
+  });
+  // The answer names three cities far apart: the first city of each of the first regions (Cairo, Giza, Alexandria).
+  const heads = c.regions.map((r) => rowsData.find((x) => x.ci === r.cities[0])).filter(Boolean);
+  const first = rowsData[0], top = heads.concat(rowsData.filter((x) => !heads.includes(x))).slice(0, 3);
+  const g = (d) => Core.gregorian(d.y, d.m, d.d, 'full', ctx);
+  const list = (k) => top.map((r) => tpl(S.listItem, { city: r.city, time: r[k] })).join(S.listSep);
+  const v = { name, country, n: Core.num(rowsData.length, ctx), date: g(first.p), date2: g(first.d1), list: list('f0'), list2: list('f1'),
+    c1: first.city, t1: first.f0, tm1: first.f1,
+    method: Core.methodLabel(c.defaultSect === 'jafria' ? (c.jafariMethod || 'Jafari') : c.method, ctx) };
+  const faq = [{ q: tpl(S.qToday, v), a: tpl(S.aToday, v) }, { q: tpl(S.qTomorrow, v), a: tpl(S.aTomorrow, v) }];
+  // Earliest and latest city: only meaningful when the whole country is on one clock.
+  if (new Set(rowsData.map((r) => r.ci.tz)).size === 1) {
+    const sorted = rowsData.slice().sort((a, b) => a.t0 - b.t0), early = sorted[0], late = sorted[sorted.length - 1];
+    const mins = Math.round((late.t0 - early.t0) / 60000);
+    if (mins >= 2) faq.push({ q: tpl(S.qSame, v), a: tpl(S.aSame, Object.assign({}, v, { early: early.city, te: early.f0, late: late.city, tl: late.f0, mins: Core.num(mins, ctx) })) });
+  }
+  const rows = rowsData.map((r) => `<tr><th scope="row"><a href="${hasPrayerPages(lang, r.ci) ? `${url.city(lang, r.ci)}${key}/` : url.city(lang, r.ci)}">${esc(r.city)}</a></th>` +
+    `<td><bdi>${esc(r.f0)}</bdi></td><td><bdi>${esc(r.f1)}</bdi></td></tr>`).join('');
+  const h1 = tpl(S.h1, v);
+  const crumbs = [{ name: t.home, href: url.home(lang) }, { name: nameIn(c.name, lang), href: url.country(lang, c) }, { name: h1, href: pagePath }];
+  const body = breadcrumbs(crumbs) + '<article class="card about guide">' +
+    `<h1>${esc(h1)}</h1><p class="answer">${esc(tpl(S.lead, v))}</p>` +
+    `<p class="muted small">${esc(tpl(S.method, v))}</p>` +
+    `<h2>${esc(tpl(S.tableH, v))}</h2><div class="table-scroll"><table class="city-table cp-table">` +
+    `<thead><tr><th scope="col">${esc(S.colCity)}</th><th scope="col">${esc(S.colToday)}</th><th scope="col">${esc(S.colTomorrow)}</th></tr></thead><tbody>${rows}</tbody></table></div>` +
+    `<h2>${esc(tpl(S.faqH, v))}</h2>` + faq.map((it) => `<h3>${esc(it.q)}</h3><p>${esc(it.a)}</p>`).join('') +
+    `<h2>${esc(tpl(S.otherH, v))}</h2>` +
+    linkList([{ name: tpl(S.countryLink, v), href: url.country(lang, c) }]
+      .concat(EG_KEYS.filter((k) => k !== key).map((k) => ({ name: tpl(S.h1, Object.assign({}, v, { name: S.names[k] })), href: countryPrayerUrl(lang, c, k) })))) +
+    `<p class="muted small">${esc(tpl(t.updated, { date: g(first.p) }))}</p></article>`;
+  const tTpl = ((S.titleByCountry && S.titleByCountry[c.slug]) || S.title)[key];
+  const title = fitTitle(tpl(tTpl, v) + ' | SalaahDaily', lang);
+  const desc = tpl(S.desc, v);
+  const alternates = CPP_LANGS.filter((l) => hasCountryPrayerPages(l, c)).map((l) => ({ lang: l, tag: langTag(l, c), href: countryPrayerUrl(l, c, key) }));
+  addPage({
+    lang, tag: langTag(lang, c), title, desc, path: pagePath, alternates, indexable: true, body, og: c.slug,
+    jsonld: { '@graph': [
+      { '@type': 'WebPage', '@id': abs(pagePath), url: abs(pagePath), name: title, description: desc, inLanguage: langTag(lang, c),
+        dateModified: TODAY_ISO, isPartOf: { '@id': `${SITE}/#website` }, about: { '@type': 'Country', name: country },
+        speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.guide h1', '.answer'] } },
+      { '@type': 'FAQPage', '@id': `${abs(pagePath)}#faq`, inLanguage: langTag(lang, c),
         mainEntity: faq.map((it) => ({ '@type': 'Question', name: it.q, acceptedAnswer: { '@type': 'Answer', text: it.a } })) },
       breadcrumbLd(crumbs),
     ] },
@@ -2031,7 +2102,7 @@ ALL_LANGS.forEach((lang) => {
   homePage(lang);
   COUNTRIES.forEach((c) => {
     if (!built(lang, c)) return;
-    const pages = () => { countryPage(lang, c); c.cities.forEach((ci) => { cityPage(lang, ci); ramadanPage(lang, ci); if (hasPrayerPages(lang, ci)) EG_KEYS.forEach((k) => cityPrayerPage(lang, ci, k)); }); };
+    const pages = () => { countryPage(lang, c); if (hasCountryPrayerPages(lang, c)) EG_KEYS.forEach((k) => countryPrayerPage(lang, c, k)); c.cities.forEach((ci) => { cityPage(lang, ci); ramadanPage(lang, ci); if (hasPrayerPages(lang, ci)) EG_KEYS.forEach((k) => cityPrayerPage(lang, ci, k)); }); };
     if (NATIONAL_CAL[c.slug]) withCalendar(NATIONAL_CAL[c.slug], pages); else pages();
   });
   nearPage(lang);
@@ -2128,6 +2199,8 @@ write('llms.txt', [
   `- [Famous mosques and holy places](${SITE}${url.mosques('en')}): Masjid al-Haram, the Prophet's Mosque, Al-Aqsa and ${LANDMARKS.length - 3} more, with short histories and photos`,
   `- [Qibla direction](${SITE}${url.qibla('en')}): Qibla bearing and distance from your location and from each country's main city`,
   `- Ramadan timetables: ${SITE}/{country}/{city}/ramadan/ (sehri and iftar for every day of Ramadan, every city)`,
+  `- One prayer in one city: ${SITE}/{lang}/{country}/{city}/{prayer}/ (fajr, sunrise, dhuhr, asr, maghrib, isha: today, tomorrow and the next 30 days), e.g. ${SITE}/pakistan/lahore/fajr/`,
+  `- One prayer across a country: ${SITE}/{lang}/{country}/{prayer}/ (today and tomorrow in every city), e.g. ${SITE}/pakistan/fajr/, ${SITE}/ar/egypt/fajr/, ${SITE}/ar/iraq/sunrise/, ${SITE}/fa/iran/fajr/`,
   `- [Free prayer times widget for mosque websites](${SITE}${url.widget('en')})`, '',
   '## Countries', '',
   ...COUNTRIES.map((c) => `- [${c.name.en}](${SITE}${url.country('en', c)}): ${c.cities.length} cities, ${Core.METHOD_EN[c.method]} method, default school ${c.defaultSect}`), '',
