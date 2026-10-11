@@ -2251,6 +2251,9 @@ write('.htaccess', [
   // Dari and Dhivehi pages were retired on 1 Oct 2026: Dari to the same page in Persian, Dhivehi to English.
   `  RewriteRule ^prs/(.*)$ ${SITE}/fa/$1 [L,R=301]`,
   `  RewriteRule ^dv/(.*)$ ${SITE}/$1 [L,R=301]`,
+  // "/index.html" (or ".../index.html") typed or linked: one address per page. THE_REQUEST so the server's own index lookup is not redirected.
+  '  RewriteCond %{THE_REQUEST} \\s/+(.*/)?index\\.html[\\s?] [NC]',
+  `  RewriteRule ^(.*/)?index\\.html$ ${SITE}/$1 [L,R=301,NC]`,
   // Since 6 Oct 2026 (7 Oct for Europe, the USA, Canada and Russia) a country's pages exist only in its own languages;
   // the other language copies go to the English page.
   ...[...LANGS_OF].filter(([, ls]) => ls).map(([slug, ls]) => {

@@ -632,8 +632,8 @@ body.bare { background: var(--surface); margin: 0; }
 /* Start and end of each prayer, its reference links, and the reference pages (Sunni and Shia side by side) */
 .p-range { display: flex; flex-direction: column; margin-top: 4px; font-size: 0.8rem; opacity: 0.9; font-variant-numeric: tabular-nums; }
 .p-ref { margin: 8px 0 0; padding-inline-start: 1.1em; font-size: 0.8rem; }
-.p-ref li + li { margin-top: 2px; }
-.p-ref a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.p-ref li + li { margin-top: 0; }
+.p-ref a { color: inherit; text-decoration: underline; text-underline-offset: 3px; display: inline-block; min-height: 24px; padding: 4px 0; }
 .nafl-item .p-ref a { color: var(--emerald-2); }
 .learn h2[id] { scroll-margin-top: 80px; }
 .ref-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
