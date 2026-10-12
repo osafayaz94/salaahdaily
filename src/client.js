@@ -131,6 +131,7 @@
     if ($('faq')) $('faq').innerHTML = C.renderFaq(loc, c, now);
     if ($('jumuah')) $('jumuah').innerHTML = C.renderJumuah(loc, c, now);
     if ($('tomorrowBody')) $('tomorrowBody').innerHTML = C.renderTomorrow(loc, c, now);
+    if ($('sehriBody') && P.fu) $('sehriBody').innerHTML = C.renderSehriIftar(loc, c, now, P.fu);
     nextAt = r.nextAt;
     renderMonth();
   }

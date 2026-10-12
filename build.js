@@ -27,6 +27,7 @@ const { GUIDES, WIKI } = require('./src/guides');
 const LEGAL = require('./src/pages-legal');
 const TOMORROW = require('./src/tomorrow');
 const CPP = require('./src/country-prayer-pages');
+const FASTUI = require('./src/fasting-ui');
 const ABOUT_WHO = require('./src/about-who');
 // German, Portuguese, Italian, Japanese, Korean: English first, the translations on top (a gap shows English).
 (function addLanguages() {
@@ -931,6 +932,9 @@ function cityPage(lang, ci) {
     `<section class="card nafl" id="nafl" aria-labelledby="naflTitle">${Core.renderNafl(loc, ctx, NOW)}</section>` +
     // Tomorrow's times ("وقت الشروق غدًا", "طلوع فردا"); the browser redraws them with the visitor's settings.
     `<section class="card tomorrow" aria-labelledby="tomorrowTitle"><h2 id="tomorrowTitle">${esc(tpl(TOMORROW[lang], { city: cityName }))}</h2><div id="tomorrowBody">${Core.renderTomorrow(loc, ctx, NOW)}</div></section>` +
+    // Sehri and iftar today and tomorrow ("sehri time today {city}"), with the fasting guide and the Ramadan timetable.
+    `<section class="card sehri" aria-labelledby="sehriTitle"><h2 id="sehriTitle">${esc(tpl(FASTUI[lang].h, { city: cityName }))}</h2><div id="sehriBody">${Core.renderSehriIftar(loc, ctx, NOW, FASTUI[lang])}</div>` +
+      linkList([{ name: FASTUI[lang].fastLink, href: learnUrl.fasting(lang) }, { name: tpl(GUIDES[lang].ramLink, { year: Core.num(RAMADAN.y, ctx), city: cityName }), href: url.ramadan(lang, ci) }]) + '</section>' +
     (loc.pp ? `<section class="card"><h2>${esc(tpl(ppStr(lang, ci).chipsH, { city: cityName }))}</h2>${linkList(EG_KEYS.map((k) => ({ name: tpl(ppStr(lang, ci).h1[k], { city: cityName }), href: `${pagePath}${k}/` })))}</section>` : '') +
     '<div class="layout">' +
       monthCard(lang, month, `${p.y}-${p.m}-${p.d}|${ctx.sect}|${ctx.method}|${ctx.hour12}|${ctx.hijriAdj}`) +
@@ -969,7 +973,7 @@ function cityPage(lang, ci) {
         breadcrumbLd(crumbItems),
       ],
     },
-    data: clientData(lang, { kind: 'city', defaultSect: ci.defaultSect, h1, loc }),
+    data: clientData(lang, { kind: 'city', defaultSect: ci.defaultSect, h1, loc, fu: FASTUI[lang] }),
   });
 }
 
@@ -1304,7 +1308,7 @@ const aboutThing = (name, wiki) => ({ '@type': 'Thing', name, sameAs: wiki });
 
 /* ---------- Learn: Quran and Hadith, wudu, rak'ahs, night and forenoon prayers, 99 Names ---------- */
 const learnUrl = {
-  evidence: (l) => `${pre(l)}prayers/evidence/`, wudu: (l) => `${pre(l)}wudu/`, rakahs: (l) => `${pre(l)}prayers/rakahs/`,
+  evidence: (l) => `${pre(l)}prayers/evidence/`, wudu: (l) => `${pre(l)}wudu/`, fasting: (l) => `${pre(l)}fasting/`, rakahs: (l) => `${pre(l)}prayers/rakahs/`,
   night: (l) => `${pre(l)}prayers/tahajjud/`, names: (l) => `${pre(l)}names-of-allah/`, prophet: (l) => `${pre(l)}names-of-prophet/`,
 };
 const learnCluster = (fn) => cluster(fn).filter((a) => LEARN[a.lang]);
@@ -1317,7 +1321,7 @@ function learnTabs(lang, current) {
   const seg = current.replace(/^\/+/, '').split('/');
   if (LANGS[seg[0]]) seg.shift();
   const ci = cityByPath(`${seg[0]}/${seg[1]}`) || cityByPath(DEFAULT_CITY[lang]);
-  const items = [[L.tabs.names, learnUrl.names(lang)]].concat(PN[lang] ? [[PN[lang].tab, learnUrl.prophet(lang)]] : [], ['rakahs', 'wudu'].map((k) => [L.tabs[k], learnUrl[k](lang)]))
+  const items = [[L.tabs.names, learnUrl.names(lang)]].concat(PN[lang] ? [[PN[lang].tab, learnUrl.prophet(lang)]] : [], ['rakahs', 'wudu'].map((k) => [L.tabs[k], learnUrl[k](lang)]), FAST[lang] ? [[FAST[lang].tab, learnUrl.fasting(lang)]] : [])
     .concat([[M.hijri, url.hijri(lang)], [M.ramadan, url.event(lang, 'ramadan')], [M.sehri, url.ramadan(lang, ci)],
       [evName(lang, 'fitr'), url.event(lang, 'eid-al-fitr')], [evName(lang, 'adha'), url.event(lang, 'eid-al-adha')]]);
   return `<nav class="learn-tabs" aria-label="${esc(L.tabs.evidence)}"><ul>` + items.map(([name, href]) => {
@@ -1357,6 +1361,37 @@ function evidencePage(lang) {
     `<p class="muted small">${esc(e.note)}</p>` +
     linkList(GUIDE_PRAYERS.map((k) => ({ name: STRINGS[lang].prayers[k], href: url.prayer(lang, k) })));
   learnAdd(lang, { path: learnUrl.evidence(lang), fn: learnUrl.evidence, title: e.title, h1: e.h1, desc: e.desc, body, crumbs: prayersCrumb(lang) });
+}
+// Fasting guide (src/fasting/<lang>.js): Ramadan and the Sunnah fasts, month by month, the days not to fast,
+// and the next White Days (13 to 15 of each Islamic month) with their dates.
+const FAST = {};
+Object.keys(LANGS).forEach((l) => { const p = path.join(__dirname, 'src/fasting', l + '.js'); if (fs.existsSync(p)) FAST[l] = require(p); });
+function fastingPage(lang) {
+  const F = FAST[lang], t = STRINGS[lang], { ci } = guideLoc(lang), ctx = ctxFor(lang, ci.defaultSect);
+  const today = ymd(NOW, ci.tz), todayUtc = Date.UTC(today[0], today[1] - 1, today[2]), h = Core.hijriParts(today[0], today[1], today[2], 0);
+  const short = (x) => Core.gregorian(x.y, x.m, x.d, 'short', ctx);
+  // The next six months' White Days (skipping a month whose 15th has passed).
+  const white = [];
+  for (let i = 0; i < 8 && white.length < 6; i++) {
+    const hm = ((h.m - 1 + i) % 12) + 1, hy = h.y + Math.floor((h.m - 1 + i) / 12);
+    const ds = [13, 14, 15].map((d) => hijriToGregorian(hy, hm, d));
+    if (ds.some((x) => !x) || Date.UTC(ds[2].y, ds[2].m - 1, ds[2].d) < todayUtc) continue;
+    // Ramadan is fasted in full, and 13 Dhul Hijjah is a day of Tashriq (no fasting): both are left out.
+    if (hm === 9 || hm === 12) continue;
+    white.push(`<tr><th scope="row">${esc(`${t.hijriMonths[hm - 1]} ${Core.num(hy, ctx)} ${t.hijriEra}`)}</th><td>${ds.map((x) => `<bdi>${esc(short(x))}</bdi>`).join(' · ')}</td></tr>`);
+  }
+  const months = F.months.map((m, i) => (m ? `<tr><th scope="row">${esc(t.hijriMonths[i])}</th><td>${esc(m[0])}</td><td class="small">${Core.ltrNums(esc(m[1]))}</td></tr>` : '')).join('');
+  const body = `<p class="answer">${esc(F.lede)}</p>` +
+    `<h2 id="white-days">${esc(F.upcomingH)}</h2><div class="table-scroll"><table class="city-table"><thead><tr><th scope="col">${esc(F.colHijri)}</th><th scope="col">${esc(F.colDates)}</th></tr></thead><tbody>${white.join('')}</tbody></table></div>` +
+    `<p class="muted small">${esc(F.upcomingNote)}</p>` +
+    F.sections.map((s) => `<h2>${esc(s.h)}</h2>` + s.p.map((x) => `<p>${esc(x)}</p>`).join('') + refList(s.refs)).join('') +
+    `<h2 id="months">${esc(F.monthsH)}</h2><p>${esc(F.monthsLede)}</p><div class="table-scroll"><table class="city-table fast-months"><thead><tr><th scope="col">${esc(F.colMonth)}</th><th scope="col">${esc(F.colFast)}</th><th scope="col">${esc(F.colSource)}</th></tr></thead><tbody>${months}</tbody></table></div>` +
+    `<h2 id="not-to-fast">${esc(F.avoidH)}</h2>${refList(F.avoid.map(([d, r]) => [r, d]))}` +
+    `<p class="muted small">${esc(F.note)}</p>` +
+    `<h2>${esc(F.morePagesH)}</h2>` + linkList(['ramadan', 'arafah', 'ashura', 'shabBarat'].map((k) => EVENTS.find((e) => e[0] === k)).map((e) => ({ name: evName(lang, e[0]), href: url.event(lang, e[3]) }))
+      .concat([{ name: tpl(GUIDES[lang].ramLink, { year: Core.num(RAMADAN.y, ctx), city: nameIn(ci.names, lang, ci.country) }), href: url.ramadan(lang, ci) }, { name: GUIDES[lang].hijriNav, href: url.hijri(lang) }]));
+  learnAdd(lang, { path: learnUrl.fasting(lang), fn: learnUrl.fasting, title: F.title, h1: F.h1, desc: F.desc, body,
+    cluster: (f) => learnCluster(f).filter((a) => FAST[a.lang]) });
 }
 function wuduPage(lang) {
   const w = LEARN[lang].wudu;
@@ -1521,6 +1556,10 @@ const EVENTS = [
   ['israMiraj', 7, 27, 'isra-and-miraj', true, 'Isra_and_Mi%27raj'], ['shabBarat', 8, 15, 'shab-e-barat', true, 'Mid-Sha%27ban'],
 ];
 const { EV } = require('./src/events');
+// "About" each Islamic date, with sources (src/events-about/<lang>.js); a language without the file shows no section.
+const EV_ABOUT = {};
+Object.keys(LANGS).forEach((l) => { const p = path.join(__dirname, 'src/events-about', l + '.js'); if (fs.existsSync(p)) EV_ABOUT[l] = require(p); });
+Object.entries(EV_ABOUT).forEach(([l, A]) => EVENTS.forEach(([k]) => { if (!A.items[k] || !A.items[k].p.length) problems.push(`events-about/${l}.js: no text for ${k}`); }));
 Object.keys(LANGS).forEach((l) => {
   if (!EV[l]) { problems.push(`events.js: no strings for ${l}`); return; }
   EVENTS.forEach(([k]) => { if (!EV[l].desc[k]) problems.push(`events.js: no ${l} text for ${k}`); });
@@ -1687,7 +1726,10 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
     (nightLine ? `<p>${esc(nightLine)}</p>` : '') +
     '<p id="evAdj" class="small" hidden></p>' +
     `<p class="ev-days" id="evDays">${esc(daysTo === 0 ? e.today : tpl(e.days, { n: Core.num(daysTo, ctx) }))}</p>` +
-    `<p>${esc(e.desc[k])}</p>` + aliasQs.map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('') + monthHtml +
+    `<p>${esc(e.desc[k])}</p>` + aliasQs.map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('') +
+    // What the day is and how it is observed, with the Quran and hadith it rests on.
+    (EV_ABOUT[lang] ? `<h2 id="about">${esc(tpl(EV_ABOUT[lang].h, { event: name }))}</h2>` + EV_ABOUT[lang].items[k].p.map((x) => `<p>${esc(x)}</p>`).join('') +
+      `<h3>${esc(EV_ABOUT[lang].refsH)}</h3>${refList(EV_ABOUT[lang].items[k].refs)}` : '') + monthHtml +
     `<h2>${esc(tpl(e.years, { event: name }))}</h2><div class="table-scroll"><table class="city-table"><tbody>` +
     dates.map((x) => `<tr><th scope="row">${esc(hijriText(x.hy))}</th><td>${esc(gFull(x.gd))}</td></tr>`).join('') +
     '</tbody></table></div>' +
@@ -2110,7 +2152,7 @@ ALL_LANGS.forEach((lang) => {
   prayersHub(lang);
   GUIDE_PRAYERS.forEach((k) => prayerPage(lang, k));
   if (REFS[lang]) REF_KEYS.forEach((k) => refPage(lang, k));
-  if (LEARN[lang]) { evidencePage(lang); wuduPage(lang); rakahsPage(lang); NAFL_PAGES.forEach((k) => naflPage(lang, k)); namesPage(lang); if (PN[lang]) prophetNamesPage(lang); }
+  if (LEARN[lang]) { evidencePage(lang); wuduPage(lang); if (FAST[lang]) fastingPage(lang); rakahsPage(lang); NAFL_PAGES.forEach((k) => naflPage(lang, k)); namesPage(lang); if (PN[lang]) prophetNamesPage(lang); }
   hijriPage(lang);
   EVENTS.forEach((e) => eventPage(lang, e));
   methodsHub(lang);
@@ -2198,6 +2240,7 @@ write('llms.txt', [
   `- Islamic dates: ${EVENTS.map((e) => `[${EV.en.names[e[0]] || GUIDES.en.ev[e[0]]}](${SITE}${url.event('en', e[3])})`).join(', ')} (next date, countdown, next three years)`,
   `- [Famous mosques and holy places](${SITE}${url.mosques('en')}): Masjid al-Haram, the Prophet's Mosque, Al-Aqsa and ${LANDMARKS.length - 3} more, with short histories and photos`,
   `- [Qibla direction](${SITE}${url.qibla('en')}): Qibla bearing and distance from your location and from each country's main city`,
+  `- [Fasting days](${SITE}${learnUrl.fasting('en')}): Ramadan and the Sunnah fasts (Monday and Thursday, the White Days 13 to 15 with their next dates, six days of Shawwal, Arafah, Ashura) month by month with Quran and hadith references, and the days not to fast. Every city page shows today's sehri and iftar time.`,
   `- Ramadan timetables: ${SITE}/{country}/{city}/ramadan/ (sehri and iftar for every day of Ramadan, every city)`,
   `- One prayer in one city: ${SITE}/{lang}/{country}/{city}/{prayer}/ (fajr, sunrise, dhuhr, asr, maghrib, isha: today, tomorrow and the next 30 days), e.g. ${SITE}/pakistan/lahore/fajr/`,
   `- One prayer across a country: ${SITE}/{lang}/{country}/{prayer}/ (today and tomorrow in every city), e.g. ${SITE}/pakistan/fajr/, ${SITE}/ar/egypt/fajr/, ${SITE}/ar/iraq/sunrise/, ${SITE}/fa/iran/fajr/`,

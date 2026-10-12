@@ -752,6 +752,28 @@
     };
   }
 
+  // Sehri ends and iftar on a given day at loc, by the same rule as the Ramadan timetable
+  // (Jafria: sehri ends 10 minutes before the earlier of the Jafari and the Sunni Fajr).
+  function sehriIftar(loc, ctx, d) {
+    var tt = timesFor(loc, ctx, d.y, d.m, d.d, paramsFor(loc, ctx)), sehri = tt.fajr;
+    if (ctx.sect === 'jafria') {
+      var sctx = Object.assign({}, ctx, { sect: 'hanafi' });
+      sehri = new Date(Math.min(tt.fajr, timesFor(loc, sctx, d.y, d.m, d.d, paramsFor(loc, sctx)).fajr) - 10 * 60000);
+    }
+    return { sehri: sehri, iftar: tt.maghrib };
+  }
+  // "Sehri and iftar today" on city pages: one answer sentence and today's and tomorrow's times. s: the page's strings.
+  function renderSehriIftar(loc, ctx, now, s) {
+    var g = ctx.g, p = partsInTz(now, loc.tz), days = [p, addDays(p.y, p.m, p.d, 1)].map(function (d) { return { d: d, x: sehriIftar(loc, ctx, d) }; });
+    var f = function (x) { return fmtTime(x, loc.tz, ctx); };
+    return '<p class="answer-line">' + esc(tpl(s.answer, { city: loc.name, sehri: f(days[0].x.sehri), iftar: f(days[0].x.iftar) })) + '</p>' +
+      '<div class="table-scroll"><table class="city-table"><thead><tr><th scope="col">' + esc(ctx.t.colDate) + '</th><th scope="col">' + esc(g.colSehri) +
+      '</th><th scope="col">' + esc(g.colIftar) + '</th></tr></thead><tbody>' + days.map(function (r, i) {
+        return '<tr' + (i === 0 ? ' class="is-today"' : '') + '><td>' + esc(gregorian(r.d.y, r.d.m, r.d.d, 'full', ctx)) + '</td><td><bdi>' + esc(f(r.x.sehri)) +
+          '</bdi></td><td><strong><bdi>' + esc(f(r.x.iftar)) + '</bdi></strong></td></tr>';
+      }).join('') + '</tbody></table></div>';
+  }
+
   // Today's five times for one city (country-page tables).
   function cityRowTimes(loc, ctx, now) {
     var p = partsInTz(now, loc.tz), tt = timesFor(loc, ctx, p.y, p.m, p.d);
@@ -844,7 +866,7 @@
     esc: esc, tpl: tpl, num: num, numGrouped: numGrouped, partsInTz: partsInTz, fmtTime: fmtTime, countdown: countdown, countdownWords: countdownWords, prayerEnds: prayerEnds,
     methodLabel: methodLabel, paramsFor: paramsFor, timesFor: timesFor, snapshot: snapshot,
     sectPicker: sectPicker, renderToday: renderToday, renderMonth: renderMonth, qiblaCard: qiblaCard,
-    distanceKm: distanceKm, renderJumuah: renderJumuah, renderTomorrow: renderTomorrow, renderPrayerLive: renderPrayerLive, hijri: hijri, hijriParts: hijriParts,
+    distanceKm: distanceKm, renderJumuah: renderJumuah, renderTomorrow: renderTomorrow, renderSehriIftar: renderSehriIftar, sehriIftar: sehriIftar, renderPrayerLive: renderPrayerLive, hijri: hijri, hijriParts: hijriParts,
     renderRamadan: renderRamadan, METHOD_SLUG: METHOD_SLUG, qibla: qibla, KAABA: KAABA, addDays: addDays, pre: pre,
     hijriToGregorian: hijriToGregorian, hijriMonthDays: hijriMonthDays, useCalendar: useCalendar, hijriText: hijriText, renderHijriGrid: renderHijriGrid,
   };
