@@ -21,3 +21,6 @@ Thumbs.db
 # SEO audit reports (local only)
 salaahdaily.com-audit/
 .indexnow-ramadan
+
+# Graphify knowledge graph (local only)
+graphify-out/

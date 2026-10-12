@@ -1,0 +1,9 @@
+# Graphify: skip images (social share banners, mosque photos) and build output
+src/og/
+src/sites/
+brand/*.png
+brand/*.jpg
+*.png
+*.jpg
+dist/
+salaahdaily.com-audit/
