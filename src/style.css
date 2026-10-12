@@ -486,6 +486,9 @@ html:not([lang|="en"]):not([lang|="id"]):not([lang|="ms"]) .month-table th { fon
 .jumuah-list { list-style: none; margin: 8px 0 10px; padding: 0; display: grid; gap: 6px; }
 .jumuah-list li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding: 8px 0; }
 .jumuah p a { text-decoration: underline; text-underline-offset: 2px; }
+/* Ad units (AdSense, only when switched on): below the main content, height reserved against layout shift. */
+.ad-slot { margin: 16px 0; min-height: 280px; }
+@media (min-width: 768px) { .ad-slot { min-height: 120px; } }
 /* Prayer times tomorrow (city pages): six times in a grid that fits a phone. */
 .tmr-grid { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .tmr-grid li { display: flex; flex-direction: column; gap: 2px; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }

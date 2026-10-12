@@ -88,6 +88,20 @@ PRIVACY_ANALYTICS.ga = {
   section: ['Visitor statistics',
     'We use Google Analytics 4 to see which pages are read, which websites and searches send visitors to us, and the approximate country and city and type of device of our visitors. Google Analytics 4 does not log or store IP addresses. Advertising features are switched off. If your device is set to a time zone in the European Economic Area, the United Kingdom or Switzerland, the Google Analytics script is not loaded at all. You can also block it with {gaoptout} or any content blocker. See {google}.'],
 };
+// Google AdSense (site.config.js adsense.client set): what the AdSense program policies require the policy to say.
+// Applied on top of the analytics wording. "live" parts apply once ads are switched on (adsense.live).
+// When AdSense is set up or switched on, set ADS_DATE to that day: it becomes the policy's "Last updated" date.
+var ADS_DATE = '2026-10-12';
+var PRIVACY_ADS = {
+  desc: 'SalaahDaily has no accounts. It shows ads from Google AdSense and counts visits with Google Analytics. Your settings stay in your browser and your location never leaves your device.',
+  lede: 'SalaahDaily shows prayer times. It has no accounts, and it shows ads from Google AdSense to stay free. This page explains the data that is involved when you use it.',
+  cookies: 'SalaahDaily sets no cookies for its own features. Google, as our advertising and statistics provider, may set cookies or use similar technology to show ads, measure them and count visits (see "Advertising" and "Visitor statistics" below). Our hosting provider’s security service may set a short-lived cookie to check that a visitor is a real browser and not an automated attack.',
+  section: ['Advertising',
+    'We show ads from Google AdSense. Google and its partners use cookies to serve ads based on your previous visits to this and other websites. Google’s use of advertising cookies lets it and its partners show you ads based on those visits. You can turn off personalised advertising in {adsettings}, and read how Google uses information from sites that use its services in {partnersites}. In the European Economic Area, the United Kingdom and Switzerland, Google asks for your consent before personalised ads or advertising cookies are used, through its own consent message; you can change your choice at any time from the link that message leaves on the page.'],
+  never: 'We do not sell or rent personal data, and we do not build profiles of visitors ourselves.',
+  // Once ads (and Google's consent message) are live, Google Analytics also runs in Europe, with consent.
+  gaLive: 'We use Google Analytics 4 to see which pages are read, which websites and searches send visitors to us, and the approximate country and city and type of device of our visitors. Google Analytics 4 does not log or store IP addresses. In the European Economic Area, the United Kingdom and Switzerland, it uses cookies only if you agree in Google’s consent message. You can also block it with {gaoptout} or any content blocker. See {google}.',
+};
 PRIVACY_ANALYTICS.cf = {
   desc: 'SalaahDaily has no accounts, no adverts and no tracking cookies. Your settings stay in your browser and your location never leaves your device.',
   lede: 'SalaahDaily shows prayer times. It has no accounts and no adverts, and its visitor statistics set no cookies. This page explains the little data that is involved when you use it.',
@@ -118,4 +132,4 @@ var TERMS = {
   ],
 };
 
-if (typeof module === 'object' && module.exports) module.exports = { POLICY_DATE: POLICY_DATE, ANALYTICS_DATE: ANALYTICS_DATE, PRIVACY_ANALYTICS: PRIVACY_ANALYTICS, LABELS: LABELS, CONTACT: CONTACT, PRIVACY: PRIVACY, TERMS: TERMS };
+if (typeof module === 'object' && module.exports) module.exports = { POLICY_DATE: POLICY_DATE, ANALYTICS_DATE: ANALYTICS_DATE, PRIVACY_ANALYTICS: PRIVACY_ANALYTICS, ADS_DATE: ADS_DATE, PRIVACY_ADS: PRIVACY_ADS, LABELS: LABELS, CONTACT: CONTACT, PRIVACY: PRIVACY, TERMS: TERMS };

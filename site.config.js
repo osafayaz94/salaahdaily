@@ -24,4 +24,11 @@ module.exports = {
   bingVerification: '', // Bing Webmaster Tools > Add site > HTML Meta Tag (msvalidate.01)
   // Official profile URLs (Facebook, X, Pinterest, YouTube, LinkedIn...). They go in the Organization schema as sameAs.
   sameAs: ['https://www.facebook.com/profile.php?id=61595367984247', 'https://www.pinterest.com/Salaahdaily/'],
+  // Google AdSense. Nothing ad-related is output while client is empty.
+  //   client: 'ca-pub-...' (AdSense > Account > Account information: Publisher ID, with "ca-" in front).
+  //     Setting it adds ads.txt, the AdSense verification meta tag and the advertising section of the privacy policy,
+  //     which the AdSense review needs. No ads are shown yet.
+  //   live: true after AdSense approves the site: loads ads in the slots below the prayer times.
+  //   slot: the ad unit id (AdSense > Ads > By ad unit > Display ad, "responsive"); empty uses Auto ads' in-page units.
+  adsense: { client: '', live: false, slot: '' },
 };

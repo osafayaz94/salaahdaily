@@ -15,12 +15,21 @@
   var europeOutside = /^Europe\/(Istanbul|Moscow|Kaliningrad|Samara|Volgograd|Saratov|Ulyanovsk|Astrakhan|Kirov|Minsk|Kiev|Kyiv|Simferopol|Chisinau)$/;
   // EEA or UK zones outside Europe/*: Iceland, Spanish and Portuguese islands, Ceuta, Cyprus, Svalbard, the French overseas regions.
   var eeaOther = /^(Atlantic\/(Reykjavik|Canary|Madeira|Azores|Faroe)|Africa\/Ceuta|Asia\/(Nicosia|Famagusta)|Arctic\/Longyearbyen|Indian\/(Reunion|Mayotte)|America\/(Guadeloupe|Martinique|Cayenne|St_Barthelemy|Marigot))$/;
-  if (!tz || (/^Europe\//.test(tz) && !europeOutside.test(tz)) || eeaOther.test(tz)) return;
+  // Once AdSense and Google's consent message are live (cmp), Google Analytics runs everywhere: in the EEA, the UK and
+  // Switzerland it starts with everything denied and Google's consent message updates it.
+  var cmp = '__CMP__' === 'true';
+  if (!cmp && (!tz || (/^Europe\//.test(tz) && !europeOutside.test(tz)) || eeaOther.test(tz))) return;
 
   window.dataLayer = window.dataLayer || [];
   function gtag() { window.dataLayer.push(arguments); }
   window.gtag = gtag;
-  gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'granted' });
+  if (cmp) {
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied', wait_for_update: 500,
+      region: ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH'] });
+    gtag('consent', 'default', { ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted', analytics_storage: 'granted' });
+  } else {
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'granted' });
+  }
   gtag('js', new Date());
   gtag('config', id);
 

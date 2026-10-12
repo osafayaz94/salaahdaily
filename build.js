@@ -397,7 +397,14 @@ const JS_LITE = [minifyJs(read('src/core.js')), minifyJs(read('src/client.js'))]
 // The crescent prediction, only on the Hijri calendar page.
 const JS_MOON = minifyJs(read('src/moon.js'));
 // Google Analytics 4 loader, only when site.config.js has ga4Id.
-const JS_GA = CONFIG.ga4Id ? minifyJs(read('src/ga.js')).replace('__GA_ID__', CONFIG.ga4Id) : '';
+// Google AdSense (site.config.js adsense): ON once the publisher id is set (review: ads.txt, verification tag,
+// privacy policy), LIVE once ads are switched on (loader, slots, Content-Security-Policy, Google's consent message).
+const AD = CONFIG.adsense || {};
+const AD_ON = /^ca-pub-\d{10,20}$/.test(AD.client || '');
+if (AD.client && !AD_ON) problems.push('site.config.js: adsense.client must look like ca-pub-1234567890123456');
+const AD_LIVE = AD_ON && !!AD.live;
+const JS_ADS = AD_LIVE ? minifyJs(read('src/ads.js')).replace('__AD_CLIENT__', AD.client) : '';
+const JS_GA = CONFIG.ga4Id ? minifyJs(read('src/ga.js')).replace('__GA_ID__', CONFIG.ga4Id).replace('__CMP__', AD_LIVE ? 'true' : 'false') : '';
 const CITIES_JSON = JSON.stringify({
   countries: Object.fromEntries(COUNTRIES.map((c) => [c.slug, {
     tz: c.tz, method: c.method, jafariMethod: c.jafariMethod, defaultSect: c.defaultSect, extraCalendar: c.extraCalendar,
@@ -428,6 +435,7 @@ const ASSET = {
   jsLite: `/assets/lite.${shortHash(JS_LITE)}.js`,
   moon: `/assets/moon.${shortHash(JS_MOON)}.js`,
   ga: JS_GA ? `/assets/ga.${shortHash(JS_GA)}.js` : '',
+  ads: JS_ADS ? `/assets/ads.${shortHash(JS_ADS)}.js` : '',
   cities: `/assets/cities.${shortHash(CITIES_JSON)}.json`,
 };
 const HAYYA_AR = 'حَيَّ عَلَى الصَّلَاةِ، حَيَّ عَلَى الْفَلَاحِ';
@@ -588,6 +596,10 @@ function breadcrumbLd(items) {
 // sameAs and contactPoint are left out until the site has real social profiles and a public address.
 // Cloudflare Web Analytics (cookieless), only when site.config.js has a token.
 const CF_BEACON = CONFIG.cfAnalyticsToken ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${JSON.stringify({ token: CONFIG.cfAnalyticsToken })}'></script>` : '';
+// An ad unit below the main content, its height reserved in CSS so nothing jumps when it fills. Empty unless ads are
+// live and an ad unit id is set (without one, Auto ads places its own units).
+const NO_ADS_KINDS = new Set(['near', 'privacy', 'terms', 'contact', 'embed', 'home']);
+const adSlot = () => (AD_LIVE && AD.slot ? `<div class="ad-slot"><ins class="adsbygoogle" style="display:block" data-ad-client="${esc(AD.client)}" data-ad-slot="${esc(AD.slot)}" data-ad-format="auto" data-full-width-responsive="true"></ins></div>` : '');
 const ORG = {
   '@type': 'Organization', '@id': `${SITE}/#org`, name: BRAND, alternateName: BRAND_ALT, url: `${SITE}/`,
   logo: { '@type': 'ImageObject', url: `${SITE}/logo.png`, width: 512, height: 512 },
@@ -691,6 +703,7 @@ function addPage(o) {
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
     // Site verification tags: the services only read the home page, and some only its first few KB.
+    AD_ON ? `<meta name="google-adsense-account" content="${esc(AD.client)}">` : '',
     o.path === '/' && CONFIG.pinterestVerification ? `<meta name="p:domain_verify" content="${esc(CONFIG.pinterestVerification)}">` : '',
     o.path === '/' && CONFIG.bingVerification ? `<meta name="msvalidate.01" content="${esc(CONFIG.bingVerification)}">` : '',
     `<title>${esc(o.title)}</title>`,
@@ -747,6 +760,7 @@ function addPage(o) {
     `<script id="page-data" type="application/json">${jsonForHtml(o.data)}</script>` +
     (o.data.kind === 'hijri' ? `<script src="${ASSET.moon}" defer></script>` : '') +
     `<script src="${script}" defer></script>` + CF_BEACON + (ASSET.ga ? `<script src="${ASSET.ga}" defer></script>` : '') +
+    (ASSET.ads && !NO_ADS_KINDS.has(o.data.kind) ? `<script src="${ASSET.ads}" defer></script>` : '') +
     '</body></html>\n';
 
   // Written straight to disk: holding every page's HTML in memory runs out of heap at this size.
@@ -837,6 +851,7 @@ function countryPage(lang, c) {
     html += '</tbody></table></div></div>';
   });
   html += '</section>';
+  html += adSlot();
   html += `<p class="empty-search" id="emptySearch" hidden>${esc(t.noMatch)} <a class="btn-link" href="${url.near(lang)}#locate">${esc(t.showMyLocation)}</a></p>`;
   html += `<p class="muted small">${esc(tpl(t.methodLine, { m: Core.methodLabel(c.method, ctx) }))} · ${esc(tpl(t.updated, { date: Core.gregorian(...ymd(NOW, c.tz), 'full', ctx) }))}</p>`;
   // Every city's Ramadan timetable, one click from the country page.
@@ -936,6 +951,7 @@ function cityPage(lang, ci) {
     `<section class="card sehri" aria-labelledby="sehriTitle"><h2 id="sehriTitle">${esc(tpl(FASTUI[lang].h, { city: cityName }))}</h2><div id="sehriBody">${Core.renderSehriIftar(loc, ctx, NOW, FASTUI[lang])}</div>` +
       linkList([{ name: FASTUI[lang].fastLink, href: learnUrl.fasting(lang) }, { name: tpl(GUIDES[lang].ramLink, { year: Core.num(RAMADAN.y, ctx), city: cityName }), href: url.ramadan(lang, ci) }]) + '</section>' +
     (loc.pp ? `<section class="card"><h2>${esc(tpl(ppStr(lang, ci).chipsH, { city: cityName }))}</h2>${linkList(EG_KEYS.map((k) => ({ name: tpl(ppStr(lang, ci).h1[k], { city: cityName }), href: `${pagePath}${k}/` })))}</section>` : '') +
+    adSlot() +
     '<div class="layout">' +
       monthCard(lang, month, `${p.y}-${p.m}-${p.d}|${ctx.sect}|${ctx.method}|${ctx.hour12}|${ctx.hijriAdj}`) +
       '<aside class="side">' +
@@ -947,6 +963,7 @@ function cityPage(lang, ci) {
       '</aside>' +
     '</div>' +
     `<section class="card jumuah" id="jumuah" aria-labelledby="jumuahTitle">${Core.renderJumuah(loc, ctx, NOW)}</section>` +
+    adSlot() +
     `<section class="card faq" id="faq" aria-labelledby="faqTitle">${Core.renderFaq(loc, ctx, NOW)}</section>` +
     landmarksNear(lang, ci, cityName, ctx) +
     Core.mosquesCard(ci.lat, ci.lng, tpl(t.mosquesH2, { city: cityName }), ctx) +
@@ -1093,7 +1110,7 @@ function cityPrayerPage(lang, ci, key) {
     `<h1>${esc(tpl(EG.h1[key], { city }))}</h1><p class="answer">${esc(tpl(sun ? EG.answerSunrise : EG.answer, v))}</p>` +
     `<p class="muted small">${esc(((m) => (typeof EG.method === 'function' ? EG.method(m) : tpl(EG.method, { method: m })))(Core.methodLabel(ci.defaultSect === 'jafria' ? (loc.jafariMethod || 'Jafari') : (loc.method || 'MuslimWorldLeague'), ctx)))}</p>` +
     `<h2>${esc(tpl(sun ? EG.tableHSunrise : EG.tableH, v))}</h2><div class="table-scroll"><table class="city-table">` +
-    `<thead><tr><th scope="col">${EG.colDate}</th><th scope="col">${EG.colHijri}</th><th scope="col">${EG.colTime}</th></tr></thead><tbody>${rows}</tbody></table></div>` +
+    `<thead><tr><th scope="col">${EG.colDate}</th><th scope="col">${EG.colHijri}</th><th scope="col">${EG.colTime}</th></tr></thead><tbody>${rows}</tbody></table></div>` + adSlot() +
     `<h2>${esc(tpl(EG.faqH, v))}</h2>` + faq.map((it) => `<h3>${esc(it.q)}</h3><p>${esc(it.a)}</p>`).join('') +
     `<h2>${esc(tpl(EG.otherH, { city }))}</h2>` +
     linkList([{ name: tpl(t.cityTitle, { city, country: nameIn(ci.country.name, lang) }).split(' | ')[0], href: base }]
@@ -1156,7 +1173,7 @@ function countryPrayerPage(lang, c, key) {
     `<h1>${esc(h1)}</h1><p class="answer">${esc(tpl(S.lead, v))}</p>` +
     `<p class="muted small">${esc(tpl(S.method, v))}</p>` +
     `<h2>${esc(tpl(S.tableH, v))}</h2><div class="table-scroll"><table class="city-table cp-table">` +
-    `<thead><tr><th scope="col">${esc(S.colCity)}</th><th scope="col">${esc(S.colToday)}</th><th scope="col">${esc(S.colTomorrow)}</th></tr></thead><tbody>${rows}</tbody></table></div>` +
+    `<thead><tr><th scope="col">${esc(S.colCity)}</th><th scope="col">${esc(S.colToday)}</th><th scope="col">${esc(S.colTomorrow)}</th></tr></thead><tbody>${rows}</tbody></table></div>` + adSlot() +
     `<h2>${esc(tpl(S.faqH, v))}</h2>` + faq.map((it) => `<h3>${esc(it.q)}</h3><p>${esc(it.a)}</p>`).join('') +
     `<h2>${esc(tpl(S.otherH, v))}</h2>` +
     linkList([{ name: tpl(S.countryLink, v), href: url.country(lang, c) }]
@@ -1241,17 +1258,31 @@ function aboutPage(lang) {
 /* ---------- Contact, privacy, terms (English) ---------- */
 // With analytics on, the privacy policy says so (Cookies rewritten if needed, "Visitor statistics" after it) and takes its date.
 const PA = CONFIG.ga4Id ? LEGAL.PRIVACY_ANALYTICS.ga : CONFIG.cfAnalyticsToken ? LEGAL.PRIVACY_ANALYTICS.cf : null;
-const PRIVACY = !PA ? LEGAL.PRIVACY : Object.assign({}, LEGAL.PRIVACY, {
+const PRIVACY = !PA ? Object.assign({}, LEGAL.PRIVACY) : Object.assign({}, LEGAL.PRIVACY, {
   desc: PA.desc, lede: PA.lede,
   sections: LEGAL.PRIVACY.sections.flatMap((x) => (x[0] === 'Cookies' ? [PA.cookies ? [x[0], PA.cookies] : x, PA.section] : [x])),
 });
-const POLICY_DATE = PA && LEGAL.ANALYTICS_DATE > LEGAL.POLICY_DATE ? LEGAL.ANALYTICS_DATE : LEGAL.POLICY_DATE;
+// With AdSense set up: the advertising section after "Visitor statistics", no "no adverts" claims, and (once ads and
+// Google's consent message are live) Google Analytics described as running in Europe with consent.
+if (AD_ON) {
+  const A = LEGAL.PRIVACY_ADS;
+  PRIVACY.desc = A.desc; PRIVACY.lede = A.lede;
+  PRIVACY.sections = PRIVACY.sections.flatMap((x) => {
+    if (x[0] === 'Cookies') return [[x[0], A.cookies]].concat(PA ? [] : [A.section]);
+    if (x[0] === 'Visitor statistics') return [AD_LIVE && CONFIG.ga4Id ? [x[0], A.gaLive] : x, A.section];
+    if (x[0] === 'What we never do') return [[x[0], A.never]];
+    return [x];
+  });
+}
+const POLICY_DATE = [LEGAL.POLICY_DATE, PA ? LEGAL.ANALYTICS_DATE : '', AD_ON ? LEGAL.ADS_DATE : ''].sort().pop();
 function legalText(text) {
   const link = (href, name) => `<a href="${href}">${esc(name)}</a>`;
   return esc(text)
     .replace('{contact}', HAS_CONTACT ? link(url.contact(), 'the Contact page') : 'the suggestion form at the foot of any page')
     .replace('{google}', link('https://policies.google.com/privacy', 'Google’s privacy policy'))
     .replace('{web3forms}', link('https://web3forms.com/privacy', 'the Web3Forms privacy policy'))
+    .replace('{adsettings}', link('https://adssettings.google.com/', 'Google’s Ads Settings'))
+    .replace('{partnersites}', link('https://policies.google.com/technologies/partner-sites', 'How Google uses information from sites or apps that use its services'))
     .replace('{gaoptout}', link('https://tools.google.com/dlpage/gaoptout', 'Google’s opt-out browser add-on'))
     .replace('{cloudflare}', link('https://www.cloudflare.com/web-analytics/', 'Cloudflare Web Analytics'));
 }
@@ -1340,7 +1371,7 @@ function headerBar(lang, current, kind) {
 const refList = (items) => `<ul class="refs">${items.map(([r, x]) => `<li><span class="ref">${Core.ltrNums(r)}</span> ${Core.ltrNums(x)}</li>`).join('')}</ul>`;
 function learnAdd(lang, o) {
   const t = STRINGS[lang], crumbs = [{ name: t.home, href: url.home(lang) }].concat(o.crumbs || [], [{ name: o.h1, href: o.path }]);
-  const body = breadcrumbs(crumbs) + `<article class="card about guide learn"><h1>${esc(o.h1)}</h1>${o.body}` +
+  const body = breadcrumbs(crumbs) + `<article class="card about guide learn"><h1>${esc(o.h1)}</h1>${o.body}${adSlot()}` +
     `<p class="muted small">${esc(tpl(t.updated, { date: Core.gregorian(...ymd(NOW, 'UTC'), 'full', ctxFor(lang, 'hanafi')) }))}</p></article>`;
   const title = fitTitle(o.title, lang);
   addPage({
@@ -1732,7 +1763,7 @@ function eventPage(lang, [k, hm, hd, slug, night, wiki]) {
       `<h3>${esc(EV_ABOUT[lang].refsH)}</h3>${refList(EV_ABOUT[lang].items[k].refs)}` : '') + monthHtml +
     `<h2>${esc(tpl(e.years, { event: name }))}</h2><div class="table-scroll"><table class="city-table"><tbody>` +
     dates.map((x) => `<tr><th scope="row">${esc(hijriText(x.hy))}</th><td>${esc(gFull(x.gd))}</td></tr>`).join('') +
-    '</tbody></table></div>' +
+    '</tbody></table></div>' + adSlot() +
     `<p class="muted small">${esc(e.note)}</p>` +
     `<h2>${esc(e.more)}</h2>` + linkList(others.concat([{ name: g.hijriNav, href: url.hijri(lang) }])) +
     `<p class="muted small">${esc(tpl(t.updated, { date: Core.gregorian(...today, 'full', ctx) }))}</p></article>`;
@@ -2185,6 +2216,9 @@ LANDMARKS.forEach((lm) => write(`sites/${lm.id}.jpg`, fs.readFileSync(path.join(
 write(ASSET.jsLite.slice(1), JS_LITE);
 write(ASSET.moon.slice(1), JS_MOON);
 if (JS_GA) write(ASSET.ga.slice(1), JS_GA);
+if (JS_ADS) write(ASSET.ads.slice(1), JS_ADS);
+// ads.txt: AdSense checks it before serving ads (Authorized Digital Sellers).
+if (AD_ON) write('ads.txt', `google.com, ${AD.client.replace(/^ca-/, '')}, DIRECT, f08c47fec0942fa0\n`);
 write(ASSET.cities.slice(1), CITIES_JSON);
 ALL_LANGS.forEach((lang) => write(SEARCH[lang].path.slice(1), SEARCH[lang].json));
 write('favicon.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#0c3a2d"/><path d="M20 7a10 10 0 1 0 5 17A8 8 0 1 1 20 7z" fill="#d9ad5b"/></svg>\n');
@@ -2259,14 +2293,16 @@ const OTHER_HOST = HOST.startsWith('www.') ? HOST.slice(4) : `www.${HOST}`;
 // Security policy. Scripts, styles and fonts only from this site (plus inline <style>); JSON data
 // blocks are never executed. The only frame is the
 // Google Maps mosque embed; nothing may frame this site.
+// Hosts AdSense and Google's consent message load scripts, frames and requests from.
+const AD_HOSTS = ' https://*.googlesyndication.com https://*.googleadservices.com https://*.doubleclick.net https://*.google.com https://*.gstatic.com https://*.adtrafficquality.google https://fundingchoicesmessages.google.com';
 const CSP = [
   "default-src 'self'",
-  "script-src 'self'" + (CONFIG.cfAnalyticsToken ? ' https://static.cloudflareinsights.com' : '') + (CONFIG.ga4Id ? ' https://www.googletagmanager.com' : ''),
+  "script-src 'self'" + (CONFIG.cfAnalyticsToken ? ' https://static.cloudflareinsights.com' : '') + (CONFIG.ga4Id ? ' https://www.googletagmanager.com' : '') + (AD_LIVE ? AD_HOSTS : ''),
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self'",
-  "img-src 'self' data:" + (CONFIG.ga4Id ? ' https://*.google-analytics.com https://*.googletagmanager.com' : ''),
-  "connect-src 'self' https://api.web3forms.com" + (CONFIG.cfAnalyticsToken ? ' https://cloudflareinsights.com' : '') + (CONFIG.ga4Id ? ' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com' : ''),
-  "frame-src 'self' https://maps.google.com https://www.google.com",
+  "img-src 'self' data:" + (AD_LIVE ? ' https:' : CONFIG.ga4Id ? ' https://*.google-analytics.com https://*.googletagmanager.com' : ''),
+  "connect-src 'self' https://api.web3forms.com" + (CONFIG.cfAnalyticsToken ? ' https://cloudflareinsights.com' : '') + (CONFIG.ga4Id ? ' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com' : '') + (AD_LIVE ? AD_HOSTS : ''),
+  "frame-src 'self' https://maps.google.com https://www.google.com" + (AD_LIVE ? AD_HOSTS : ''),
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self' https://api.web3forms.com",
