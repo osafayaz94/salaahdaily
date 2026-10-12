@@ -244,10 +244,12 @@ html:not([lang|="en"]):not([lang|="id"]):not([lang|="ms"]) .region h3 { font-siz
 html[lang|="ur"] .today h1 { line-height: 1.9; }
 .today-date { margin: 0; color: var(--hero-muted); }
 .dot { color: var(--gold-bright); margin: 0 6px; }
+/* Countdown: its own row across the whole hero; label and countdown at the start, local time at the end. */
 .next-box {
-  display: flex; flex-direction: column; align-items: flex-end; text-align: end;
-  background: var(--hero-card); border: 1px solid var(--hero-line); border-radius: 18px; padding: 18px 24px; min-width: 260px;
+  flex: 1 0 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: 24px; text-align: start;
+  background: var(--hero-card); border: 1px solid var(--hero-line); border-radius: 18px; padding: 18px 24px;
 }
+.next-clock { grid-column: 2; grid-row: 1 / span 2; text-align: end; margin-bottom: 6px; }
 .next-label { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold-bright); font-weight: 700; }
 .next-count { font-size: clamp(0.95rem, 3.8vw, 1.75rem); white-space: nowrap; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; line-height: 1.25; margin: 4px 0; }
 .next-clock { font-size: 0.9rem; color: var(--hero-muted); font-variant-numeric: tabular-nums; }
@@ -365,7 +367,6 @@ html:not([lang|="en"]):not([lang|="id"]):not([lang|="ms"]) .month-table th { fon
 /* How we calculate */
 .about h1 { margin: 0 0 12px; font-size: clamp(1.5rem, 3vw, 2rem); }
 .about h2 { margin: 26px 0 8px; font-size: 1.15rem; }
-.about p { max-width: 72ch; }
 .about .table-scroll { margin: 0; border: 1px solid var(--line); border-radius: 14px; }
 
 .nafl { margin-top: 20px; }
@@ -435,7 +436,8 @@ html:not([lang|="en"]):not([lang|="id"]):not([lang|="ms"]) .month-table th { fon
   .home-hero { padding: 40px 20px 32px; border-radius: 20px; }
   .home-actions { flex-direction: column; }
   .today { padding: 22px 18px; border-radius: 20px; }
-  .next-box { width: 100%; align-items: flex-start; text-align: start; }
+  .next-box { grid-template-columns: minmax(0, 1fr); }
+  .next-clock { grid-column: 1; grid-row: auto; text-align: start; margin-bottom: 0; }
   .sect-row { gap: 8px; }
   /* Five names fit one row in most languages; long ones (French, Spanish) wrap to a second row instead of colliding. */
   .sect-picker { display: flex; flex-wrap: wrap; gap: 3px; width: 100%; }
@@ -469,8 +471,8 @@ html:not([lang|="en"]):not([lang|="id"]):not([lang|="ms"]) .month-table th { fon
 
 /* Explainers: /prayers/ and /hijri-calendar/ */
 .guide h1 .ar, .guide h2 .ar { font-family: var(--font-ar); font-weight: 400; color: var(--gold); margin-inline-start: 6px; }
-.guide .lede-text, .guide .answer { font-size: 1.08rem; max-width: 72ch; }
-.prayer-live { background: var(--gold-soft); border-radius: 12px; padding: 12px 16px; margin: 4px 0 8px; max-width: 72ch; }
+.guide .lede-text, .guide .answer { font-size: 1.08rem; }
+.prayer-live { background: var(--gold-soft); border-radius: 12px; padding: 12px 16px; margin: 4px 0 8px; }
 .prayer-live a { text-decoration: underline; text-underline-offset: 2px; }
 .guide-list { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 14px; }
 .guide-list li { border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; }
@@ -508,7 +510,7 @@ html:not([lang|="en"]):not([lang|="id"]):not([lang|="ms"]) .month-table th { fon
 .ramadan-link a { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
 /* Methods, Qibla, widget */
-.why-list { margin: 8px 0 0; padding-inline-start: 20px; max-width: 72ch; }
+.why-list { margin: 8px 0 0; padding-inline-start: 20px; }
 .why-list li { margin: 6px 0; }
 .qibla-result { max-width: 320px; margin: 8px 0 16px; }
 .widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 12px; }
@@ -530,7 +532,6 @@ body.bare { background: var(--surface); margin: 0; }
 .guide .city-table th a { text-decoration: underline; text-underline-offset: 2px; }
 
 /* Contact, privacy and terms */
-.legal { max-width: 760px; }
 .legal-intro { font-size: 1.0625rem; }
 .legal .suggest { margin-top: 20px; }
 .site-footer .site-links a { margin: 0 2px; }
