@@ -15,8 +15,8 @@ node_modules/
 .DS_Store
 Thumbs.db
 
-# Local Claude Code settings
-.claude/
+# Local Claude Code settings (settings.json is shared)
+.claude/settings.local.json
 
 # SEO audit reports (local only)
 salaahdaily.com-audit/
