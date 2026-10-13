@@ -26,6 +26,7 @@ const NAMES = require('./src/names');
 const { GUIDES, WIKI } = require('./src/guides');
 const LEGAL = require('./src/pages-legal');
 const TOMORROW = require('./src/tomorrow');
+const YEARUI = require('./src/year-ui');
 const CPP = require('./src/country-prayer-pages');
 const FASTUI = require('./src/fasting-ui');
 const ABOUT_WHO = require('./src/about-who');
@@ -164,6 +165,7 @@ const problems = [];
   Object.keys(REFS).forEach((l) => Object.entries(REFS[l].items).forEach(([k, it]) => {
     if (it.azkar && it.azkar.s.concat(it.azkar.j).some((x) => !Array.isArray(x))) problems.push(`prayer-refs-more/daily/${l}.js: an adhkar for ${k} is missing`);
   }));
+  Object.keys(LANGS).forEach((l) => { if (!YEARUI[l]) problems.push(`year-ui.js: no strings for ${l}`); });
   Object.keys(LANGS).forEach((l) => { if (!TABS_MORE[l] || ['hijri', 'ramadan', 'sehri'].some((k) => !TABS_MORE[l][k])) problems.push(`tabs-more.js: missing tabs for ${l}`); });
   Object.keys(PN).forEach((l) => { if (shape(PN[l]) !== shape(PN.en)) problems.push(`prophet-names-i18n/${l}.js: keys or list lengths differ from English`); });
   if (PN.en.meanings.length !== PROPHET_NAMES.length) problems.push('prophet-names.js: meanings and names differ in length');
@@ -598,7 +600,7 @@ function breadcrumbLd(items) {
 const CF_BEACON = CONFIG.cfAnalyticsToken ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${JSON.stringify({ token: CONFIG.cfAnalyticsToken })}'></script>` : '';
 // An ad unit below the main content, its height reserved in CSS so nothing jumps when it fills. Empty unless ads are
 // live and an ad unit id is set (without one, Auto ads places its own units).
-const NO_ADS_KINDS = new Set(['near', 'privacy', 'terms', 'contact', 'embed', 'home']);
+const NO_ADS_KINDS = new Set(['near', 'privacy', 'terms', 'contact', 'embed', 'home', '404', 'widget']);
 const adSlot = () => (AD_LIVE && AD.slot ? `<div class="ad-slot"><ins class="adsbygoogle" style="display:block" data-ad-client="${esc(AD.client)}" data-ad-slot="${esc(AD.slot)}" data-ad-format="auto" data-full-width-responsive="true"></ins></div>` : '');
 const ORG = {
   '@type': 'Organization', '@id': `${SITE}/#org`, name: BRAND, alternateName: BRAND_ALT, url: `${SITE}/`,
@@ -870,7 +872,7 @@ function countryPage(lang, c) {
   // Midnight sun and light summer nights: how the times are estimated, and the options scholars give.
   if (NORDIC.has(c.slug)) faq.push({ q: GUIDES[lang].nordicQ, a: GUIDES[lang].nordicA });
   // "Fajr time in Kuwait today": the country's first (largest) city answers, named in the answer.
-  const first = locOf(c.cities[0], lang), fq = Core.faqItems(first, ctx, NOW), other = tpl(t.cOther, { country });
+  const first = locOf(c.cities[0], lang), fq = Core.faqItems(first, ctx, NOW, true), other = tpl(t.cOther, { country });
   const atFirst = (k) => fq.find((it) => it.q === tpl(t.qAt, { prayer: t.prayers[k], city: first.name }));
   const perPrayer = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((k) => {
     const it = atFirst(k);
@@ -928,6 +930,7 @@ function cityPage(lang, ci) {
   const p = Core.partsInTz(NOW, ci.tz);
   const month = Core.renderMonth(loc, ctx, p.y, p.m, p);
   const faq = Core.faqItems(loc, ctx, NOW);
+  const yearHtml = Core.renderYearFacts(loc, ctx, NOW, YEARUI[lang], RAMADAN);
 
   const crumbItems = [
     { name: t.home, href: url.home(lang) },
@@ -963,6 +966,8 @@ function cityPage(lang, ci) {
       '</aside>' +
     '</div>' +
     `<section class="card jumuah" id="jumuah" aria-labelledby="jumuahTitle">${Core.renderJumuah(loc, ctx, NOW)}</section>` +
+    // How this city's day changes through the year (earliest and latest Fajr, shortest and longest fast, Ramadan): calculated, so it is true for this city only.
+    (yearHtml ? `<section class="card year" aria-labelledby="yearTitle"><h2 id="yearTitle">${esc(tpl(YEARUI[lang].h, { city: cityName }))}</h2><div id="yearBody">${yearHtml}</div></section>` : '') +
     adSlot() +
     `<section class="card faq" id="faq" aria-labelledby="faqTitle">${Core.renderFaq(loc, ctx, NOW)}</section>` +
     landmarksNear(lang, ci, cityName, ctx) +
@@ -990,7 +995,7 @@ function cityPage(lang, ci) {
         breadcrumbLd(crumbItems),
       ],
     },
-    data: clientData(lang, { kind: 'city', defaultSect: ci.defaultSect, h1, loc, fu: FASTUI[lang] }),
+    data: clientData(lang, { kind: 'city', defaultSect: ci.defaultSect, h1, loc, fu: FASTUI[lang], yu: YEARUI[lang], ram: RAMADAN }),
   });
 }
 

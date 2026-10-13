@@ -23,7 +23,7 @@ module.exports = {
   pinterestVerification: '14b1b43dc48bb9d20347627fa8d205ac', // Pinterest > Settings > Claim > Websites > "Add HTML tag" (p:domain_verify)
   bingVerification: '', // Bing Webmaster Tools > Add site > HTML Meta Tag (msvalidate.01)
   // Official profile URLs (Facebook, X, Pinterest, YouTube, LinkedIn...). They go in the Organization schema as sameAs.
-  sameAs: ['https://www.facebook.com/profile.php?id=61595367984247', 'https://www.pinterest.com/Salaahdaily/'],
+  sameAs: ['https://www.facebook.com/profile.php?id=61595367984247', 'https://www.pinterest.com/Salaahdaily/', 'https://www.instagram.com/salaahdaily/'],
   // Google AdSense. Nothing ad-related is output while client is empty.
   //   client: 'ca-pub-...' (AdSense > Account > Account information: Publisher ID, with "ca-" in front).
   //     Setting it adds ads.txt, the AdSense verification meta tag and the advertising section of the privacy policy,

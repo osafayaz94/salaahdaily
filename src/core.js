@@ -607,7 +607,7 @@
   }
 
   // Quick answers: plain-text questions and answers with today's values (also used for FAQPage data).
-  function faqItems(loc, ctx, now) {
+  function faqItems(loc, ctx, now, perPrayer) {
     var t = ctx.t, s = snapshot(loc, ctx, now), d = s.date, tt = s.times;
     var f = function (x) { return fmtTime(x, loc.tz, ctx); };
     var city = loc.name, sect = t.sects[ctx.sect];
@@ -646,16 +646,15 @@
       var fr = fridays(loc, ctx, now, 1)[0];
       items.splice(3, 0, [tpl(ctx.g.qJ, { city: city }), tpl(ctx.g.aJ, { city: city, time: f(fr.at), date: gregorian(fr.y, fr.m, fr.d, 'full', ctx) })]);
     }
-    // One question per prayer (start and end today), then how much time is left until the next one.
-    if (t.qAt) {
+    // One question per prayer only where asked for (the country page); on a city page each prayer has its own page.
+    if (t.qAt && perPrayer) {
       var ends = { fajr: tt.sunrise, dhuhr: tt.asr, asr: tt.maghrib, maghrib: tt.isha, isha: nafl[nafl.length - 1][2] };
       ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(function (k) {
         items.push([tpl(t.qAt, { prayer: t.prayers[k], city: city }), tpl(t.aAt, { prayer: t.prayers[k], city: city, start: f(tt[k]), end: f(ends[k]) })]);
       });
-      nafl.forEach(function (r) {
-        if (r[0] === 'awwabin') return;
-        items.push([tpl(t.qAt, { prayer: t.nafl[r[0]], city: city }), tpl(t.aAt, { prayer: t.nafl[r[0]], city: city, start: f(r[1]), end: f(r[2]) })]);
-      });
+    }
+    // How much time is left until the next prayer.
+    if (t.qAt) {
       var nk = s.next.key;
       items.push([tpl(t.qLeft, { city: city }), tpl(t.aLeft, { city: city, next: t.prayers[nk] || nk, time: f(s.next.at) })]);
     }
@@ -663,13 +662,22 @@
     var extra = ((loc.v && loc.v.faq) || []).map(function (x) { return [tpl(x[0], vars), tpl(x[1], vars)]; })
       .filter(function (x) { return !/\{[A-Za-z]+\}/.test(x[0] + x[1]); });
     items.splice.apply(items, [1, 0].concat(extra));
-    return items.map(function (x) { return { q: x[0], a: x[1] }; });
+    // Questions worded differently but answered with the same times add nothing: keep the first, drop the repeats.
+    var timeRe = /[0-9\u0660-\u0669\u06F0-\u06F9\u0966-\u096F\u09E6-\u09EF]{1,2}[:\uFF1A][0-9\u0660-\u0669\u06F0-\u06F9\u0966-\u096F\u09E6-\u09EF]{2}/g;
+    var seen = [], kept = [];
+    items.forEach(function (x) {
+      var ts = x[1].match(timeRe) || [];
+      if (ts.length >= 3 && seen.some(function (prev) { return ts.every(function (z) { return prev.indexOf(z) >= 0; }); })) return;
+      if (ts.length >= 3) seen.push(ts);
+      kept.push(x);
+    });
+    return kept.map(function (x) { return { q: x[0], a: x[1] }; });
   }
-  // Inner HTML of the #faq section.
+  // Inner HTML of the #faq section: each answer opens under its question (the first one starts open).
   function renderFaq(loc, ctx, now) {
     return '<h2 id="faqTitle">' + esc(tpl(ctx.t.faqH2, { city: loc.name })) + '</h2>' +
-      faqItems(loc, ctx, now).map(function (it) {
-        return '<div class="faq-item"><h3>' + esc(it.q) + '</h3><p>' + esc(it.a) + '</p></div>';
+      faqItems(loc, ctx, now).map(function (it, i) {
+        return '<details class="faq-item"' + (i === 0 ? ' open' : '') + '><summary><h3>' + esc(it.q) + '</h3></summary><p>' + esc(it.a) + '</p></details>';
       }).join('');
   }
 
@@ -774,6 +782,68 @@
       }).join('') + '</tbody></table></div>';
   }
 
+  // Earliest and latest Fajr and the shortest and longest fast (dawn to sunset) in one calendar year at loc.
+  // The same days give the same answer in every language, so the numbers are kept per city and school.
+  var yearMemo = {};
+  function yearStats(loc, ctx, y) {
+    var key = [loc.lat, loc.lng, loc.tz, ctx.sect, methodKey(loc, ctx), y].join('|');
+    if (key in yearMemo) return yearMemo[key];
+    var params = paramsFor(loc, ctx), jafria = ctx.sect === 'jafria', st = { n: 0 };
+    for (var m = 1; m <= 12; m++) {
+      for (var d = 1, dm = daysInMonth(y, m); d <= dm; d++) {
+        var tt = timesFor(loc, ctx, y, m, d, params);
+        var sehri = jafria ? sehriIftar(loc, ctx, { y: y, m: m, d: d }).sehri : tt.fajr;
+        if (!(tt.fajr instanceof Date) || isNaN(tt.fajr) || isNaN(sehri) || isNaN(tt.maghrib)) continue;
+        var p = partsInTz(tt.fajr, loc.tz), fm = p.h * 60 + p.min, len = Math.round((tt.maghrib - sehri) / 60000), day = { y: y, m: m, d: d };
+        st.n++;
+        if (!st.fMin || fm < st.fMin.v) st.fMin = { v: fm, at: tt.fajr, day: day };
+        if (!st.fMax || fm > st.fMax.v) st.fMax = { v: fm, at: tt.fajr, day: day };
+        if (!st.lMin || len < st.lMin.v) st.lMin = { v: len, day: day };
+        if (!st.lMax || len > st.lMax.v) st.lMax = { v: len, day: day };
+      }
+    }
+    return (yearMemo[key] = st.n >= 300 ? st : null);
+  }
+  // "12 hours and 5 minutes" in the page's language.
+  function durationWords(mins, ctx) {
+    var h = Math.floor(mins / 60), m = mins % 60, loc = ctx.L.locale;
+    if (loc && typeof Intl !== 'undefined' && Intl.ListFormat && Intl.NumberFormat.prototype.formatToParts) {
+      try {
+        var words = [['hour', h], ['minute', m]].filter(function (x) { return x[1]; }).map(function (p) {
+          return nf(loc, { style: 'unit', unit: p[0], unitDisplay: 'long' }).formatToParts(p[1])
+            .map(function (x) { return x.type === 'integer' ? num(p[1], ctx) : x.value; }).join('');
+        });
+        return new Intl.ListFormat(loc, { style: 'long', type: 'conjunction' }).format(words);
+      } catch (e) { /* falls through to the plain form */ }
+    }
+    return num(h, ctx) + ' h ' + num(m, ctx) + ' min';
+  }
+  function dayMonth(day, ctx) {
+    if (!ctx.L.locale) return num(day.d, ctx) + ' ' + ctx.t.months[day.m - 1];
+    return dtf(ctx.L.locale + '-u-ca-gregory', { day: 'numeric', month: 'long', timeZone: 'UTC' }).format(civil(day.y, day.m, day.d));
+  }
+  // ram: the Ramadan shown on the site ({ y, m, d, n }); without it the Ramadan rows are left out.
+  function renderYearFacts(loc, ctx, now, s, ram) {
+    var p = partsInTz(now, loc.tz), st = yearStats(loc, ctx, p.y);
+    if (!st) return '';
+    var f = function (x) { return fmtTime(x, loc.tz, ctx); }, rows = [];
+    var row = function (label, qual, value, note) {
+      rows.push('<li><span>' + esc(label) + ' · ' + esc(qual) + '</span><strong><bdi>' + esc(value) + '</bdi></strong>' + (note ? '<small class="muted"><bdi>' + esc(note) + '</bdi></small>' : '') + '</li>');
+    };
+    row(ctx.t.prayers.fajr, s.earliest, f(st.fMin.at), dayMonth(st.fMin.day, ctx));
+    row(ctx.t.prayers.fajr, s.latest, f(st.fMax.at), dayMonth(st.fMax.day, ctx));
+    row(s.fast, s.shortest, durationWords(st.lMin.v, ctx), dayMonth(st.lMin.day, ctx));
+    row(s.fast, s.longest, durationWords(st.lMax.v, ctx), dayMonth(st.lMax.day, ctx));
+    if (ram) {
+      var start = addDays(ram.y, ram.m, ram.d, -(ctx.hijriAdj || 0)), last = addDays(start.y, start.m, start.d, ram.n - 1);
+      var lenOn = function (d) { var x = sehriIftar(loc, ctx, d); return Math.round((x.iftar - x.sehri) / 60000); };
+      var label = tpl(s.ram, { year: num(ram.y, ctx) });
+      row(label, s.first, durationWords(lenOn(start), ctx), dayMonth(start, ctx));
+      row(label, s.last, durationWords(lenOn(last), ctx), dayMonth(last, ctx));
+    }
+    return '<ul class="year-list">' + rows.join('') + '</ul>';
+  }
+
   // Today's five times for one city (country-page tables).
   function cityRowTimes(loc, ctx, now) {
     var p = partsInTz(now, loc.tz), tt = timesFor(loc, ctx, p.y, p.m, p.d);
@@ -866,7 +936,7 @@
     esc: esc, tpl: tpl, num: num, numGrouped: numGrouped, partsInTz: partsInTz, fmtTime: fmtTime, countdown: countdown, countdownWords: countdownWords, prayerEnds: prayerEnds,
     methodLabel: methodLabel, paramsFor: paramsFor, timesFor: timesFor, snapshot: snapshot,
     sectPicker: sectPicker, renderToday: renderToday, renderMonth: renderMonth, qiblaCard: qiblaCard,
-    distanceKm: distanceKm, renderJumuah: renderJumuah, renderTomorrow: renderTomorrow, renderSehriIftar: renderSehriIftar, sehriIftar: sehriIftar, renderPrayerLive: renderPrayerLive, hijri: hijri, hijriParts: hijriParts,
+    distanceKm: distanceKm, renderJumuah: renderJumuah, renderTomorrow: renderTomorrow, renderSehriIftar: renderSehriIftar, sehriIftar: sehriIftar, renderYearFacts: renderYearFacts, renderPrayerLive: renderPrayerLive, hijri: hijri, hijriParts: hijriParts,
     renderRamadan: renderRamadan, METHOD_SLUG: METHOD_SLUG, qibla: qibla, KAABA: KAABA, addDays: addDays, pre: pre,
     hijriToGregorian: hijriToGregorian, hijriMonthDays: hijriMonthDays, useCalendar: useCalendar, hijriText: hijriText, renderHijriGrid: renderHijriGrid,
   };

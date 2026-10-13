@@ -132,6 +132,7 @@
     if ($('jumuah')) $('jumuah').innerHTML = C.renderJumuah(loc, c, now);
     if ($('tomorrowBody')) $('tomorrowBody').innerHTML = C.renderTomorrow(loc, c, now);
     if ($('sehriBody') && P.fu) $('sehriBody').innerHTML = C.renderSehriIftar(loc, c, now, P.fu);
+    if ($('yearBody') && P.yu) $('yearBody').innerHTML = C.renderYearFacts(loc, c, now, P.yu, P.ram);
     nextAt = r.nextAt;
     renderMonth();
   }
