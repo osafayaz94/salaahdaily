@@ -30,6 +30,7 @@ const YEARUI = require('./src/year-ui');
 const CPP = require('./src/country-prayer-pages');
 const FASTUI = require('./src/fasting-ui');
 const ABOUT_WHO = require('./src/about-who');
+const ABOUT_PURPOSE = require('./src/about-purpose');
 // German, Portuguese, Italian, Japanese, Korean: English first, the translations on top (a gap shows English).
 (function addLanguages() {
   const { MORE } = require('./src/i18n-more');
@@ -107,6 +108,16 @@ const WAZIFA = require('./src/learn-wazifa');
 const { NAMES: PROPHET_NAMES, PN } = require('./src/prophet-names');
 if (fs.existsSync(path.join(__dirname, 'src/prophet-names-i18n'))) fs.readdirSync(path.join(__dirname, 'src/prophet-names-i18n')).forEach((f) => { PN[f.replace(/.js$/, '')] = require('./src/prophet-names-i18n/' + f); });
 // Learn pages (src/learn.js, translations in src/learn-i18n/): only languages that have them get the pages and tabs.
+// Extra sections for the Wudu and Five Prayers pages (src/learn-more/<lang>.js): sources use {B} {M} {Q} {sep}, filled per language.
+const LEARN_MORE = {};
+fs.readdirSync(path.join(__dirname, 'src/learn-more')).forEach((f) => { LEARN_MORE[f.replace(/\.js$/, '')] = require('./src/learn-more/' + f); });
+const DUA_AR = 'أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا ٱللَّٰهُ وَأَنَّ مُحَمَّدًا عَبْدُ ٱللَّٰهِ وَرَسُولُهُ';
+const lmSrc = (lang, s) => {
+  const n = LEARN_MORE[lang].names;
+  const out = s.replace(/\{(B|M|Q)\} ?/g, (m, k) => n[k] + n.sp).replace(/\{sep\}/g, n.sep);
+  return n.digits ? out.replace(/[0-9]/g, (d) => n.digits[+d]) : out;
+};
+const lmRefs = (lang, items) => refList(items.map(([r, x]) => [lmSrc(lang, r), x]));
 // Quran and hadith under each prayer time (src/prayer-refs.js, translations in src/prayer-refs-i18n/), fetched when opened.
 const TABS_MORE = require('./src/tabs-more');
 const { REFS, REF_KEYS } = require('./src/prayer-refs');
@@ -161,6 +172,9 @@ const problems = [];
     : o && typeof o === 'object' ? `{${Object.keys(o).sort().map((k) => k + ':' + shape(o[k])).join(',')}}` : typeof o;
   const en = shape(LEARN.en);
   Object.keys(LANGS).forEach((l) => { if (!LEARN[l]) problems.push(`learn: no strings for ${l}`); else if (shape(LEARN[l]) !== en) problems.push(`learn-i18n/${l}.js: keys or list lengths differ from English`); });
+  const enMore = shape(LEARN_MORE.en);
+  Object.keys(LANGS).forEach((l) => { if (!LEARN_MORE[l]) problems.push(`learn-more: no strings for ${l}`); else if (shape(LEARN_MORE[l]) !== enMore) problems.push(`learn-more/${l}.js: keys or list lengths differ from English`); });
+  Object.keys(LANGS).forEach((l) => { if (!ABOUT_PURPOSE[l]) problems.push(`about-purpose.js: no text for ${l}`); });
   Object.keys(LANGS).forEach((l) => { if (!REF_LINKS[l]) problems.push(`ref-links.js: no labels for ${l}`); });
   Object.keys(REFS).forEach((l) => Object.entries(REFS[l].items).forEach(([k, it]) => {
     if (it.azkar && it.azkar.s.concat(it.azkar.j).some((x) => !Array.isArray(x))) problems.push(`prayer-refs-more/daily/${l}.js: an adhkar for ${k} is missing`);
@@ -441,7 +455,7 @@ const ASSET = {
   cities: `/assets/cities.${shortHash(CITIES_JSON)}.json`,
 };
 const HAYYA_AR = 'حَيَّ عَلَى الصَّلَاةِ، حَيَّ عَلَى الْفَلَاحِ';
-const AMIRI_TEXT = Array.from(new Set(Array.from(Core.BISMILLAH + Object.values(Core.ARABIC).join('') + BRAND_AR + HAYYA_AR))).join('');
+const AMIRI_TEXT = Array.from(new Set(Array.from(Core.BISMILLAH + Object.values(Core.ARABIC).join('') + BRAND_AR + HAYYA_AR + DUA_AR))).join('');
 
 /* ---------- Shared pieces ---------- */
 const ICON = {
@@ -1242,7 +1256,7 @@ function aboutPage(lang) {
     '<article class="card about">' +
       `<h1>${esc(t.aboutH1)}</h1><p>${esc(t.aboutP1)}</p>` +
       // Who runs the site, with the contact address as a link.
-      (ABOUT_WHO[lang] && CONFIG.contactEmail ? `<h2 id="who">${esc(ABOUT_WHO[lang][0])}</h2><p>${esc(ABOUT_WHO[lang][1]).replace('{email}', `<a href="mailto:${esc(CONFIG.contactEmail)}">${esc(CONFIG.contactEmail)}</a>`)}</p>` : '') +
+      (ABOUT_WHO[lang] && CONFIG.contactEmail ? `<h2 id="who">${esc(ABOUT_WHO[lang][0])}</h2><p>${esc(ABOUT_WHO[lang][1]).replace('{email}', `<a href="mailto:${esc(CONFIG.contactEmail)}">${esc(CONFIG.contactEmail)}</a>`)}</p>${ABOUT_PURPOSE[lang] ? `<p>${esc(ABOUT_PURPOSE[lang])}</p>` : ''}` : '') +
       `<h2>${esc(t.aboutMethodsH2)}</h2><div class="table-scroll"><table class="city-table">` +
         `<thead><tr><th scope="col">${esc(t.colCountry)}</th><th scope="col">${esc(t.colMethod)}</th><th scope="col">${esc(t.prayers.fajr)}</th><th scope="col">${esc(t.prayers.isha)}</th></tr></thead>` +
         `<tbody>${rows}</tbody></table></div>` +
@@ -1430,21 +1444,29 @@ function fastingPage(lang) {
     cluster: (f) => learnCluster(f).filter((a) => FAST[a.lang]) });
 }
 function wuduPage(lang) {
-  const w = LEARN[lang].wudu;
+  const w = LEARN[lang].wudu, m = LEARN_MORE[lang].wudu;
   const ol = (a) => `<ol class="steps">${a.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>`;
   const body = `<p class="answer">${esc(w.lede)}</p><h2>${esc(w.whyH)}</h2>${refList(w.why)}` +
     `<h2>${esc(w.stepsH)}</h2>${ol(w.steps)}<p class="muted small">${esc(w.stepsRef)} ${esc(w.feetRef)}</p>` +
     `<h2>${esc(w.jafariH)}</h2>${ol(w.jafari)}<p class="muted small">${esc(w.jafariRef)}</p>` +
     `<h2>${esc(w.diffH)}</h2>` + w.diff.map(([h, p]) => `<h3>${esc(h)}</h3><p>${esc(p)}</p>`).join('') +
-    `<h2>${esc(w.breaksH)}</h2><p>${esc(w.breaks)}</p>`;
+    `<h2>${esc(w.breaksH)}</h2><p>${esc(w.breaks)}</p>` +
+    `<h2>${esc(m.sunnahH)}</h2>${lmRefs(lang, m.sunnah)}` +
+    `<h2>${esc(m.socksH)}</h2><p>${esc(m.socksP)}</p>${lmRefs(lang, m.socksRefs)}` +
+    `<h2>${esc(m.tayH)}</h2><p>${esc(m.tayP)}</p>${ol(m.tay)}${lmRefs(lang, m.tayRefs)}` +
+    `<h2>${esc(m.duaH)}</h2><p>${esc(m.duaP)}</p><p class="dua-ar" lang="ar" dir="rtl">${esc(DUA_AR)}</p><p>${esc(m.duaTr)}</p>${lmRefs(lang, m.duaRefs)}`;
   learnAdd(lang, { path: learnUrl.wudu(lang), fn: learnUrl.wudu, title: w.title, h1: w.h1, desc: w.desc, body });
 }
 function rakahsPage(lang) {
-  const r = LEARN[lang].rk, t = STRINGS[lang];
+  const r = LEARN[lang].rk, t = STRINGS[lang], m = LEARN_MORE[lang].rakahs;
   const body = `<p class="answer">${esc(r.lede)}</p><div class="table-scroll"><table class="city-table">` +
     `<thead><tr><th scope="col">${esc(r.colPrayer)}</th><th scope="col">${esc(r.colFard)}</th><th scope="col">${esc(r.colSunni)}</th><th scope="col">${esc(r.colShafi)}</th><th scope="col">${esc(r.colJafari)}</th></tr></thead><tbody>` +
     ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((k) => `<tr><th scope="row"><a href="${url.prayer(lang, k)}">${esc(t.prayers[k])}</a></th>${r.rows[k].map((x) => `<td>${esc(x)}</td>`).join('')}</tr>`).join('') +
-    `</tbody></table></div><p>${esc(r.night)}</p><h2>${esc(r.refsH)}</h2>${refList(r.refs)}`;
+    `</tbody></table></div><p>${esc(r.night)}</p><h2>${esc(r.refsH)}</h2>${refList(r.refs)}` +
+    `<h2>${esc(m.stepsH)}</h2><p>${esc(m.stepsP)}</p><ol class="steps">${m.steps.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>${lmRefs(lang, m.stepsRefs)}` +
+    `<h2>${esc(m.fardH)}</h2>${lmRefs(lang, m.fardRefs)}` +
+    `<h2>${esc(m.travelH)}</h2><p>${esc(m.travelP)}</p>${lmRefs(lang, m.travelRefs)}` +
+    `<h2>${esc(m.missedH)}</h2><p>${esc(m.missedP)}</p>${lmRefs(lang, m.missedRefs)}`;
   learnAdd(lang, { path: learnUrl.rakahs(lang), fn: learnUrl.rakahs, title: r.title, h1: r.h1, desc: r.desc, body, crumbs: prayersCrumb(lang) });
 }
 function naflPage(lang, key) {
