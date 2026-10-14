@@ -1555,6 +1555,16 @@ function prayersHub(lang) {
   });
 }
 
+// The sourced virtues and the sunnah prayers of a prayer, taken from the reference page (already checked and translated),
+// so the guide page is not just four short answers. The full list stays one click away.
+function moreGuide(lang, key, name) {
+  const R = REFS[lang], it = R && R.items[key];
+  if (!it || !LEARN[lang]) return ;
+  const seen = new Set(), virtue = it.virtue.s.concat(it.virtue.j).filter(([r]) => r && !seen.has(r) && seen.add(r)).slice(0, 4);
+  return `<h2>${esc(tpl(R.virtueH, { prayer: name }))}</h2>${refList(virtue)}<h2>${esc(tpl(R.prayerH, { prayer: name }))}</h2><div class="ref-cols">` +
+    `<section><h3>${esc(R.sunniH)}</h3>${refList(it.prayer.s.slice(0, 3))}</section><section><h3>${esc(R.shiaH)}</h3>${refList(it.prayer.j.slice(0, 3))}</section></div>` +
+    `<p><a href="${pre(lang)}prayers/${key}/reference/">${esc(LEARN[lang].basis.more)}</a></p>`;
+}
 function prayerPage(lang, key) {
   const t = STRINGS[lang], g = GUIDES[lang], pagePath = url.prayer(lang, key), name = t.prayers[key];
   const { ci, loc } = guideLoc(lang);
@@ -1571,6 +1581,7 @@ function prayerPage(lang, key) {
     `<p class="prayer-live"><span id="prayerLive">${Core.renderPrayerLive(loc, ctx, key, NOW)}</span> · <a id="prayerCity" href="${loc.url}">${esc(tpl(g.seeCity, { city: loc.name }))}</a></p>` +
     faq.map((it) => `<h2>${esc(it.q)}</h2><p>${esc(it.a)}</p>`).join('') +
     `<h2 id="schools">${esc(g.lSchools)}</h2><p>${esc(schools)}</p>` + (key === 'asr' ? `<p>${esc(t.aboutSects)}</p>` : '') +
+    moreGuide(lang, key, name) +
     `<h2>${esc(tpl(g.otherCities, { prayer: name }))}</h2>` +
     linkList(guideCities(lang).map((o) => ({ name: nameIn(o.names, lang, o.country), href: url.city(lang, o) }))) +
     `<h2>${esc(g.otherPrayers)}</h2>` +
